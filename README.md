@@ -1,1 +1,1 @@
-# art-fuse
+# ArtFuse
