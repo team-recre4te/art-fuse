@@ -128,7 +128,7 @@ router.post(
  * @throws {400} - If username or password are not of the correct format
  * @throws {410} - If the user tries to use 'Anonymous User' as username
  */
-router.put(
+router.patch(
   '/',
   [
     userValidator.isUserLoggedIn,
