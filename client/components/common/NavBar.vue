@@ -7,7 +7,7 @@
     <div class="left">
       <!-- <img src="../../public/logo.svg"> -->
       <h1 class="title">
-        Fritter
+      <img src="../../public/other-logo-transparent.png">
       </h1>
     </div>
     <div class="right">
@@ -55,7 +55,7 @@ nav {
 }
 
 img {
-    height: 32px;
+    height: 100px;
 }
 
 .left {

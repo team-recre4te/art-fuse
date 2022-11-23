@@ -50,6 +50,21 @@ const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
 };
 
 /**
+ * Checks if a bio length doesnt exceed the max character
+ */
+const isValidBio = (req: Request, res: Response, next: NextFunction) => {
+  if(req.body.bio && req.body.bio.length > 500){
+    res.status(405).json({
+      error: {
+        bio: 'The bio length must be less than 500 characters.'
+      }
+    });
+    return;
+  }
+
+  next();
+}
+/**
  * Checks if a password in req.body is valid, that is, at 6-50 characters long without any spaces
  */
 const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
@@ -168,5 +183,6 @@ export {
   isAccountExists,
   isAuthorExists,
   isValidUsername,
-  isValidPassword
+  isValidPassword,
+  isValidBio
 };

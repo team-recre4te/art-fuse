@@ -6,6 +6,7 @@ import BlockForm from '@/components/common/BlockForm.vue';
 export default {
   name: 'ChangeBioForm',
   mixins: [BlockForm],
+
   data() {
     return {
       url: '/api/users',
