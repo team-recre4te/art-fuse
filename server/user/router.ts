@@ -124,6 +124,7 @@ router.post(
  * @param {string} bio - The user's new bio
  * @return {UserResponse} - The updated user
  * @throws {403} - If user is not logged in
+ * @throws {405} - If bio length is > 500 chars
  * @throws {409} - If username already taken
  * @throws {400} - If username or password are not of the correct format
  * @throws {410} - If the user tries to use 'Anonymous User' as username

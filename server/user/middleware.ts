@@ -30,21 +30,23 @@ const isCurrentSessionUserExists = async (req: Request, res: Response, next: Nex
  */
 const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
   const usernameRegex = /^\w+$/i;
-  if (!usernameRegex.test(req.body.username)) {
-    res.status(400).json({
-      error: {
-        username: 'Username must be a nonempty alphanumeric string.'
-      }
-    });
-    return;
-  }
-  if (req.body.username === "Anonymous User"){
-    res.status(410).json({
-      error:{
-        username: '"Anonymous User" cannot be a username.'
-      }
-    });
-
+  if(req.body.username !== undefined){
+    if (!usernameRegex.test(req.body.username)) {
+      res.status(400).json({
+        error: {
+          username: 'Username must be a nonempty alphanumeric string.'
+        }
+      });
+      return;
+    }
+    if (req.body.username === "Anonymous User"){
+      res.status(410).json({
+        error:{
+          username: '"Anonymous User" cannot be a username.'
+        }
+      });
+  
+    }
   }
   next();
 };
@@ -53,7 +55,8 @@ const isValidUsername = (req: Request, res: Response, next: NextFunction) => {
  * Checks if a bio length doesnt exceed the max character
  */
 const isValidBio = (req: Request, res: Response, next: NextFunction) => {
-  if(req.body.bio && req.body.bio.length > 500){
+  const {bio} = req.body as {bio:string}
+  if(bio !== undefined && bio.length > 500){
     res.status(405).json({
       error: {
         bio: 'The bio length must be less than 500 characters.'
@@ -107,20 +110,23 @@ const isAccountExists = async (req: Request, res: Response, next: NextFunction) 
  * Checks if a username in req.body is already in use
  */
 const isUsernameNotAlreadyInUse = async (req: Request, res: Response, next: NextFunction) => {
-  const user = await UserCollection.findOneByUsername(req.body.username);
+  if (req.body.username!==undefined){
+    const user = await UserCollection.findOneByUsername(req.body.username);
 
-  // If the current session user wants to change their username to one which matches
-  // the current one irrespective of the case, we should allow them to do so
-  if (!user || (user?._id.toString() === req.session.userId)) {
-    next();
-    return;
-  }
-
-  res.status(409).json({
-    error: {
-      username: 'An account with this username already exists.'
+    // If the current session user wants to change their username to one which matches
+    // the current one irrespective of the case, we should allow them to do so
+    if (!user || (user?._id.toString() === req.session.userId)) {
+      next();
+      return;
     }
-  });
+  
+    res.status(409).json({
+      error: {
+        username: 'An account with this username already exists.'
+      }
+    });
+  }
+  next();
 };
 
 /**
