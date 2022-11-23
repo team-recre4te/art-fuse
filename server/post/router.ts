@@ -5,26 +5,6 @@ import * as userValidator from '../user/middleware';
 import * as postValidator from '../post/middleware';
 import * as util from './util';
 
-// var storage = new GridFsStorage({
-//   url: dbConfig.url + dbConfig.database,
-//   options: { useNewUrlParser: true, useUnifiedTopology: true },
-//   file: (req, file) => {
-//     const match = ["image/png", "image/jpeg"];
-  
-//     if (match.indexOf(file.mimetype) === -1) {
-//       const filename = `${Date.now()}-bezkoder-${file.originalname}`;
-//       return filename;
-//     }
-  
-//     return {
-//       bucketName: dbConfig.imgBucket,
-//       filename: `${Date.now()}-bezkoder-${file.originalname}`
-//     };
-//   }
-// });
-  
-// var uploadFiles = multer({ storage: storage }).single("file");
-
 const router = express.Router();
 
 /**
@@ -75,11 +55,9 @@ const router = express.Router();
  *
  * @param {string} title - The title of the post
  * @param {string} description - The description for the post
- * @param {string} image - Test field for one image
- * 
- * 
- * @param {?} files - The files for the post
- * @param {?} images - The images for the post
+ * @param {string[]} files - The files for the post
+ * @param {string[]} images - The images for the post
+ * @param {string?} parentId - The id of the parent post
  * @return {PostResponse} - The created post
  */
 router.post(
@@ -94,11 +72,8 @@ router.post(
     
     const authorId = (req.session.userId as string) ?? '';
 
-    // const files = ?;
-    // const images = ?;
-
     const parentId = req.body.parentId ?? undefined; 
-    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.image, parentId);
+    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.files, req.body.images, parentId);
   
     res.status(201).json({
       message: 'Your post was created successfully.',
@@ -136,6 +111,8 @@ router.delete(
  *
  * @param {string} title - the new title for the post
  * @param {string} description - the new description for the post
+ * @param {string[]} files - The new files for the post
+ * @param {string[]} images - The new images for the post
  * @return {PostResponse} - the updated post
  */
 router.patch(
@@ -147,7 +124,7 @@ router.patch(
     postValidator.isValidPostDescription,
   ],
   async (req: Request, res: Response) => {
-    const post = await PostCollection.updateOne(req.params.postId, req.body.title, req.body.description, req.body.image);
+    const post = await PostCollection.updateOne(req.params.postId, req.body.title, req.body.description, req.body.files, req.body.images);
     res.status(200).json({
         message: 'Your post was updated successfully.',
         post: util.constructPostResponse(post)

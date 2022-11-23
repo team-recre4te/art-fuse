@@ -10,10 +10,12 @@ class PostCollection {
    * @param {string} authorId - The id of the author of the post
    * @param {string} title - The title of the post
    * @param {string} description - The description of the post
+   * @param {string[]} images - The list of images for the post
+   * @param {string[]} files - The list of files for the post
    * @param {string} parentId - The id of the parent post, optional
    * not sure if we're including parent or reportStatus
    */
-  static async addOne(authorId: Types.ObjectId | string, title: string, description: string, image: string, parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
+  static async addOne(authorId: Types.ObjectId | string, title: string, description: string,  files: string[], images: string[], parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
     const date = new Date();
 
       if (parentId !== undefined) {
@@ -21,7 +23,8 @@ class PostCollection {
           authorId,
           title,
           description,
-          image,
+          files,
+          images,
           dateCreated: date,
           dateModified: date,
           parentId, 
@@ -34,7 +37,8 @@ class PostCollection {
         authorId,
         title,
         description,
-        image,
+        files,
+        images,
         dateCreated: date,
         dateModified: date,
     });
@@ -90,11 +94,12 @@ class PostCollection {
    * @param {string} description - The new description of the post
    * @return {Promise<HydratedDocument<Post>>} - The newly updated post
    */
-   static async updateOne(postId: Types.ObjectId | string, title: string, description: string, image: string): Promise<HydratedDocument<Post>> {
+   static async updateOne(postId: Types.ObjectId | string, title: string, description: string, files: string[], images: string[]): Promise<HydratedDocument<Post>> {
     const post = await PostModel.findOne({_id: postId});
     post.title = title;
     post.description = description;
-    post.image = image;
+    post.files = files;
+    post.images = images;
     post.dateModified = new Date();
     await post.save();
     return post.populate(['authorId', 'parentId']);

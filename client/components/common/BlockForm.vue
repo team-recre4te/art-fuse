@@ -64,7 +64,7 @@ export default {
       refreshPosts: false, // Whether or not stored posts should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
-      imageFile: null
+      images: []
     };
   },
   methods: {
@@ -73,7 +73,7 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(image);
         reader.onload = e =>{
-            this.imageFile = e.target.result;
+            this.images.push(e.target.result);
         };
     },
     async submit() {
@@ -87,7 +87,7 @@ export default {
       };
 
       if (this.hasBody) {
-        if (this.url === '/api/posts' && this.imageFile) {
+        if (this.url === '/api/posts') {
 
           const inputFields = Object.fromEntries(
             this.fields.map(field => {
@@ -97,7 +97,7 @@ export default {
             })
           );
 
-          const idField = {image: this.imageFile}
+          const idField = {images: this.images}
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField));
 

@@ -7,11 +7,9 @@ export type Post = {
   authorId: Types.ObjectId;
   title: string;
   description: string;
-  // categories: string[];
-  // tags: string[];
-  image: string
-  // files: any[];
-  // images: not sure what type
+  // image: string
+  files: any[];
+  images: string[];
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
@@ -23,9 +21,9 @@ export type PopulatedPost = {
   authorId: User;
   title: string;
   description: string;
-  image: string
-  // files: any[],
-  // images: any[],
+  // image: string
+  files: any[],
+  images: string[],
   dateCreated: Date;
   dateModified: Date
   parentId: Post; 
@@ -46,18 +44,18 @@ const PostSchema = new Schema<Post>({
     type: String,
     required: true,
   },
-  image: {
-    type: String,
+  // image: {
+  //   type: String,
+  //   required: false,
+  // },
+  files: {
+    type: [],
     required: true,
   },
-  // files: {
-  //   type: [],
-  //   required: true,
-  // },
-  // images: {
-  //   type: [],
-  //   required: true
-  // },
+  images: {
+    type: [String],
+    required: true
+  },
   dateCreated: {
     type: Date,
     required: true,

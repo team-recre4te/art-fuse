@@ -16,9 +16,6 @@
     <!-- <p v-if="post.parentId">
       Remixed from {{ postParentUsername }}
     </p> -->
-    <img 
-      v-if="post.image" 
-      v-bind:src="post.image"/> 
     <textarea
       v-if="editing"
       class="content"
@@ -63,7 +60,7 @@
         <i v-if="post.edited">(edited)</i>
       </p>
     </div>
-    <div>Files</div>
+    <div v-if="post.files.length > 0">Files</div>
     <div
       v-for="file in post.files"
       :key="file.index"
@@ -71,13 +68,13 @@
       <p>a file</p>
       {{ file.name }}
     </div>
-    <div>Images</div>
+    <div v-if="post.images.length > 0 ">Images</div>
     <div
       v-for="image in post.images"
       :key="image.index"
     >
-      <p>a image</p>
-      {{ image }}
+    <img 
+      v-bind:src="image"/> 
     </div>
     <section class="alerts">
       <article
