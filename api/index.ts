@@ -7,6 +7,9 @@ import http from 'http';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import MongoStore from 'connect-mongo';
+import {userRouter} from '../server/user/router';
+import {postRouter} from '../server/post/router';
+import * as userValidator from '../server/user/middleware';
 
 // Load environmental variables
 dotenv.config({});
@@ -49,22 +52,23 @@ app.use(express.urlencoded({extended: false}));
 
 // Initialize cookie session
 // https://www.npmjs.com/package/express-session#options
-// app.use(session({
-//   secret: '61040', // Should generate a real secret
-//   resave: true,
-//   saveUninitialized: false,
-//   store: MongoStore.create({
-//     clientPromise: client,
-//     dbName: 'sessions',
-//     autoRemove: 'interval',
-//     autoRemoveInterval: 10 // Minutes
-//   })
-// }));
-
+app.use(session({
+  secret: '61040', // Should generate a real secret
+  resave: true,
+  saveUninitialized: false,
+  // store: MongoStore.create({
+  //   clientPromise: client,
+  //   dbName: 'sessions',
+  //   autoRemove: 'interval',
+  //   autoRemoveInterval: 10 // Minutes
+  // })
+}));
 // This makes sure that if a user is logged in, they still exist in the database
-// app.use(userValidator.isCurrentSessionUserExists);
+app.use(userValidator.isCurrentSessionUserExists);
 
 // Add routers from routes folder
+app.use('/api/users', userRouter);
+app.use('/api/posts', postRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

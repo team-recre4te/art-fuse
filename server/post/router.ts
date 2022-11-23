@@ -87,6 +87,8 @@ router.post(
       postValidator.isValidPostDescription,
     ],
   async (req: Request, res: Response) => {
+    console.log("try to make post");
+    
     const authorId = (req.session.userId as string) ?? '';
     // const files = ?;
     // const images = ?;
@@ -113,7 +115,7 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     postValidator.isPostExists,
-    postValidator.isValidPostModifier
+    // postValidator.isValidPostModifier
   ],
   async (req: Request, res: Response) => {
     await PostCollection.deleteOne(req.params.postId);
@@ -138,7 +140,7 @@ router.patch(
     userValidator.isUserLoggedIn,
     postValidator.isPostExists,
     postValidator.isValidPostTitle,
-      postValidator.isValidPostDescription,
+    postValidator.isValidPostDescription,
   ],
   async (req: Request, res: Response) => {
     const post = await PostCollection.updateOne(req.params.postId, req.body.title, req.body.description);
