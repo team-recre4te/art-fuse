@@ -16,6 +16,9 @@
     <!-- <p v-if="post.parentId">
       Remixed from {{ postParentUsername }}
     </p> -->
+    <img 
+      v-if="post.image" 
+      v-bind:src="post.image"/> 
     <textarea
       v-if="editing"
       class="content"

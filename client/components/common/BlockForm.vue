@@ -26,6 +26,7 @@
           @input="field.value = $event.target.value"
         >
       </div>
+      <input v-if="url == '/api/posts'" type="file" id="image" name="image"  @change="uploadFile">
     </article>
     <article v-else>
       <p>{{ content }}</p>
@@ -62,10 +63,19 @@ export default {
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshPosts: false, // Whether or not stored posts should be updated after form submission
       alerts: {}, // Displays success/error messages encountered during form submission
-      callback: null // Function to run after successful form submission
+      callback: null, // Function to run after successful form submission
+      imageFile: null
     };
   },
   methods: {
+    uploadFile(e){
+        const image = e.target.files[0];
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = e =>{
+            this.imageFile = e.target.result;
+        };
+    },
     async submit() {
       /**
         * Submits a form with the specified options from data().
@@ -75,16 +85,35 @@ export default {
         headers: {'Content-Type': 'application/json'},
         credentials: 'same-origin' // Sends express-session credentials with request
       };
-      if (this.hasBody) {
-        options.body = JSON.stringify(Object.fromEntries(
-          this.fields.map(field => {
-            const {id, value} = field;
-            field.value = '';
-            return [id, value];
-          })
-        ));
-      }
 
+      if (this.hasBody) {
+        if (this.url === '/api/posts' && this.imageFile) {
+
+          const inputFields = Object.fromEntries(
+            this.fields.map(field => {
+              const {id, value} = field;
+              field.value = '';
+              return [id, value];
+            })
+          );
+
+          const idField = {image: this.imageFile}
+
+          options.body = JSON.stringify(Object.assign({}, inputFields, idField));
+
+          console.log('options', options.body);
+
+        } else {
+          options.body = JSON.stringify(Object.fromEntries(
+            this.fields.map(field => {
+              const {id, value} = field;
+              field.value = '';
+              return [id, value];
+            })
+          ));
+        }
+      }
+      
       try {
         const r = await fetch(this.url, options);
         if (!r.ok) {

@@ -75,6 +75,9 @@ const router = express.Router();
  *
  * @param {string} title - The title of the post
  * @param {string} description - The description for the post
+ * @param {string} image - Test field for one image
+ * 
+ * 
  * @param {?} files - The files for the post
  * @param {?} images - The images for the post
  * @return {PostResponse} - The created post
@@ -90,11 +93,12 @@ router.post(
     console.log("try to make post");
     
     const authorId = (req.session.userId as string) ?? '';
+
     // const files = ?;
     // const images = ?;
 
     const parentId = req.body.parentId ?? undefined; 
-    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, parentId);
+    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.image, parentId);
   
     res.status(201).json({
       message: 'Your post was created successfully.',
@@ -143,7 +147,7 @@ router.patch(
     postValidator.isValidPostDescription,
   ],
   async (req: Request, res: Response) => {
-    const post = await PostCollection.updateOne(req.params.postId, req.body.title, req.body.description);
+    const post = await PostCollection.updateOne(req.params.postId, req.body.title, req.body.description, req.body.image);
     res.status(200).json({
         message: 'Your post was updated successfully.',
         post: util.constructPostResponse(post)

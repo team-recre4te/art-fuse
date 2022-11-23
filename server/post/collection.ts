@@ -10,9 +10,10 @@ class PostCollection {
    * @param {string} authorId - The id of the author of the post
    * @param {string} title - The title of the post
    * @param {string} description - The description of the post
+   * @param {string} parentId - The id of the parent post, optional
    * not sure if we're including parent or reportStatus
    */
-  static async addOne(authorId: Types.ObjectId | string, title: string, description: string, parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
+  static async addOne(authorId: Types.ObjectId | string, title: string, description: string, image: string, parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
     const date = new Date();
 
       if (parentId !== undefined) {
@@ -20,6 +21,7 @@ class PostCollection {
           authorId,
           title,
           description,
+          image,
           dateCreated: date,
           dateModified: date,
           parentId, 
@@ -32,6 +34,7 @@ class PostCollection {
         authorId,
         title,
         description,
+        image,
         dateCreated: date,
         dateModified: date,
     });
@@ -70,6 +73,16 @@ class PostCollection {
   }
 
   /**
+   * Get all remixes of given post
+   * 
+   * @param {Types.ObjectId | string} parentId - The id of the parent post
+   * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
+   */
+  static async findAllByParent(parentId: Types.ObjectId | string): Promise<Array<HydratedDocument<Post>>> {
+    return PostModel.find({parentId}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+  }
+
+  /**
    * Update a post
    *
    * @param {string} postId - The id of the post to be updated
@@ -77,10 +90,11 @@ class PostCollection {
    * @param {string} description - The new description of the post
    * @return {Promise<HydratedDocument<Post>>} - The newly updated post
    */
-   static async updateOne(postId: Types.ObjectId | string, title: string, description: string): Promise<HydratedDocument<Post>> {
+   static async updateOne(postId: Types.ObjectId | string, title: string, description: string, image: string): Promise<HydratedDocument<Post>> {
     const post = await PostModel.findOne({_id: postId});
     post.title = title;
     post.description = description;
+    post.image = image;
     post.dateModified = new Date();
     await post.save();
     return post.populate(['authorId', 'parentId']);
