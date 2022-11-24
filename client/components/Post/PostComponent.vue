@@ -25,7 +25,7 @@
       v-for="image in post.images"
       :key="image.index"
     >
-      <img v-bind:src="image"/> 
+      <img :src="image" width="200px"/> 
     </div>
 
     <!-- <textarea
@@ -112,18 +112,6 @@
 </template>
 
 <script>
-
-// TODO: add image and files display
-// authorId: User ObjectId
-// parentId: User ObjectId
-// title: String
-// description: String
-// dateCreated: Date
-// files: array[]
-// images: array[]
-
-// categories: ??
-// tags: ??
 
 export default {
   name: 'PostComponent',

@@ -1,6 +1,7 @@
 // This file must be in the /api folder for Vercel to detect it as a serverless function
 import type {Request, Response} from 'express';
 import express from 'express';
+import bodyParser from 'body-parser';
 import session from 'express-session';
 import logger from 'morgan';
 import http from 'http';
@@ -44,11 +45,14 @@ app.set('port', process.env.PORT || 3000);
 // Log requests in the terminal
 app.use(logger('dev'));
 
+app.use(bodyParser.json({ limit: '10mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
+
 // Parse incoming requests with JSON payloads ('content-type: application/json' in header)
 app.use(express.json());
 
 // Parse incoming requests with urlencoded payloads ('content-type: application/x-www-form-urlencoded' in header)
-app.use(express.urlencoded({extended: false}));
+// app.use(express.urlencoded({extended: false}));
 
 // Initialize cookie session
 // https://www.npmjs.com/package/express-session#options
