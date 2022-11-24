@@ -93,6 +93,7 @@ export default {
       hasBody: false, // Whether or not form request has a body
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshPosts: false, // Whether or not stored posts should be updated after form submission
+      refreshBio: false,
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
       images: [],
@@ -180,10 +181,15 @@ export default {
           const text = await r.text();
           const res = text ? JSON.parse(text) : {user: null};
           this.$store.commit('setUsername', res.user ? res.user.username : null);
+          this.$store.commit('setBio', res.user ? res.user.bio : null);
         }
 
         if (this.refreshPosts) {
           this.$store.commit('refreshPosts');
+        }
+
+        if (this.refreshBio) {
+          this.$store.commit('refreshBio');
         }
 
         if (this.callback) {
