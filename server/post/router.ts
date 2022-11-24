@@ -69,7 +69,6 @@ router.post(
       postValidator.isValidPostImageOrFile
     ],
   async (req: Request, res: Response) => {
-    console.log("try to make post");
     
     const authorId = (req.session.userId as string) ?? '';
 

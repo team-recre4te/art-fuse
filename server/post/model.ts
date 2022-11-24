@@ -7,13 +7,11 @@ export type Post = {
   authorId: Types.ObjectId;
   title: string;
   description: string;
-  // image: string
   files: any[];
   images: string[];
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
-  // reportStatus: are we leaving this out as well?
 }
 
 export type PopulatedPost = {
@@ -21,13 +19,11 @@ export type PopulatedPost = {
   authorId: User;
   title: string;
   description: string;
-  // image: string
   files: any[],
   images: string[],
   dateCreated: Date;
   dateModified: Date
   parentId: Post; 
-  // reportStatus: not sure if this is being done?
 }
 
 const PostSchema = new Schema<Post>({
@@ -44,10 +40,6 @@ const PostSchema = new Schema<Post>({
     type: String,
     required: true,
   },
-  // image: {
-  //   type: String,
-  //   required: false,
-  // },
   files: {
     type: [],
     required: true,
@@ -69,7 +61,6 @@ const PostSchema = new Schema<Post>({
     required: false,
     ref: 'Post'
   },
-  // idk if we're doing report status
 });
 
 const PostModel = model<Post>('Post', PostSchema);
