@@ -11,6 +11,7 @@ const store = new Vuex.Store({
   state: {
     filter: null, // Username to filter shown freets by (null = show all)
     posts: [], // All freets created in the app
+    bio: null,
     username: null, // Username of the logged in user
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
@@ -23,6 +24,14 @@ const store = new Vuex.Store({
       setTimeout(() => {
         Vue.delete(state.alerts, payload.message);
       }, 3000);
+    },
+    setBio(state, bio) {
+      /**
+       * Update the stored user to the specified one.
+       * @param user - new object to set
+       */
+      state.bio = bio;
+      console.log(state.bio);
     },
     setUsername(state, username) {
       /**
@@ -52,6 +61,15 @@ const store = new Vuex.Store({
       const url = state.filter ? `/api/users/${state.filter}/posts` : '/api/posts';
       const res = await fetch(url).then(async r => r.json());
       state.posts = res;
+    },
+    async refreshBio(state) {
+      /**
+       * Request the server for the currently available freets.
+       */
+      const url = `/api/users/session`;
+      const res = await fetch(url).then(async r => r.json());
+      const user = res.user;
+      state.bio = user.bio;
     }
   },
   // Store data across page refreshes, only discard on browser close

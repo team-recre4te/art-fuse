@@ -7,6 +7,7 @@
       <header>
         <h2>Account settings for @{{ $store.state.username }}</h2>
       </header>
+      <p>Biography: {{ $store.state.bio}}</p>
       <ChangeUsernameForm />
       <ChangePasswordForm />
       <ChangeBioForm />
