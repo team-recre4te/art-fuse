@@ -60,10 +60,31 @@ const isValidPostTitle = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+/**
+ * Checks if the post has at least one file or image
+ */
+ const isValidPostImageOrFile = (req: Request, res: Response, next: NextFunction) => {
+  const {files} = req.body as {files: string[]};
+  const {images} = req.body as {images: string[]};
+
+  console.log(files);
+  console.log(images)
+
+  if (files.length + images.length == 0) {
+    res.status(400).json({
+      error: 'Post must contain at least 1 image or file.'
+    });
+    return;
+  }
+
+  next();
+};
+
 export {
   isPostExists,
   isValidPostTitle,
   isValidPostDescription,
+  isValidPostImageOrFile
   // isValidPostModifier,
 }
 

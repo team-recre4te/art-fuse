@@ -66,6 +66,7 @@ router.post(
       userValidator.isUserLoggedIn,
       postValidator.isValidPostTitle,
       postValidator.isValidPostDescription,
+      postValidator.isValidPostImageOrFile
     ],
   async (req: Request, res: Response) => {
     console.log("try to make post");

@@ -3,36 +3,49 @@
 
 <template>
   <article class="post">
-    <header>
-      <div class="post-header">
-        <p>
-          {{ post.title }}
-        </p>
-        <p>
-          By {{ post.author }}
-        </p>
-      </div>
+    <header class="post-header">
+      <h3>
+        {{ post.title }}
+      </h3>
+      <p>
+        By {{ post.author }}
+      </p>
     </header>
     <!-- <p v-if="post.parentId">
       Remixed from {{ postParentUsername }}
     </p> -->
-    <textarea
+
+    <h5 
+      v-if="post.images && post.images.length > 0"
+      class="section-label"
+    >
+      Images
+    </h5>
+    <div
+      v-for="image in post.images"
+      :key="image.index"
+    >
+      <img v-bind:src="image"/> 
+    </div>
+
+    <!-- <textarea
       v-if="editing"
       class="content"
       :value="draft"
       @input="draft = $event.target.value"
-    />
-    <p
-      v-else
+    /> -->
+    <div
       class="description"
     >
-      {{ post.description }}
-    </p>
+      <h5 class="section-label">Description</h5>
+      <p>{{ post.description }}</p>
+    </div>
+
     <div
       v-if="$store.state.username == post.author"
       class="actions"
     >
-      <button
+      <!-- <button
         v-if="editing"
         @click="submitEdit"
       >
@@ -49,33 +62,43 @@
         @click="startEditing"
       >
         ✏️ Edit
-      </button>
+      </button> -->
       <button v-if="!editing" @click="deletePost">
         🗑️ Delete
       </button>
     </div>
+
+    <div v-if="post.files.length">
+      <h5 class="section-label">Files</h5>
+      <div
+        v-for="file in post.files"
+        :key="file.index"
+      >
+        <iframe 
+          :src="file"
+          width=300
+          height=400
+        >
+        </iframe>
+      </div>
+    </div>
+
     <div>
       <p class="info">
         {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
         <i v-if="post.edited">(edited)</i>
       </p>
     </div>
-    <div v-if="post.files.length > 0">Files</div>
+    
+    <!-- <div v-if="post.files && post.files.length > 0">Files</div>
     <div
       v-for="file in post.files"
       :key="file.index"
     >
       <p>a file</p>
       {{ file.name }}
-    </div>
-    <div v-if="post.images.length > 0 ">Images</div>
-    <div
-      v-for="image in post.images"
-      :key="image.index"
-    >
-    <img 
-      v-bind:src="image"/> 
-    </div>
+    </div> -->
+
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -119,8 +142,9 @@ export default {
     };
   },
   mounted() {
-    console.log("Post")
-    console.log(this.post);
+    if (this.post.files.length) {
+    console.log(this.post)
+    }
   },
   methods: {
     startEditing() {
@@ -239,9 +263,13 @@ export default {
   padding-right: 15px;
 }
 
-.post-header {
-  display: flex;
-  justify-content: space-between;
+.post-header h3 {
+  margin: 0px;
+}
+
+.post-header p {
+  margin-top: 10px;
+  font-size: smaller;
 }
 
 .info {
@@ -262,5 +290,13 @@ export default {
 .description {
   width: 100%;
   resize: vertical;
+}
+
+.section-label {
+  margin: 0px;
+}
+
+.description p {
+  margin-top: 5px;
 }
 </style>

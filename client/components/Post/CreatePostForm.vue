@@ -13,7 +13,9 @@ export default {
       hasBody: true,
       fields: [
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
-        {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'}
+        {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
+        {id: 'files', label: 'Files', accept: ''},
+        {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'}
       ],
       title: 'Create a new post',
       buttonText: 'Create Post',
