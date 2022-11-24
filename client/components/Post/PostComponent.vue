@@ -11,9 +11,6 @@
         By {{ post.author }}
       </p>
     </header>
-    <!-- <p v-if="post.parentId">
-      Remixed from {{ postParentUsername }}
-    </p> -->
 
     <h5 
       v-if="post.images && post.images.length > 0"
@@ -89,15 +86,6 @@
         <i v-if="post.edited">(edited)</i>
       </p>
     </div>
-    
-    <!-- <div v-if="post.files && post.files.length > 0">Files</div>
-    <div
-      v-for="file in post.files"
-      :key="file.index"
-    >
-      <p>a file</p>
-      {{ file.name }}
-    </div> -->
 
     <section class="alerts">
       <article

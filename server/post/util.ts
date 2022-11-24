@@ -6,9 +6,9 @@ type PostResponse = {
   _id: string;
   author: string;
   title: string;
-  description: string
-  // files?
-  // images?
+  description: string;
+  files: string[];
+  images: string[];
   dateCreated: string;
   dateModified: string;
   parentTitle?: string;
@@ -40,21 +40,6 @@ const constructPostResponse = (post: HydratedDocument<Post>): PostResponse => {
 
   const {username} = postCopy.authorId;
   delete postCopy.authorId;
-
-  if (post.parentId !== undefined) {
-    const {title} = postCopy.parentId;
-    delete postCopy.parentId;
-    
-    return {
-      ...postCopy,
-      _id: postCopy._id.toString(),
-      author: username,
-      parentTitle: title,
-      parent: post.parentId.toString(),
-      dateCreated: formatDate(post.dateCreated),
-      dateModified: formatDate(post.dateModified),
-    };
-  }
 
   return {
     ...postCopy,

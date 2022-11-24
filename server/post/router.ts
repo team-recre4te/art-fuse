@@ -74,7 +74,7 @@ router.post(
     const authorId = (req.session.userId as string) ?? '';
 
     const parentId = req.body.parentId ?? undefined; 
-    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.files, req.body.images, parentId);
+    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.files, req.body.images);
   
     res.status(201).json({
       message: 'Your post was created successfully.',

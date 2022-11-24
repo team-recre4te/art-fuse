@@ -12,26 +12,10 @@ class PostCollection {
    * @param {string} description - The description of the post
    * @param {string[]} images - The list of images for the post
    * @param {string[]} files - The list of files for the post
-   * @param {string} parentId - The id of the parent post, optional
    * not sure if we're including parent or reportStatus
    */
-  static async addOne(authorId: Types.ObjectId | string, title: string, description: string,  files: string[], images: string[], parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
+  static async addOne(authorId: Types.ObjectId | string, title: string, description: string,  files: string[], images: string[]): Promise<HydratedDocument<Post>> {
     const date = new Date();
-
-      if (parentId !== undefined) {
-        const post = new PostModel({
-          authorId,
-          title,
-          description,
-          files,
-          images,
-          dateCreated: date,
-          dateModified: date,
-          parentId, 
-      });
-      await post.save();
-      return post.populate(['authorId', 'parentId']);
-    }
 
     const post = new PostModel({
         authorId,
@@ -53,7 +37,7 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await PostModel.findOne({_id: postId})).populate(['authorId', 'parentId']);
+    return (await PostModel.findOne({_id: postId})).populate(['authorId']);
   }
 
   /**
