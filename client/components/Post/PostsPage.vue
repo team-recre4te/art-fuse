@@ -180,6 +180,11 @@ section .scrollbox {
   min-width: 280px;
 }
 
+.post-header h3 {
+  margin-top: 0px;
+  margin-bottom: 22px;
+}
+
 article p {
   font-size: smaller;
 }

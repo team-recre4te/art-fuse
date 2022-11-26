@@ -52,7 +52,6 @@ export default {
 <style scoped>
 .flex-container {
   display: flex;
-  margin-top: 40px;
 }
 
 .search-bar {

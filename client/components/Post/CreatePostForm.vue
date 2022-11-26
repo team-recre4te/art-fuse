@@ -22,6 +22,8 @@ export default {
       refreshPosts: true,
       callback: () => {
         const message = 'Successfully created a post!';
+        this.$router.push({name: 'Home'}); // Goes to Home page after creating a post
+
         this.$set(this.alerts, message, 'success');
         setTimeout(() => this.$delete(this.alerts, message), 3000);
       }

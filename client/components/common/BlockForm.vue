@@ -152,7 +152,18 @@ export default {
           );
 
           const idField = {images: this.images}
-          const fileField = {files: this.files}
+          const f = [];
+          for (let i = 0; i < this.files.length; i++) {
+            f.push({
+              name: this.fileNames[i],
+              file: this.files[i]
+            })
+          }
+          const fileField = {files: f}
+
+          // TODO: how should we send filenames to database, need to stay associated to their file
+          // files: [{ name: ..., file: ... }, {}]
+          // const fileNameField = {fileNames: this.fileNames}
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
 
