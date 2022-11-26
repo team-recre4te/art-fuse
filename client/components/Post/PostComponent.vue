@@ -160,6 +160,35 @@
       <button v-if="!editing" @click="deletePost">
         🗑️ Delete
       </button>
+
+          <button
+      style="background-color: white; border: 0px;"
+      @click="showComments = !showComments">
+      💬 {{comments.length}} comments
+    </button>
+    <div v-if="showComments">
+      <section  v-if="$store.state.username">
+        <CreateCommentForm
+        :postId=post._id
+        />
+      </section>
+      <section
+          v-if="comments.length"
+        >
+          <CommentComponent
+            v-for="comment in comments"
+            :key="comment.id"
+            :comment="comment"
+          />
+      </section>
+      <article
+          v-else
+        >
+          <h3>No Comments, write the first!</h3>
+      </article>
+
+    </div>
+
     </div>
   </article>
 </template>
@@ -167,6 +196,8 @@
 <script>
 import { Carousel3d, Slide } from 'vue-carousel-3d';
 import TagsComponent from '@/components/Post/TagsComponent.vue';
+import CommentComponent from '@/components/Comment/CommentComponent.vue';
+import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
 
 export default {
   name: 'PostComponent',
@@ -180,7 +211,9 @@ export default {
   components: {
     TagsComponent,
     Carousel3d,
-    Slide
+    Slide,
+    CommentComponent, 
+    CreateCommentForm
   },
   data() {
     return {
@@ -191,6 +224,8 @@ export default {
       draftFiles: this.post.files, // Potentially updated files for this post
       draftImages: this.post.images, // Potentially updated images for this post
       alerts: {}, // Displays success/error messages encountered during post modification
+      showComments: false,
+      comments: [],
     };
   },
   mounted() {
@@ -260,12 +295,12 @@ export default {
         method: 'DELETE',
         callback: () => {
           this.$store.commit('refreshPosts');
-          
           this.$store.commit('alert', {
             message: 'Successfully deleted post!', status: 'success'
           });
         }
       };
+      this.comments = [];
       this.request(`posts/${this.post._id}`, params);
     },
     clearImages() {
@@ -293,6 +328,16 @@ export default {
           this.draftFiles.push({ name: file.name, file: e.target.result });
         };
       });
+    },
+    getComments() {
+      /**
+       * Get the comments for the freet
+       */
+      const params = {
+        method: 'GET',
+        callback: () => {}
+      };      
+      this.request(`comments/`, params);
     },
     submitEdit() {
       /**
@@ -358,10 +403,19 @@ export default {
       try {
         const r = await fetch(`/api/${path}`, options);
         const res = await r.json();
+
         if (!r.ok) {
           throw new Error(res.error);
         }
 
+        if (path === `comments?postId=${this.post._id}`) {
+          const comments = [];
+
+          for (var i = 0; i < res.length; i++) {
+            comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
+          }
+          this.comments = comments;
+        }
         params.callback();
       } catch (e) {
         this.liking = false;
@@ -369,7 +423,7 @@ export default {
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
-    }
+    },
   },
   computed: {
     // postAuthorUsername() {
@@ -393,6 +447,12 @@ export default {
     postImagesToDisplay() {
       return this.editing ? this.draftImages : this.post.images;
     }
+  },
+  created() {
+    this.getComments();
+  },
+  updated() {
+    this.getComments();
   }
 };
 </script>
