@@ -100,35 +100,34 @@
       <button v-if="!editing" @click="deletePost">
         🗑️ Delete
       </button>
+    </div>
 
-          <button
+    <button
       style="background-color: white; border: 0px;"
       @click="showComments = !showComments">
       💬 {{comments.length}} comments
     </button>
+
     <div v-if="showComments">
-      <section  v-if="$store.state.username">
+      <section v-if="$store.state.username">
         <CreateCommentForm
         :postId=post._id
         />
       </section>
       <section
-          v-if="comments.length"
-        >
-          <CommentComponent
-            v-for="comment in comments"
-            :key="comment.id"
-            :comment="comment"
-          />
+        v-if="comments.length"
+      >
+        <CommentComponent
+          v-for="comment in comments"
+          :key="comment.id"
+          :comment="comment"
+        />
       </section>
       <article
-          v-else
-        >
-          <h3>No Comments, write the first!</h3>
+        v-else
+      >
+        <h3>No Comments, write the first!</h3>
       </article>
-
-    </div>
-
     </div>
   </article>
 </template>
