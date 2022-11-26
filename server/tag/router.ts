@@ -95,4 +95,4 @@ router.delete(
   }
 );
 
-export {router as postRouter};
+export {router as tagRouter};

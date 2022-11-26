@@ -10,6 +10,7 @@ Vue.use(Vuex);
 const store = new Vuex.Store({
   state: {
     filter: null, // Username to filter shown freets by (null = show all)
+    tagFilter: null, // Tag to filter shown freets by (null = show all)
     posts: [], // All freets created in the app
     bio: null,
     username: null, // Username of the logged in user
@@ -31,7 +32,6 @@ const store = new Vuex.Store({
        * @param user - new object to set
        */
       state.bio = bio;
-      console.log(state.bio);
     },
     setUsername(state, username) {
       /**
@@ -46,6 +46,13 @@ const store = new Vuex.Store({
        * @param filter - Username of the user to fitler freets by
        */
       state.filter = filter;
+    },
+    updateTagFilter(state, filter) {
+      /**
+       * Update the stored tag filter to the specified one.
+       * @param filter - Tag to filter freets by
+       */
+      state.tagFilter = filter;
     },
     updatePosts(state, posts) {
       /**

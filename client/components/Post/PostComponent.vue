@@ -1,5 +1,4 @@
 <!-- Reusable component representing a single post and its actions -->
-<!-- We've tagged some elements with classes; consider writing CSS using those classes to style them... -->
 
 <template>
   <article class="post">
@@ -11,19 +10,6 @@
         By {{ post.author }}
       </p>
     </header>
-
-    <h5 
-      v-if="post.images && post.images.length > 0"
-      class="section-label"
-    >
-      Images
-    </h5>
-    <div
-      v-for="image in post.images"
-      :key="image.index"
-    >
-      <img :src="image" width="200px"/> 
-    </div>
 
     <!-- <textarea
       v-if="editing"
@@ -38,34 +24,26 @@
       <p>{{ post.description }}</p>
     </div>
 
-    <div
-      v-if="$store.state.username == post.author"
-      class="actions"
-    >
-      <!-- <button
-        v-if="editing"
-        @click="submitEdit"
-      >
-        ✅ Save
-      </button>
-      <button
-        v-if="editing"
-        @click="stopEditing"
-      >
-        🚫 Discard
-      </button>
-      <button
-        v-if="!editing"
-        @click="startEditing"
-      >
-        ✏️ Edit
-      </button> -->
-      <button v-if="!editing" @click="deletePost">
-        🗑️ Delete
-      </button>
+    <div>
+      <TagsComponent 
+        :post="post"
+      />
     </div>
 
-    <div v-if="post.files.length">
+    <h5 
+      v-if="post.images && post.images.length > 0"
+      class="section-label"
+    >
+      Images
+    </h5>
+    <div
+      v-for="image in post.images"
+      :key="image.index"
+    >
+      <img :src="image" width="200px"/> 
+    </div>
+
+    <div v-if="post.files && post.files.length">
       <h5 class="section-label">Files</h5>
       <div
         v-for="file in post.files"
@@ -96,10 +74,38 @@
         <p>{{ alert }}</p>
       </article>
     </section>
+
+    <div
+      v-if="$store.state.username == post.author"
+      class="actions"
+    >
+      <!-- <button
+        v-if="editing"
+        @click="submitEdit"
+      >
+        ✅ Save
+      </button>
+      <button
+        v-if="editing"
+        @click="stopEditing"
+      >
+        🚫 Discard
+      </button>
+      <button
+        v-if="!editing"
+        @click="startEditing"
+      >
+        ✏️ Edit
+      </button> -->
+      <button v-if="!editing" @click="deletePost">
+        🗑️ Delete
+      </button>
+    </div>
   </article>
 </template>
 
 <script>
+import TagsComponent from '@/components/Post/TagsComponent.vue';
 
 export default {
   name: 'PostComponent',
@@ -110,6 +116,9 @@ export default {
       required: true
     }
   },
+  components: {
+    TagsComponent
+  },
   data() {
     return {
       editing: false, // Whether or not this post is in edit mode
@@ -118,9 +127,9 @@ export default {
     };
   },
   mounted() {
-    if (this.post.files.length) {
-    console.log(this.post)
-    }
+    // if (this.post.files.length) {
+    //   console.log(this.post)
+    // }
   },
   methods: {
     startEditing() {

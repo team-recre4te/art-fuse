@@ -1,5 +1,6 @@
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
+import { Tag } from '../tag/model';
 import type {User} from '../user/model';
 
 export type Post = {
@@ -12,6 +13,7 @@ export type Post = {
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
+  tags?: Array<Tag>;
 }
 
 export type PopulatedPost = {
@@ -61,7 +63,22 @@ const PostSchema = new Schema<Post>({
     required: false,
     ref: 'Post'
   },
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
+
+PostSchema.virtual('tags', {
+  ref: 'Tag',
+  localField: '_id',
+  foreignField: 'postId',
+});
+
+// FreetSchema.virtual('likedBy', {
+//   ref: 'Like',
+//   localField: '_id',
+//   foreignField: 'freetId',
+// });
 
 const PostModel = model<Post>('Post', PostSchema);
 export default PostModel;
