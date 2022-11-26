@@ -74,10 +74,10 @@ PostSchema.virtual('tags', {
   foreignField: 'postId',
 });
 
-// FreetSchema.virtual('likedBy', {
+// PostSchema.virtual('likedBy', {
 //   ref: 'Like',
 //   localField: '_id',
-//   foreignField: 'freetId',
+//   foreignField: 'postId',
 // });
 
 const PostModel = model<Post>('Post', PostSchema);

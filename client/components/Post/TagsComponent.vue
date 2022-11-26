@@ -42,7 +42,7 @@ export default {
     return {
       addingTag: false,
       newTag: '',
-      alerts: {}, // Displays success/error messages encountered during freet modification
+      alerts: {}, // Displays success/error messages encountered during post modification
     }
   },
   methods: {
@@ -95,7 +95,7 @@ export default {
     },
     async request(path, params) {
       /**
-       * Submits a request to the freet's endpoint
+       * Submits a request to the post's endpoint
        * @param params - Options for the request
        * @param params.body - Body for the request, if it exists
        * @param params.callback - Function to run if the the request succeeds
