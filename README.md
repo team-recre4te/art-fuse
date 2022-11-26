@@ -13,45 +13,86 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
 # Conceptual Designs
 ## Post
 * *Purpose:* Help users share their projects online for others to see and build on.
-* *Operational Principle:* When creator x has a project that they want to see others remix, they can create an ArtFuse post which includes a project name, statement, related files, an associated category, and associated tags. If creator x is remixing another project, creator x’s post will have a reference to the post they remixed. After creator x posts the post, it will show up on the home pages of creators on the platform. When creator y goes onto ArtFuse looking for something new to work on, they may encounter creator x’s post. Creator y will also be able to use the remix button to create a post that remixes creator x’s post. Creator z, if a parent or ancestor of creator x’s post, can also choose to report the post. Creator z might want to do that if they feel creator x is disrespecting the previous creators. Reported posts will have warnings covering the post; users will need to choose to view the posts by clicking to remove the warning.
-* *States:* author, name, description, files, images (displayed images on a post), categories, tags, parent post, and report status
+* *Operational Principle:* When creator x has a project that they want to see others remix or talk about, they can create an ArtFuse post which includes a project name, statement, and related files. After creator x posts the post, it will show up on the home pages of creators on the platform. When creator y goes onto ArtFuse looking for something new to work on, they may encounter creator x’s post. 
+* *States:* author, name, description, files, images (displayed images on a post)
 * *Actions:*
     * add (author: User, name: String, description: String, files: File[], images: Image[], categories: Category[], tags: Tag[], parent: Post)
         * date = current date
-        * use author, name, description, files, images, categories, tags, parent, and date to create a new post
-    * get (category: Category)
-        * return posts that have category as a category
-    * get (tag: Tag)
-        * return posts that have tag as a tag
+        * use author, name, description, files, images, and date to create a new post
     * delete (post: Post)
         * delete post
         * disconnect post from its user, categories, and tag(s)
-    * add (reportStatus: ReportStatus, post: Post, reporter: User)
-        * if reportStatus equals reported and reporter has a post that’s an ancestor to post
-        * add reportStatus to post reportStatus
-    * remix (parent: Post)
-        * add name of parent to parent field of post
 
 * *Data Modeling:*
     * author: Post -> one User
     * name: Post -> one String
     * description: Post -> one String
-    * parent: Post -> one Post
-    * categories: Post -> some Category
-    * tags: Post -> set Tag
     * files: Post -> set File
     * images: Post -> set Image
     * date: Post -> one Date
-    * reportStatus: Post -> one ReportStatus
+
+## Category
+* *Purpose:* Help users narrow their view of posts to major art categories. Help creators reach their target audiences. 
+* *Operational Principle:* When a user makes a post, they must add at least one category to help other users looking for specific types of art find it without searching for too long. When a user is on the home page, they can filter the displayed posts by category. 
+* *States:* category name and post that falls under the category
+* *Actions:*
+    * add (category: Category, post: Post, user: User)
+        * If user is author of post and category is not already on post
+            * add category to post
+    * remove (category: Category, post: Post, user: User)
+        * If user is author of post and category is already on post
+            * remove category from post
+    * filter (category: Category)
+        * return all posts that contain this category
+    * get (post: Post)
+        * return all categories on post
+
+* *Data Modeling:*
+    * categories: Item -> set Categories (where Category is a String)
+
+## Tag
+* *Purpose:* Help users find posts related to their interests to work on.
+* *Operational Principle:* When a user makes a post, they can include tags to help other users quickly find their posts. When a user is searching for posts, they can search for posts by tag.
+* *States:* tag name and associated post
+* *Actions:*
+    * addTag(tag: Tag, post: Post, user: User)
+        * If user is author of post and tag is not already on post
+            * add tag to post
+    * removeTag(tag: Tag, post: Post, user: User)
+        * If user is author of post and tag is already on post
+            * remove tag from post
+    * searchByTag(tag: Tag)
+        * return all posts that contain this tag
+    * getTags(post: Post)
+        * return all tags on post
+* *Data Modeling:*
+    * tags: Item -> set Tag (where Tag is a String)
+
+## Report
+* *Purpose:* Allows users to report posts that violate community guidelines or is seen to not fit with the remix branch.
+* *Operational Principle:* If a user with a post that’s an ancestor to a child post, finds that child post to be violating community guidelines or not well-suited to be part of this remix branch, they can report the post. It will then have a warning covering the post, and users will need to choose to view the post by clicking to remove the warning. 
+* *States:* report status
+* *Actions:*
+    * add (reportStatus: ReportStatus, post: Post, reporter: User)
+        * if reportStatus equals reported and reporter has a post that’s an ancestor to post
+            * add reportStatus to post reportStatus
+* *Data Modeling:*
+    * reportStatus: Post -> one ReportStatus (where ReportStatus is a Boolean and True means reported)
+
+## Remix
+* *Purpose:* Enable users to get inspired by projects and share their take.
+* *Operational Principle:* From user x’s post, user y can click on the remix button to create a post that remixes user x’s post. User y’s post will now have user x’s post as its parent. Other users can choose to remix user y’s post and will be part of the tree that develops from the original project.
+* *States:* parent post and set of remixed posts from each post
+* *Actions:*
+    * remix(parentPost: Post, childPost: Post)
+        * add childPost to parentPost's set of remixed posts
+* *Data Modeling:*
+    * remixes: Post -> set Post
 
 ## User
-
 * *Purpose:* Allow one to have a presence on ArtFuse in the form of an account that connects their name and password with the projects they share and work on.
-
 * *Operational Principle:* An artist learns about ArtFuse and decides to create an account; in this process, they add their name, a username, a password, a bio, and some tags that they are interested in; this information will be tied to the user’s account. Going forward, the artist can log in and log out whenever they choose. While logged in, the artist can view their bio, username, and name. Each user can decide to edit their bio at any point. When the artist goes on to create posts, likes, or comments, their creations will be associated with their user information. Anyone on the platform can go onto an artist’s profile to see information about the artist as well as posts they’ve liked, commented, or created.
-
 * *States:* account status (existing account logged in or existing account logged out) and bio
-
 * *Actions:*
     * add (name: String, username: String, password: String, bio: String)
         * use name, username, password, and bio to create new user
@@ -65,7 +106,6 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
         * delete all comments created by user
         * delete all likes created by user
         * delete user
-
 * *Data Modeling:*
     * username: User -> one String
     * name: User -> one String
@@ -73,12 +113,10 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
     * bio: User -> one String
 
 ## Comment
-
 * *Purpose:* Give users a way to interact with other users’ art projects, give feedback, discuss topics, and encourage ideas.
 * *Operational Principle:* When a user looks through posts on ArtFuse, they may see posts that they like, dislike, or generally find interesting. User u can share thoughts by commenting on the project post of various users. Users can also interact with and learn more about each other by viewing each other’s comments.
 * *States:* comments by certain user, comments on certain post, content of comment, and date comment was created
-
-* Actions:
+* *Actions:*
     * add (content: String, post: Post, author: User)
         * date = current date
         * Create comment using date, content, and author
@@ -93,7 +131,6 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
         * return comments that author has created
     get (post: Post)
         * return comments that have to do with
-
 *Data Modeling:*
     * commentedItem: Comment -> one Item
     * author: Comment -> one User
@@ -101,12 +138,10 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
     * Date: Comment -> Date
 
 ## Like
-
 *Purpose:* Help users show their interest or admiration for another user’s project post, and help users discover posts that users are currently most interested in.
 *Operational Principle:* When a user sees a post they like, they can press the like button to show the creator and others that they like this post. After the post has been liked, the user will also have access to an unlike button that will be helpful to them if they change their mind about liking the post. When other users view their home pages, they will be able to see posts that currently have the most likes.
 *States:* number of likes on post, likes created by certain user, author of like, and post being liked
-
-* Actions:
+* *Actions:*
     * add (author: User, likedItem: Post)
         * create like using likedItem and author
     * delete (post: Post)
@@ -116,7 +151,7 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
         *return likes that author has created
     * get (post: Post)
         * return likes on post
-* Data Modeling:
+* *Data Modeling:*
     * author: Like -> one User
     * likedItem: Like -> one Item
 
@@ -124,7 +159,6 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
 * *Purpose:* Help users find projects to work on by providing suggestions on the fields of art they excel.
 * *Operational Principle:* The user navigates to the notifications page and selects the categories they want to receive suggestions for. The system automatically selects the most liked projects from the categories they have selected. The user can click on the projects to view the projects and decide if they want to remix it.
 * *States:* set of categories the user wants to receive a notification for
-
 * *Actions:*
     * getRecommendations(user: User)
         * return suggested projects for user
@@ -144,6 +178,10 @@ Because remixing is the heart of ArtFuse, making space for new voices and acknow
 * app ArtFuse
 * concepts
     * Post
+    * Tag [User.User, Post.Post]
+    * Category [User.User, Post.Post]
+    * Report [User.User, Post.Post]
+    * Remix [Post.Post]
     * User
     * Comment [User.User, Post.Post]
     * Like [User.User, Post.Post]
@@ -214,3 +252,38 @@ One of our mentors expressed the importance of having a reporting feature that a
 ## *4. Do You Really Have to Be So Complicated, Comments? (comments)*
 
 Users have the ability to comment on posts to express what they like or dislike about the pieces, give advice or even share similar posts. We weren’t sure if we wanted people to also be able to comment on comments. A benefit of this would be more focused threads of communication, however, we decided to keep things simple and encourage people to direct their comments to the posts by only allowing people to make comments on posts. This decision will also make the user interface for displaying comments a lot more straightforward.
+
+## Project Plan
+
+| Phase         | Deliverable                                                                                     | Date Due          | Team Member      |
+| ------------- | ----------------------------------------------------------------------------------------------- | ----------------- | ---------------- |
+| Alpha Release | Github setup                                                                                    | Nov 20            | Adanna           |
+|               | Mongo setup                                                                                     | Nov 20            | Shanti           |
+|               | Vercel setup                                                                                    | Nov 20            | Kaleb            |
+|               | User frontend                                                                                   | Nov 22            | Bukunmi          |
+|               | User backend                                                                                    | Nov 22            | Kaleb            |
+|               | Post frontend                                                                                   | Nov 22            | Shanti           |
+|               | Post backend                                                                                    | Nov 22            | Adanna           |
+|               | Integration (the backend for each concept reviews the frontend for that concept and vice versa) | Nov 23 - 6pm      | All team members |
+|               | Code Reviews                                                                                    | Nov 23 - 9pm      | All team members |
+|               | Responding to Feedback                                                                          | Nov 23 - midnight | All team members |
+| Beta Release  | Comment Frontend                                                                                |                   | Bukunmi          |
+|               | Comment Backend                                                                                 | Nov 27            | Bukunmi          |
+|               | Like Frontend                                                                                   | Nov 27            | Shanti           |
+|               | Like Backend                                                                                    | Nov 27            | Shanti           |
+|               | Remix Backend                                                                                   | Nov 27            | Kaleb            |
+|               | Remix Frontend                                                                                  | Nov 27            | Kaleb            |
+|               | Tag Backend                                                                                     | Nov 27            | Adanna           |
+|               | Tag Frontend                                                                                    | Nov 27            | Shanti           |
+|               | Category Frontend                                                                               | Dec 3             | Adanna           |
+|               | Category Backend                                                                                | Dec 3             | Adanna           |
+|               | Notification Frontend                                                                           | Dec 3             | Kaleb            |
+|               | Notification Backend                                                                            | Dec 3             | Kaleb            |
+|               | Report Backend                                                                                  | Dec 3             | Bukunmi          |
+|               | Report Frontend                                                                                 | Dec 3             | Adanna           |
+|               | Integration (everyone reviews everyone’s code changes)                                          | Dec 4 - 6pm       | All team members |
+|               | Code reviews                                                                                    | Dec 4 - 9pm       | All team members |
+|               | Responding to Feedback                                                                          | Dec 4 - midnight  | All team members |
+| Final Build   | Conduct user tests                                                                              | Dec 5 - midnight  | All team members |
+|               | Address feedback                                                                                | Dec 10            | All team members |
+|               | Design Changes                                                                                  | Dec 12            | All team members |

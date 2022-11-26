@@ -15,6 +15,42 @@ const isPostExists = async (req: Request, res: Response, next: NextFunction) => 
 }
 
 /**
+ * Checks if a post with postId req.query.postId exists
+ */
+ const isPostQueryExists = async (req: Request, res: Response, next: NextFunction) => {
+  const validFormat = Types.ObjectId.isValid(req.query.postId as string);
+  const post = validFormat ? await PostCollection.findOne(req.query.postId as string) : '';
+  if (!post) {
+    res.status(404).json({
+      error: {
+        postNotFound: `Post with post ID ${validFormat} does not exist.`
+      }
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
+ * Checks if a post with postId req.body.postId exists
+ */
+ const isPostBodyExists = async (req: Request, res: Response, next: NextFunction) => {
+  const validFormat = Types.ObjectId.isValid(req.body.postId as string);
+  const post = validFormat ? await PostCollection.findOne(req.body.postId as string) : '';
+  if (!post) {
+    res.status(404).json({
+      error: {
+        postNotFound: `Post with post ID ${req.body.postId} does not exist.`
+      }
+    });
+    return;
+  }
+
+  next();
+};
+
+/**
  * Checks if the title of the post in req.body is valid, i.e not a stream of empty
  * spaces and not more than 60 characters
  */
@@ -84,7 +120,9 @@ export {
   isPostExists,
   isValidPostTitle,
   isValidPostDescription,
-  isValidPostImageOrFile
+  isValidPostImageOrFile,
+  isPostQueryExists,
+  isPostBodyExists,
   // isValidPostModifier,
 }
 

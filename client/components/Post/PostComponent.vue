@@ -1,5 +1,4 @@
 <!-- Reusable component representing a single post and its actions -->
-<!-- We've tagged some elements with classes; consider writing CSS using those classes to style them... -->
 
 <template>
   <article class="post">
@@ -11,9 +10,25 @@
         By {{ post.author }}
       </p>
     </header>
-    <!-- <p v-if="post.parentId">
-      Remixed from {{ postParentUsername }}
-    </p> -->
+
+    <!-- <textarea
+      v-if="editing"
+      class="content"
+      :value="draft"
+      @input="draft = $event.target.value"
+    /> -->
+    <div
+      class="description"
+    >
+      <h5 class="section-label">Description</h5>
+      <p>{{ post.description }}</p>
+    </div>
+
+    <div>
+      <TagsComponent 
+        :post="post"
+      />
+    </div>
 
     <h5 
       v-if="post.images && post.images.length > 0"
@@ -28,18 +43,37 @@
       <img :src="image" width="200px"/> 
     </div>
 
-    <!-- <textarea
-      v-if="editing"
-      class="content"
-      :value="draft"
-      @input="draft = $event.target.value"
-    /> -->
-    <div
-      class="description"
-    >
-      <h5 class="section-label">Description</h5>
-      <p>{{ post.description }}</p>
+    <div v-if="post.files && post.files.length">
+      <h5 class="section-label">Files</h5>
+      <div
+        v-for="file in post.files"
+        :key="file.index"
+      >
+        <iframe 
+          :src="file"
+          width=300
+          height=400
+        >
+        </iframe>
+      </div>
     </div>
+
+    <div>
+      <p class="info">
+        {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
+        <i v-if="post.edited">(edited)</i>
+      </p>
+    </div>
+
+    <section class="alerts">
+      <article
+        v-for="(status, alert, index) in alerts"
+        :key="index"
+        :class="status"
+      >
+        <p>{{ alert }}</p>
+      </article>
+    </section>
 
     <div
       v-if="$store.state.username == post.author"
@@ -67,51 +101,11 @@
         🗑️ Delete
       </button>
     </div>
-
-    <div v-if="post.files.length">
-      <h5 class="section-label">Files</h5>
-      <div
-        v-for="file in post.files"
-        :key="file.index"
-      >
-        <iframe 
-          :src="file"
-          width=300
-          height=400
-        >
-        </iframe>
-      </div>
-    </div>
-
-    <div>
-      <p class="info">
-        {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
-        <i v-if="post.edited">(edited)</i>
-      </p>
-    </div>
-    
-    <!-- <div v-if="post.files && post.files.length > 0">Files</div>
-    <div
-      v-for="file in post.files"
-      :key="file.index"
-    >
-      <p>a file</p>
-      {{ file.name }}
-    </div> -->
-
-    <section class="alerts">
-      <article
-        v-for="(status, alert, index) in alerts"
-        :key="index"
-        :class="status"
-      >
-        <p>{{ alert }}</p>
-      </article>
-    </section>
   </article>
 </template>
 
 <script>
+import TagsComponent from '@/components/Post/TagsComponent.vue';
 
 export default {
   name: 'PostComponent',
@@ -122,6 +116,9 @@ export default {
       required: true
     }
   },
+  components: {
+    TagsComponent
+  },
   data() {
     return {
       editing: false, // Whether or not this post is in edit mode
@@ -130,9 +127,9 @@ export default {
     };
   },
   mounted() {
-    if (this.post.files.length) {
-    console.log(this.post)
-    }
+    // if (this.post.files.length) {
+    //   console.log(this.post)
+    // }
   },
   methods: {
     startEditing() {

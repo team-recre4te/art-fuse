@@ -1,8 +1,10 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 import PostsPage from './components/Post/PostsPage.vue';
+import CreatePostPage from './components/Post/CreatePostPage.vue';
 import AccountPage from './components/Account/AccountPage.vue';
 import LoginPage from './components/Login/LoginPage.vue';
+import SearchPage from './components/Search/SearchPage.vue';
 import NotFound from './NotFound.vue';
 
 Vue.use(VueRouter);
@@ -11,6 +13,8 @@ const routes = [
   {path: '/', name: 'Home', component: PostsPage},
   {path: '/account', name: 'Account', component: AccountPage},
   {path: '/login', name: 'Login', component: LoginPage},
+  {path: '/browse', name: 'Browse', component: SearchPage},
+  {path: '/create', name: 'Create Post', component: CreatePostPage},
   {path: '*', name: 'Not Found', component: NotFound}
 ];
 
@@ -28,6 +32,11 @@ router.beforeEach((to, from, next) => {
 
     if (to.name === 'Account' && !router.app.$store.state.username) {
       next({name: 'Login'}); // Go to Login page if user navigates to Account and are not signed in
+      return;
+    }
+
+    if (to.name === 'Create Post' && !router.app.$store.state.username) {
+      next({name: 'Login'}); // Go to Login page if user navigates to Create Post and are not signed in
       return;
     }
   }

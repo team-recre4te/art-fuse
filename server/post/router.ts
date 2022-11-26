@@ -3,6 +3,7 @@ import express from 'express';
 import PostCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as postValidator from '../post/middleware';
+import * as tagValidator from '../tag/middleware';
 import * as util from './util';
 
 const router = express.Router();
@@ -45,8 +46,31 @@ const router = express.Router();
       const authorPosts = await PostCollection.findAllByUsername(req.query.author as string);
       const response = authorPosts.map(util.constructPostResponse);
       res.status(200).json(response);
+
+      return;
     }
   );
+
+/**
+ * Get all posts with tag
+ *
+ * @name GET /api/posts/tags?name=tag
+ *
+ * @return {PostResponse[]} - An array of posts with tag, name
+ * @throws {400} - If name is not given
+ *
+ */
+ router.get(
+  '/tags',
+  [
+    tagValidator.isValidQueryTagName
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const postsWithTag = await PostCollection.findAllWithTag(req.query.name as string);
+    const response = postsWithTag.map(util.constructPostResponse);
+    res.status(200).json(response);
+  }
+);
 
 /**
  * Create a new post.
@@ -69,12 +93,11 @@ router.post(
       postValidator.isValidPostImageOrFile
     ],
   async (req: Request, res: Response) => {
-    console.log("try to make post");
     
     const authorId = (req.session.userId as string) ?? '';
 
     const parentId = req.body.parentId ?? undefined; 
-    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.files, req.body.images, parentId);
+    const post = await PostCollection.addOne(authorId, req.body.title, req.body.description, req.body.files, req.body.images);
   
     res.status(201).json({
       message: 'Your post was created successfully.',

@@ -1,5 +1,6 @@
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
+import { Tag } from '../tag/model';
 import type {User} from '../user/model';
 
 export type Post = {
@@ -7,13 +8,12 @@ export type Post = {
   authorId: Types.ObjectId;
   title: string;
   description: string;
-  // image: string
   files: any[];
   images: string[];
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
-  // reportStatus: are we leaving this out as well?
+  tags?: Array<Tag>;
 }
 
 export type PopulatedPost = {
@@ -21,13 +21,11 @@ export type PopulatedPost = {
   authorId: User;
   title: string;
   description: string;
-  // image: string
   files: any[],
   images: string[],
   dateCreated: Date;
   dateModified: Date
   parentId: Post; 
-  // reportStatus: not sure if this is being done?
 }
 
 const PostSchema = new Schema<Post>({
@@ -44,10 +42,6 @@ const PostSchema = new Schema<Post>({
     type: String,
     required: true,
   },
-  // image: {
-  //   type: String,
-  //   required: false,
-  // },
   files: {
     type: [],
     required: true,
@@ -69,8 +63,22 @@ const PostSchema = new Schema<Post>({
     required: false,
     ref: 'Post'
   },
-  // idk if we're doing report status
+}, {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
 });
+
+PostSchema.virtual('tags', {
+  ref: 'Tag',
+  localField: '_id',
+  foreignField: 'postId',
+});
+
+// FreetSchema.virtual('likedBy', {
+//   ref: 'Like',
+//   localField: '_id',
+//   foreignField: 'freetId',
+// });
 
 const PostModel = model<Post>('Post', PostSchema);
 export default PostModel;

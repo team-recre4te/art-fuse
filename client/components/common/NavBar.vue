@@ -15,6 +15,11 @@
         Home
       </router-link>
       <router-link
+        to="/search"
+      >
+        Browse
+      </router-link>
+      <router-link
         v-if="$store.state.username"
         to="/account"
       >

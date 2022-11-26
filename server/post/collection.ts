@@ -12,26 +12,10 @@ class PostCollection {
    * @param {string} description - The description of the post
    * @param {string[]} images - The list of images for the post
    * @param {string[]} files - The list of files for the post
-   * @param {string} parentId - The id of the parent post, optional
    * not sure if we're including parent or reportStatus
    */
-  static async addOne(authorId: Types.ObjectId | string, title: string, description: string,  files: string[], images: string[], parentId?: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
+  static async addOne(authorId: Types.ObjectId | string, title: string, description: string,  files: string[], images: string[]): Promise<HydratedDocument<Post>> {
     const date = new Date();
-
-      if (parentId !== undefined) {
-        const post = new PostModel({
-          authorId,
-          title,
-          description,
-          files,
-          images,
-          dateCreated: date,
-          dateModified: date,
-          parentId, 
-      });
-      await post.save();
-      return post.populate(['authorId', 'parentId']);
-    }
 
     const post = new PostModel({
         authorId,
@@ -43,7 +27,7 @@ class PostCollection {
         dateModified: date,
     });
     await post.save();
-    return post.populate('authorId');
+    return post.populate(['authorId', 'tags']);
   }
 
   /**
@@ -53,7 +37,7 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await PostModel.findOne({_id: postId})).populate(['authorId', 'parentId']);
+    return (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags']);
   }
 
   /**
@@ -62,7 +46,7 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
    */
   static async findAll(): Promise<Array<HydratedDocument<Post>>> {
-    return PostModel.find({}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']);
   }
 
   /**
@@ -73,7 +57,22 @@ class PostCollection {
    */
    static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Post>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return PostModel.find({authorId: author._id}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({authorId: author._id}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']);
+  }
+
+
+  /**
+   * Get all posts with given tag name
+   *
+   * @param {string} name - The tag name being searched for
+   * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
+   */
+   static async findAllWithTag(name: string): Promise<Array<HydratedDocument<Post>>> {
+    const allPosts = this.findAll();
+    return (await allPosts).filter(post => { 
+      const postTags = post.tags.map(tag => { return tag.name.toLowerCase() });
+      return postTags.includes(name);
+    });
   }
 
   /**
@@ -83,7 +82,7 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
    */
   static async findAllByParent(parentId: Types.ObjectId | string): Promise<Array<HydratedDocument<Post>>> {
-    return PostModel.find({parentId}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({parentId}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']);
   }
 
   /**
@@ -102,7 +101,7 @@ class PostCollection {
     post.images = images;
     post.dateModified = new Date();
     await post.save();
-    return post.populate(['authorId', 'parentId']);
+    return post.populate(['authorId', 'parentId', 'tags']);
   }
 
   /**
