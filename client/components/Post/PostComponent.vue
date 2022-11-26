@@ -100,12 +100,43 @@
       <button v-if="!editing" @click="deletePost">
         🗑️ Delete
       </button>
+
+          <button
+      style="background-color: white; border: 0px;"
+      @click="showComments = !showComments">
+      💬 {{comments.length}} comments
+    </button>
+    <div v-if="showComments">
+      <section  v-if="$store.state.username">
+        <CreateCommentForm
+        :postId=post._id
+        />
+      </section>
+      <section
+          v-if="comments.length"
+        >
+          <CommentComponent
+            v-for="comment in comments"
+            :key="comment.id"
+            :comment="comment"
+          />
+      </section>
+      <article
+          v-else
+        >
+          <h3>No Comments, write the first!</h3>
+      </article>
+
+    </div>
+
     </div>
   </article>
 </template>
 
 <script>
 import TagsComponent from '@/components/Post/TagsComponent.vue';
+import CommentComponent from '@/components/Comment/CommentComponent.vue';
+import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
 
 export default {
   name: 'PostComponent',
@@ -117,13 +148,17 @@ export default {
     }
   },
   components: {
-    TagsComponent
+    TagsComponent,
+    CommentComponent, 
+    CreateCommentForm
   },
   data() {
     return {
       editing: false, // Whether or not this post is in edit mode
       draft: this.post.description, // Potentially-new description for this post
       alerts: {}, // Displays success/error messages encountered during post modification
+      showComments: false,
+      comments: [],
     };
   },
   mounted() {
@@ -154,13 +189,23 @@ export default {
         method: 'DELETE',
         callback: () => {
           this.$store.commit('refreshPosts');
-          
           this.$store.commit('alert', {
             message: 'Successfully deleted post!', status: 'success'
           });
         }
       };
+      this.comments = [];
       this.request(`posts/${this.post._id}`, params);
+    },
+      getComments() {
+      /**
+       * Get the comments for the freet
+       */
+      const params = {
+        method: 'GET',
+        callback: () => {}
+      };
+      this.request(`comments/`, params);
     },
     submitEdit() {
       /**
@@ -230,6 +275,12 @@ export default {
       // return this.convertDate(this.post.dateCreated);
       return this.post.dateCreated;
     }
+  },
+  created() {
+    this.getComments();
+  },
+  updated() {
+    this.getComments();
   }
 };
 </script>

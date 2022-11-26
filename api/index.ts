@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import MongoStore from 'connect-mongo';
 import {userRouter} from '../server/user/router';
+import {commentRouter} from '../server/comment/router';
 import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
 import * as userValidator from '../server/user/middleware';
@@ -75,6 +76,7 @@ app.use(userValidator.isCurrentSessionUserExists);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
+app.use('/api/comments', commentRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {
