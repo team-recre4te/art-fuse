@@ -165,7 +165,7 @@
     <button
       style="background-color: white; border: 0px;"
       @click="showComments = !showComments">
-      💬 {{comments.length}} comments
+      💬 {{comments.length}} Comments
     </button>
 
     <div v-if="showComments">
