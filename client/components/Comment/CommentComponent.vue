@@ -65,8 +65,10 @@
             const res = await r.json();
             throw new Error(res.error);
             }
-            console.log(r);
+            // console.log(r);
+
             // add something here to refresh??
+            this.$emit('comment_deleted');
         } catch (e) {
             this.$set(this.alerts, e, 'error');
             setTimeout(() => this.$delete(this.alerts, e), 3000);

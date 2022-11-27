@@ -187,12 +187,11 @@ export default {
       }
 
       try {
-        console.log(this.url);
-        console.log(options);
+        // console.log(this.url);
+        // console.log(options);
         const r = await fetch(this.url, options);
-        console.log(r);
+        // console.log(r);
         if (!r.ok) {
-          console.log("HUH??");
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
           throw new Error(res.error);

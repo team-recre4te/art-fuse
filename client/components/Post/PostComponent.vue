@@ -171,7 +171,8 @@
     <div v-if="showComments">
       <section v-if="$store.state.username">
         <CreateCommentForm
-        :postId=post._id
+          :postId=post._id
+          @comments_added="getComments"
         />
       </section>
       <section
@@ -181,6 +182,7 @@
           v-for="comment in comments"
           :key="comment.id"
           :comment="comment"
+          @comment_deleted="getComments"
         />
       </section>
       <article
@@ -414,7 +416,7 @@ export default {
             comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
           }
           this.comments = comments;
-          console.log(this.comments);
+          // console.log(this.comments);
         }
         params.callback();
       } catch (e) {
@@ -451,9 +453,6 @@ export default {
   created() {
     this.getComments();
   },
-  updated() {
-    this.getComments();
-  }
 };
 </script>
 

@@ -23,6 +23,8 @@ export default {
         const message = 'Successfully created a comment!';
         this.$set(this.alerts, message, 'success');
         setTimeout(() => this.$delete(this.alerts, message), 3000);
+
+        this.$emit('comments_added');
       }
     };
   }
