@@ -35,7 +35,7 @@ class CategoryCollection {
    * @return {Promise<HydratedDocument<Category>[]>} - An array of all of the categories
    */
   static async findAll(): Promise<Array<HydratedDocument<Category>>> {
-    return CategoryModel.find({}).sort({dateModified: -1}).populate('postId');
+    return CategoryModel.find({}).populate('postId');
   }
 
   /**
@@ -45,7 +45,17 @@ class CategoryCollection {
    * @return {Promise<HydratedDocument<Category>[]>} - An array of all of the posts
    */
    static async findAllByPostId(postId: string): Promise<Array<HydratedDocument<Category>>> {
-    return CategoryModel.find({postId}).sort({dateModified: -1}).populate('postId');
+    return CategoryModel.find({postId}).populate('postId');
+  }
+
+  /**
+   * Get all tags by given tag name
+   *
+   * @param {string} name - The name of the tag
+   * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the tags
+   */
+  static async findAllByTagName(name: string): Promise<Array<HydratedDocument<Category>>> {
+    return CategoryModel.find({name}).populate('postId');
   }
 
   /**
