@@ -11,6 +11,7 @@ import MongoStore from 'connect-mongo';
 import {userRouter} from '../server/user/router';
 import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
+import {likeRouter} from '../server/like/router';
 import * as userValidator from '../server/user/middleware';
 
 // Load environmental variables
@@ -75,6 +76,7 @@ app.use(userValidator.isCurrentSessionUserExists);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
+app.use('/api/likes', likeRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

@@ -11,6 +11,19 @@
       </p>
     </header>
 
+    <div v-if="post.images && post.images.length > 0">
+      <h5 class="section-label">
+        Images
+      </h5>
+      <carousel-3d >
+        <slide class="slide" v-for=" (image, i) in post.images" :index="i" :key="i">
+          <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
+            <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
+          </template>
+        </slide>
+      </carousel-3d>
+    </div>
+
     <!-- <textarea
       v-if="editing"
       class="content"
@@ -30,32 +43,38 @@
       />
     </div>
 
-    <h5 
-      v-if="post.images && post.images.length > 0"
-      class="section-label"
-    >
-      Images
-    </h5>
-    <div
-      v-for="image in post.images"
-      :key="image.index"
-    >
-      <img :src="image" width="200px"/> 
+    <div class="actions">
+      <div v-if="$store.state.username">
+        <button
+          v-if="isLiked"
+          @click="unlikePost"
+          class="icon-btn"
+        >
+          <img src="../../public/assets/heart_filled.png" alt="">
+        </button>
+        <button
+          v-else
+          @click="likePost"
+          class="icon-btn"
+        >
+          <img src="../../public/assets/heart_outline.png" alt="">
+        </button>
+      </div>
+      <p>
+        {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
+      </p>
     </div>
 
     <div v-if="post.files && post.files.length">
       <h5 class="section-label">Files</h5>
-      <div
-        v-for="file in post.files"
-        :key="file.index"
-      >
-        <iframe 
-          :src="file"
-          width=300
-          height=400
+      <ul>
+        <li
+          v-for="file in post.files"
+          :key="file.index"
         >
-        </iframe>
-      </div>
+          <a :download="file.name" :href="file.file">{{file.name}}</a>
+        </li>
+      </ul>
     </div>
 
     <div>
@@ -105,6 +124,7 @@
 </template>
 
 <script>
+import { Carousel3d, Slide } from 'vue-carousel-3d';
 import TagsComponent from '@/components/Post/TagsComponent.vue';
 
 export default {
@@ -117,19 +137,21 @@ export default {
     }
   },
   components: {
-    TagsComponent
+    TagsComponent,
+    Carousel3d,
+    Slide
   },
   data() {
     return {
       editing: false, // Whether or not this post is in edit mode
+      liking: false,
       draft: this.post.description, // Potentially-new description for this post
       alerts: {}, // Displays success/error messages encountered during post modification
     };
   },
   mounted() {
-    // if (this.post.files.length) {
-    //   console.log(this.post)
-    // }
+    // console.log(this.post)
+    console.log(this.post.files)
   },
   methods: {
     startEditing() {
@@ -145,6 +167,45 @@ export default {
        */
       this.editing = false;
       this.draft = this.post.content;
+    },
+    likePost() {
+      /**
+       * Likes this post.
+       */
+      const params = {
+        method: 'POST',
+        message: 'Successfully liked post!',
+        body: JSON.stringify({postId: this.post._id}),
+        callback: () => {
+          this.liking = false;
+          this.$store.commit('refreshPosts');
+        }
+      };
+
+      // If already liking/unliking ignore, once that has finished then accept new requests to like/unlike
+      if (!this.liking) {
+        this.request(`likes/`, params);
+        this.liking = true;
+      }
+    },
+    unlikePost() {
+      /**
+       * Unlikes this post.
+       */
+      const params = {
+        method: 'DELETE',
+        message: 'Successfully unliked post!',
+        callback: () => {
+          this.liking = false;
+          this.$store.commit('refreshPosts');
+        }
+      };
+
+      // If already liking/unliking ignore, once that has finished then accept new requests to like/unlike
+      if (!this.liking) {
+        this.request(`likes/${this.post._id}`, params);
+        this.liking = true;
+      }
     },
     deletePost() {
       /**
@@ -210,13 +271,11 @@ export default {
 
         params.callback();
       } catch (e) {
+        this.liking = false;
+
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
-    },
-    convertDate(date) {
-      var d = new Date(date);
-      return d.toLocaleString();
     }
   },
   computed: {
@@ -227,9 +286,14 @@ export default {
     //   return this.post.parentId.username;
     // },
     postDate() {
-      // return this.convertDate(this.post.dateCreated);
       return this.post.dateCreated;
-    }
+    },
+    isLiked() {
+      return this.postLikedBy.includes(this.$store.state.username);
+    },
+    postLikedBy() {
+      return this.post.likedBy.map(like => { return like.userId.username });
+    },
   }
 };
 </script>
@@ -240,7 +304,7 @@ export default {
     padding: 20px;
     position: relative;
     margin: 10px 0px;
-    border-radius: 15px;
+    border-radius: 12px;
 }
 
 .author {
@@ -270,6 +334,7 @@ export default {
 
 .actions p {
   margin-bottom: 3px;
+  margin-top: 3px;
 }
 
 .description {
@@ -283,5 +348,25 @@ export default {
 
 .description p {
   margin-top: 5px;
+}
+
+.icon-btn {
+  border: none;
+  background-color: transparent;
+}
+
+.icon-btn img {
+  height: 24px;
+}
+
+.slide img {
+  width: auto;
+  height: 100%;
+}
+
+.slide {
+  text-align: center;
+  border: none;
+  background-color: #EAEAEA;
 }
 </style>
