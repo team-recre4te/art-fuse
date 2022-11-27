@@ -336,7 +336,7 @@ export default {
         method: 'GET',
         callback: () => {}
       };      
-      this.request(`comments/`, params);
+      this.request(`comments?postId=${this.post._id}`, params);
     },
     submitEdit() {
       /**
