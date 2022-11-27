@@ -264,8 +264,8 @@ export default {
       const params = {
         method: 'GET',
         callback: () => {}
-      };
-      this.request(`comments/`, params);
+      };      
+      this.request(`comments?postId=${this.post._id}`, params);
     },
     submitEdit() {
       /**
@@ -309,10 +309,19 @@ export default {
       try {
         const r = await fetch(`/api/${path}`, options);
         const res = await r.json();
+
         if (!r.ok) {
           throw new Error(res.error);
         }
 
+        if (path === `comments?postId=${this.post._id}`) {
+          const comments = [];
+
+          for (var i = 0; i < res.length; i++) {
+            comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
+          }
+          this.comments = comments;
+        }
         params.callback();
       } catch (e) {
         this.liking = false;

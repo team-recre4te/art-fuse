@@ -55,15 +55,15 @@ router.get(
  * @throws {413} - If the post content is more than 140 characters long
  */
 router.post(
-  '/:postId',
+  '/',
   [
     userValidator.isUserLoggedIn,
-    commentValidator.isPostExists,
+    // commentValidator.isPostExists,
 
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const postId = (req.params.postId as string) ?? ''; 
+    const postId = (req.body.postId as string) ?? ''; 
     
     const comment = await CommentCollection.addOne(userId, postId, req.body.content);
 

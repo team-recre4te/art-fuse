@@ -9,10 +9,10 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import MongoStore from 'connect-mongo';
 import {userRouter} from '../server/user/router';
-import {commentRouter} from '../server/comment/router';
 import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
 import {likeRouter} from '../server/like/router';
+import {commentRouter} from '../server/comment/router';
 import * as userValidator from '../server/user/middleware';
 
 // Load environmental variables
@@ -47,7 +47,6 @@ app.set('port', process.env.PORT || 3000);
 
 // Log requests in the terminal
 app.use(logger('dev'));
-
 app.use(bodyParser.json({ limit: '10mb' }));
 app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
@@ -55,7 +54,7 @@ app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.json());
 
 // Parse incoming requests with urlencoded payloads ('content-type: application/x-www-form-urlencoded' in header)
-// app.use(express.urlencoded({extended: false}));
+app.use(express.urlencoded({extended: false}));
 
 // Initialize cookie session
 // https://www.npmjs.com/package/express-session#options
@@ -77,6 +76,7 @@ app.use(userValidator.isCurrentSessionUserExists);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
+app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/likes', likeRouter);
 
