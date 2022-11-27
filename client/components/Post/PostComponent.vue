@@ -3,7 +3,13 @@
 <template>
   <article class="post">
     <header class="post-header">
-      <h3>
+      <input
+        v-if="editing"
+        type="text"
+        :value="draftTitle"
+        @input="draftTitle = $event.target.value"
+      >
+      <h3 v-else>
         {{ post.title }}
       </h3>
       <p>
@@ -11,12 +17,36 @@
       </p>
     </header>
 
-    <div v-if="post.images && post.images.length > 0">
+    <div v-if="(post.images && post.images.length > 0) || editing">
       <h5 class="section-label">
         Images
       </h5>
-      <carousel-3d >
-        <slide class="slide" v-for=" (image, i) in post.images" :index="i" :key="i">
+      <div v-if="editing">
+        <input 
+          type="file"
+          id="images"
+          name="images"
+          accept="image/png, image/jpeg, image/webp"
+          @change="uploadImages($event)"
+          ref="images"
+          style="display: none"
+          multiple
+        >
+        <input type="button" value="Choose images" @click="$refs['images'].click()" />
+        <div>
+          <img 
+            v-for="image in draftImages"
+            :key="image"
+            :src="image"
+            height=200
+            alt=""
+          >
+        </div>
+        <button v-if="draftImages.length" type="button" @click="clearImages()">Clear Images</button>
+      </div>
+      <!-- https://wlada.github.io/vue-carousel-3d/api/ -->
+      <carousel-3d v-else>
+        <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
           <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
             <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
           </template>
@@ -24,16 +54,17 @@
       </carousel-3d>
     </div>
 
-    <!-- <textarea
+    <h5 class="section-label">Description</h5>
+    <textarea
       v-if="editing"
-      class="content"
-      :value="draft"
-      @input="draft = $event.target.value"
-    /> -->
+      class="description"
+      :value="draftDesc"
+      @input="draftDesc = $event.target.value"
+    />
     <div
+      v-else
       class="description"
     >
-      <h5 class="section-label">Description</h5>
       <p>{{ post.description }}</p>
     </div>
 
@@ -65,16 +96,26 @@
       </p>
     </div>
 
-    <div v-if="post.files && post.files.length">
+    <div v-if="(post.files && post.files.length) || editing">
       <h5 class="section-label">Files</h5>
-      <ul>
-        <li
-          v-for="file in post.files"
-          :key="file.index"
+      <div v-if="editing">
+        <input 
+          type="file"
+          id="files"
+          name="files"
+          @change="uploadFiles($event)"
+          ref="files"
+          style="display: none"
+          multiple
         >
+        <input type="button" value="Choose files" @click="$refs['files'].click()" />
+      </div>
+      <ul>
+        <li v-for="file in postFilesToDisplay" :key="file.index">
           <a :download="file.name" :href="file.file">{{file.name}}</a>
         </li>
       </ul>
+      <button v-if="editing && postFilesToDisplay.length" type="button" @click="clearFiles()">Clear Files</button>
     </div>
 
     <div>
@@ -98,7 +139,7 @@
       v-if="$store.state.username == post.author"
       class="actions"
     >
-      <!-- <button
+      <button
         v-if="editing"
         @click="submitEdit"
       >
@@ -115,7 +156,7 @@
         @click="startEditing"
       >
         ✏️ Edit
-      </button> -->
+      </button>
       <button v-if="!editing" @click="deletePost">
         🗑️ Delete
       </button>
@@ -145,13 +186,15 @@ export default {
     return {
       editing: false, // Whether or not this post is in edit mode
       liking: false,
-      draft: this.post.description, // Potentially-new description for this post
+      draftTitle: this.post.title, // Potentially-new title for this post
+      draftDesc: this.post.description, // Potentially-new description for this post
+      draftFiles: this.post.files, // Potentially updated files for this post
+      draftImages: this.post.images, // Potentially updated images for this post
       alerts: {}, // Displays success/error messages encountered during post modification
     };
   },
   mounted() {
     // console.log(this.post)
-    console.log(this.post.files)
   },
   methods: {
     startEditing() {
@@ -159,14 +202,16 @@ export default {
        * Enables edit mode on this post.
        */
       this.editing = true; // Keeps track of if a post is being edited
-      this.draft = this.post.content; // The content of our current "draft" while being edited
+      this.draftTitle = this.post.title;
+      this.draftDesc = this.post.description; // The content of our current "draft" while being edited
+      this.draftFiles = this.post.files.slice();
+      this.draftImages = this.post.images.slice();
     },
     stopEditing() {
       /**
        * Disables edit mode on this post.
        */
       this.editing = false;
-      this.draft = this.post.content;
     },
     likePost() {
       /**
@@ -223,12 +268,55 @@ export default {
       };
       this.request(`posts/${this.post._id}`, params);
     },
+    clearImages() {
+      this.draftImages = [];
+      this.$refs["images"].value = '';
+    },
+    clearFiles() {
+      this.draftFiles = [];
+      this.$refs["files"].value = null;
+    },
+    uploadImages(e){
+      Array.from(e.target.files).forEach(image => { 
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = e => {
+          this.draftImages.push(e.target.result);
+        };
+      });
+    },
+    uploadFiles(e) {
+      Array.from(e.target.files).forEach(file => { 
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = e =>{
+          this.draftFiles.push({ name: file.name, file: e.target.result });
+        };
+      });
+    },
     submitEdit() {
       /**
        * Updates post to have the submitted draft content.
        */
-      if (this.post.content === this.draft) {
-        const error = 'Error: Edited post content should be different than current post content.';
+      // Check if description, title, or number of files/images was edited
+      var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length;
+
+      if (!postEdited) {
+        // Check if images or files were edited
+        this.draftImages.forEach(image => {
+          if (!this.post.images.includes(image)) {
+            postEdited = true;
+          }
+        });
+        this.draftFiles.forEach(file => {
+          if (!this.post.files.includes(file)) {
+            postEdited = true;
+          }
+        });
+      }
+
+      if (!postEdited) {
+        const error = 'Error: Edited post should be different than original post.';
         this.$set(this.alerts, error, 'error'); // Set an alert to be the error text, timeout of 3000 ms
         setTimeout(() => this.$delete(this.alerts, error), 3000);
         return;
@@ -237,7 +325,12 @@ export default {
       const params = {
         method: 'PATCH',
         message: 'Successfully edited post!',
-        body: JSON.stringify({description: this.draft}),
+        body: JSON.stringify({ 
+          title: this.draftTitle, 
+          description: this.draftDesc,
+          files: this.draftFiles,
+          images: this.draftImages
+        }),
         callback: () => {
           this.editing = false;
           this.$store.commit('refreshPosts');
@@ -294,6 +387,12 @@ export default {
     postLikedBy() {
       return this.post.likedBy.map(like => { return like.userId.username });
     },
+    postFilesToDisplay() {
+      return this.editing ? this.draftFiles : this.post.files;
+    },
+    postImagesToDisplay() {
+      return this.editing ? this.draftImages : this.post.images;
+    }
   }
 };
 </script>
