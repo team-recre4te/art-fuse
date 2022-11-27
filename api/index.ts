@@ -78,7 +78,6 @@ app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
-app.use('/api/likes', likeRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {
