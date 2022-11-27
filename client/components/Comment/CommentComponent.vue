@@ -4,7 +4,7 @@
   >
     <header>
       <h3 class="author">
-        @{{ comment.author }}
+        @ {{ comment.author }}
       </h3>
       <div
         v-if="$store.state.username === comment.author"
