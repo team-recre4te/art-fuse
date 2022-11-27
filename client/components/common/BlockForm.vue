@@ -83,6 +83,12 @@
 
 export default {
   name: 'BlockForm',
+  props: {
+    postId: {
+      type: String,
+      required: false,
+    }
+  },
   data() {
     /**
      * Options for submitting this form.
@@ -156,6 +162,19 @@ export default {
 
           console.log('options', options.body);
 
+        } else if (this.url === '/api/comments' && this.method == 'POST') {
+          const inputFields = Object.fromEntries(
+            this.fields.map(field => {
+              const {id, value} = field;
+              field.value = '';
+              return [id, value];
+            })
+          );
+
+          const idField = {postId: this.postId}
+
+          options.body = JSON.stringify(Object.assign({}, inputFields, idField));
+          console.log(options.body);
         } else {
           options.body = JSON.stringify(Object.fromEntries(
             this.fields.map(field => {
@@ -166,9 +185,12 @@ export default {
           ));
         }
       }
-      
+
       try {
+        // console.log(this.url);
+        // console.log(options);
         const r = await fetch(this.url, options);
+        // console.log(r);
         if (!r.ok) {
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
