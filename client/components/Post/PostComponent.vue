@@ -302,7 +302,6 @@ export default {
       this.comments = [];
       this.request(`posts/${this.post._id}`, params);
     },
-<<<<<<< HEAD
       getComments() {
       /**
        * Get the comments for the freet
@@ -312,7 +311,7 @@ export default {
         callback: () => {}
       };      
       this.request(`comments?postId=${this.post._id}`, params);
-=======
+    },
     clearImages() {
       this.draftImages = [];
       this.$refs["images"].value = '';
@@ -338,7 +337,6 @@ export default {
           this.draftFiles.push({ name: file.name, file: e.target.result });
         };
       });
->>>>>>> main
     },
     submitEdit() {
       /**
