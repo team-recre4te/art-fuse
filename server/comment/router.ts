@@ -34,7 +34,6 @@ router.get(
     res.status(200).json(response);
   },
   [
-    // postValidator.isPostExists,
     commentValidator.isPostExists,
   ],
   async (req: Request, res: Response) => {
