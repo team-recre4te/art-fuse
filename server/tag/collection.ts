@@ -4,13 +4,10 @@ import TagModel from './model';
 
 class TagCollection {
   /**
-   * Add a post to the collection
+   * Add a tag to the collection
    * 
-   * @param {string} authorId - The id of the author of the post
-   * @param {string} title - The title of the post
-   * @param {string} description - The description of the post
-   * @param {string[]} images - The list of images for the post
-   * @param {string[]} files - The list of files for the post
+   * @param {string} name - The name of the tag
+   * @param {Types.ObjectId | string} postId - The id of the post that has the tag
    */
   static async addOne(name: string, postId: Types.ObjectId | string): Promise<HydratedDocument<Tag>> {
 
@@ -38,17 +35,27 @@ class TagCollection {
    * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the tags
    */
   static async findAll(): Promise<Array<HydratedDocument<Tag>>> {
-    return TagModel.find({}).sort({dateModified: -1}).populate('postId');
+    return TagModel.find({}).populate('postId');
   }
 
   /**
    * Get all tags by given postId
    *
    * @param {string} postId - The postId of post that tags are being searched for
-   * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the posts
+   * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the tags
    */
    static async findAllByPostId(postId: string): Promise<Array<HydratedDocument<Tag>>> {
-    return TagModel.find({postId}).sort({dateModified: -1}).populate('postId');
+    return TagModel.find({postId}).populate('postId');
+  }
+
+  /**
+   * Get all tags by given tag name
+   *
+   * @param {string} name - The name of the tag
+   * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the tags
+   */
+   static async findAllByTagName(name: string): Promise<Array<HydratedDocument<Tag>>> {
+    return TagModel.find({name}).populate('postId');
   }
 
   /**
