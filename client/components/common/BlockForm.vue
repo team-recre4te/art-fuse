@@ -38,12 +38,12 @@
           :value="field.value"
           @input="field.value = $event.target.value"
         >
-        <ul v-if="field.id === 'files' && fileNames.length" >
+        <ul v-if="field.id === 'files' && files.length" >
           <li
-            v-for="name in fileNames"
-            :key="name"
+            v-for="file in files"
+            :key="file.name"
           >
-            {{name}}
+            {{file.name}}
           </li>
           <button type="button" @click="clearFiles()">Clear Files</button>
         </ul>
@@ -108,7 +108,6 @@ export default {
     },
     clearFiles() {
       this.files = [];
-      this.fileNames = [];
       this.$refs["files"].value = null;
     },
     uploadImages(e){
@@ -124,9 +123,8 @@ export default {
       Array.from(e.target.files).forEach(file => { 
         const reader = new FileReader();
         reader.readAsDataURL(file);
-        this.fileNames.push(file.name);
         reader.onload = e =>{
-          this.files.push(e.target.result);
+          this.files.push({ name: file.name, file: e.target.result });
         };
       });
     },
@@ -152,18 +150,7 @@ export default {
           );
 
           const idField = {images: this.images}
-          const f = [];
-          for (let i = 0; i < this.files.length; i++) {
-            f.push({
-              name: this.fileNames[i],
-              file: this.files[i]
-            })
-          }
-          const fileField = {files: f}
-
-          // TODO: how should we send filenames to database, need to stay associated to their file
-          // files: [{ name: ..., file: ... }, {}]
-          // const fileNameField = {fileNames: this.fileNames}
+          const fileField = {files: this.files}
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
 
