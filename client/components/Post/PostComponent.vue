@@ -414,6 +414,7 @@ export default {
             comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
           }
           this.comments = comments;
+          console.log(this.comments);
         }
         params.callback();
       } catch (e) {
