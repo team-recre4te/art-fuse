@@ -1,19 +1,21 @@
 import type {NextFunction, Request, Response} from 'express';
 import express from 'express';
 import TagCollection from './collection';
+import PostCollection from '../post/collection';
 import * as userValidator from '../user/middleware';
 import * as postValidator from '../post/middleware';
 import * as tagValidator from '../tag/middleware';
 import * as util from './util';
+import * as postUtil from '../post/util'
 
 const router = express.Router();
 
 /**
- * Get all the tags
+ * Get all posts by tag name
  *
- * @name GET /api/tags
+ * @name GET /api/tags?name=name
  *
- * @return {PostResponse[]} - A list of all the tags
+ * @return {PostResponse[]} - A list of all the posts that have the tag, tagName
  */
 /**
  * Get tags by post.
@@ -25,15 +27,19 @@ const router = express.Router();
  */
  router.get(
     '/',
+    [
+        tagValidator.isValidQueryTagName
+    ],
     async (req: Request, res: Response, next: NextFunction) => {
-      // Check if postId query parameter was supplied
-      if (req.query.postId !== undefined) {
-        next();
-        return;
-      }
+      const nameTags = await TagCollection.findAllByTagName(req.query.name as string);
+      const posts = [];
+      for (const tag of nameTags) {
+        const post = await PostCollection.findOne(tag.postId);
 
-      const allTags = await TagCollection.findAll();
-      const response = allTags.map(util.constructTagResponse);
+        if (post) posts.push(post);
+        
+      }
+      const response = posts.map(postUtil.constructPostResponse);
       res.status(200).json(response);
     },
     [
@@ -95,4 +101,4 @@ router.delete(
   }
 );
 
-export {router as postRouter};
+export {router as tagRouter};

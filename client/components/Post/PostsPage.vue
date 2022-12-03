@@ -1,4 +1,4 @@
-<!-- Default page that also displays freets -->
+<!-- Default page that also displays posts -->
 
 <template>
   <main>
@@ -6,7 +6,6 @@
       <header>
         <h2>Welcome @{{ $store.state.username }}</h2>
       </header>
-      <CreatePostForm />
     </section>
     <section v-else>
       <header>
@@ -21,7 +20,32 @@
     </section>
     <section>
       <header class="post-header">
-        <h3>All Posts</h3>
+        <h3>Posts</h3>
+        <div>
+          <SearchBar 
+            @searched="handleSearch" 
+            placeholderText="Search by author..."
+          />
+          <section
+            v-if="Object.keys(alerts).length"
+          >
+            <article
+              class="search-alerts"
+              v-for="(status, alert, index) in alerts"
+              :key="index"
+              :class="status"
+            >
+              <p>{{ alert }}</p>
+            </article>
+          </section>
+          <article
+            v-else
+            class="placeholder"
+          >
+            <!-- keeps spacing when there's no alert to display -->
+            <p>placeholder</p>
+          </article>  
+        </div>
       </header>
       <section
         v-if="$store.state.posts.length"
@@ -52,16 +76,65 @@ Router Notes
 */
 
 import PostComponent from '@/components/Post/PostComponent.vue';
-import CreatePostForm from '@/components/Post/CreatePostForm.vue';
+import SearchBar from '@/components/common/SearchBar.vue';
 
 export default {
   name: 'PostsPage',
-  components: {PostComponent, CreatePostForm},
+  components: {
+    PostComponent, 
+    SearchBar
+  },
+  data() {
+    return {
+      searching: false,
+      searchAuthor: '',
+      alerts: {}
+    };
+  },
   mounted() {
     this.$store.state.filter = '';
     this.$store.commit('refreshPosts');
   },
-  computed: {
+  methods: {
+    async handleSearch(value) {
+      if (value.length > 0 && value.trim().length === 0) { // just whitespace in search
+        // cannot search for empty string
+        const e = ('status', 'empty_text_alert', 'Search text for author name cannot be empty');
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+        
+        this.searchAuthor = '';
+        return;
+      }
+
+      this.searching = true;
+      
+      // clear old alerts
+      this.alerts = {};
+
+      this.searchAuthor = value.trim();
+
+      this.$store.state.filter = this.searchAuthor;
+
+      const url = this.searchAuthor ? `/api/posts?author=${this.searchAuthor}` : '/api/posts';
+      try {
+        const r = await fetch(url);
+        const res = await r.json();
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.searching = false;
+
+        this.$store.commit('updateFilter', this.searchAuthor);
+        this.$store.commit('updatePosts', res);
+      } catch (e) {
+        this.searching = false;
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    }
   }
 };
 </script>
@@ -102,7 +175,33 @@ section .scrollbox {
   align-items: center;
 }
 
+.post-header div {
+  display: block;
+  min-width: 280px;
+}
+
+.post-header h3 {
+  margin-top: 0px;
+  margin-bottom: 22px;
+}
+
 article p {
   font-size: smaller;
+}
+
+.search-alerts {
+  color: red;
+  font-size: small;
+}
+
+.search-alerts p {
+  font-size: 12px;
+  margin: 8px 0px 0px 20px; /* top, right, bottom, left */
+}
+
+.placeholder p {
+  opacity: 0;
+  font-size: 12px;
+  margin: 8px 0px 0px 20px; /* top, right, bottom, left */
 }
 </style>

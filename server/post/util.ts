@@ -51,5 +51,6 @@ const constructPostResponse = (post: HydratedDocument<Post>): PostResponse => {
 };
 
 export {
-    constructPostResponse
+    constructPostResponse,
+    PostResponse
 };

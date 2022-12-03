@@ -9,8 +9,9 @@ Vue.use(Vuex);
  */
 const store = new Vuex.Store({
   state: {
-    filter: null, // Username to filter shown freets by (null = show all)
-    posts: [], // All freets created in the app
+    filter: null, // Username to filter shown posts by (null = show all)
+    tagFilter: null, // Tag to filter shown posts by (null = show all)
+    posts: [], // All posts created in the app
     bio: null,
     username: null, // Username of the logged in user
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
@@ -31,7 +32,6 @@ const store = new Vuex.Store({
        * @param user - new object to set
        */
       state.bio = bio;
-      console.log(state.bio);
     },
     setUsername(state, username) {
       /**
@@ -42,21 +42,28 @@ const store = new Vuex.Store({
     },
     updateFilter(state, filter) {
       /**
-       * Update the stored freets filter to the specified one.
-       * @param filter - Username of the user to fitler freets by
+       * Update the stored posts filter to the specified one.
+       * @param filter - Username of the user to fitler posts by
        */
       state.filter = filter;
     },
+    updateTagFilter(state, filter) {
+      /**
+       * Update the stored tag filter to the specified one.
+       * @param filter - Tag to filter posts by
+       */
+      state.tagFilter = filter;
+    },
     updatePosts(state, posts) {
       /**
-       * Update the stored freets to the provided freets.
+       * Update the stored posts to the provided posts.
        * @param posts - Posts to store
        */
       state.posts = posts;
     },
     async refreshPosts(state) {
       /**
-       * Request the server for the currently available freets.
+       * Request the server for the currently available posts.
        */
       const url = state.filter ? `/api/users/${state.filter}/posts` : '/api/posts';
       const res = await fetch(url).then(async r => r.json());
@@ -64,7 +71,7 @@ const store = new Vuex.Store({
     },
     async refreshBio(state) {
       /**
-       * Request the server for the currently available freets.
+       * Request the server for the currently available posts.
        */
       const url = `/api/users/session`;
       const res = await fetch(url).then(async r => r.json());

@@ -27,7 +27,12 @@ class PostCollection {
         dateModified: date,
     });
     await post.save();
-    return post.populate('authorId');
+    return (await post.populate(['authorId', 'tags'])).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
   }
 
   /**
@@ -37,7 +42,12 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await PostModel.findOne({_id: postId})).populate(['authorId']);
+    return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
   }
 
   /**
@@ -46,7 +56,12 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
    */
   static async findAll(): Promise<Array<HydratedDocument<Post>>> {
-    return PostModel.find({}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
   }
 
   /**
@@ -57,7 +72,27 @@ class PostCollection {
    */
    static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Post>>> {
     const author = await UserCollection.findOneByUsername(username);
-    return PostModel.find({authorId: author._id}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({authorId: author._id}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
+  }
+
+
+  /**
+   * Get all posts with given tag name
+   *
+   * @param {string} name - The tag name being searched for
+   * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
+   */
+   static async findAllWithTag(name: string): Promise<Array<HydratedDocument<Post>>> {
+    const allPosts = this.findAll();
+    return (await allPosts).filter(post => { 
+      const postTags = post.tags.map(tag => { return tag.name.toLowerCase() });
+      return postTags.includes(name);
+    });
   }
 
   /**
@@ -67,7 +102,12 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
    */
   static async findAllByParent(parentId: Types.ObjectId | string): Promise<Array<HydratedDocument<Post>>> {
-    return PostModel.find({parentId}).sort({dateModified: -1}).populate(['authorId', 'parentId']);
+    return PostModel.find({parentId}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
   }
 
   /**
@@ -86,7 +126,12 @@ class PostCollection {
     post.images = images;
     post.dateModified = new Date();
     await post.save();
-    return post.populate(['authorId', 'parentId']);
+    return (await post.populate(['authorId', 'parentId', 'tags'])).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
   }
 
   /**

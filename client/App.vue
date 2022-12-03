@@ -1,28 +1,28 @@
 <template>
   <div id="app">
     <header>
-      <NavBar />
+      <SideBar />
     </header>
-    <router-view />
+    <div class="main-text">
+      <router-view />
+    </div>
   </div>
 </template>
 
 <script>
-import NavBar from '@/components/common/NavBar.vue';
+import SideBar from '@/components/common/SideBar.vue';
 
 export default {
   name: 'App',
-  components: {NavBar},
+  components: {SideBar},
   beforeCreate() {
     // Sync stored username to current session
     fetch('/api/users/session', {
       credentials: 'same-origin' // Sends express-session credentials with request
     }).then(res => res.json()).then(res => {
       const user = res.user;
-      console.log('user', user);
       this.$store.commit('setUsername', user ? user.username : null);
       this.$store.commit('setBio', user ? user.bio : null);
-      console.log('bio', user.bio);
     });
 
     // Clear alerts on page refresh
@@ -50,6 +50,10 @@ body {
 
 main {
   padding: 0 5em 5em;
+}
+
+.main-text {
+  margin-left: 240px;
 }
 
 .alerts {
