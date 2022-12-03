@@ -13,6 +13,7 @@ export type User = {
   password: string;
   dateJoined: Date;
   bio:string;
+  preferences:string[];
 };
 
 // Mongoose schema definition for interfacing with a MongoDB table
@@ -38,7 +39,11 @@ const UserSchema = new Schema({
   bio: {
     type: String,
     default: ''
-  }
+  },
+  //preference of the user for the catagories they want
+  preferences: {
+    type: [String]
+  },
 });
 
 const UserModel = model<User>('User', UserSchema);

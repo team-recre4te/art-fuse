@@ -84,6 +84,22 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+const isValidPreferences = (req: Request, res: Response, next: NextFunction) => {
+  const catagories = ['Painting','Sculpture','Literature','Architecture','Cinema','Music','Theater']
+  if (req.body.preferences !== undefined){
+    const preferences = req.body.preferences
+    const notShared = preferences.filter((x: string) => !catagories.includes(x)).length
+    if (notShared !== 0){
+      res.status(406).json({
+        error: {
+          preferences: 'Invalid catagories were selected.'
+        }
+      })
+    }
+  }
+  next();
+}
+
 /**
  * Checks if a user with username and password in req.body exists
  */
@@ -190,5 +206,6 @@ export {
   isAuthorExists,
   isValidUsername,
   isValidPassword,
-  isValidBio
+  isValidBio,
+  isValidPreferences
 };

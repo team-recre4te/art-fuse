@@ -23,7 +23,7 @@ class UserCollection {
   static async addOne(username: string, password: string, bio:string): Promise<HydratedDocument<User>> {
     const dateJoined = new Date();
 
-    const user = new UserModel({username, password, dateJoined, bio});
+    const user = new UserModel({username, password, dateJoined, bio, preferences:[]});
     await user.save(); // Saves user to MongoDB
     return user;
   }
@@ -82,7 +82,9 @@ class UserCollection {
     if (userDetails.bio) {
       user.bio = userDetails.bio as string;
     }
-
+    if (userDetails.preferences){
+      user.preferences = Array.from(new Set(userDetails.preferences))
+    }
     await user.save();
     return user;
   }

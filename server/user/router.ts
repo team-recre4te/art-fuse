@@ -136,7 +136,8 @@ router.patch(
     userValidator.isValidUsername,
     userValidator.isUsernameNotAlreadyInUse,
     userValidator.isValidPassword,
-    userValidator.isValidBio
+    userValidator.isValidBio,
+    userValidator.isValidPreferences
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
