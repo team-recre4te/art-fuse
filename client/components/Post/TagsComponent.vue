@@ -23,7 +23,7 @@
         <button @click="addTag()">&#x2713;</button>
         <button @click="stopAddingTag()">&#x2715;</button>
       </div>
-      <button v-else @click="startAddingTag">+ tag</button>
+      <button v-else-if="allowAddTag" class="add-tag-btn" @click="startAddingTag">+ tag</button>
       </div>
     </div>
   </section>
@@ -37,6 +37,10 @@ export default {
       type: Object,
       required: true
     },
+    allowAddTag: {
+      type: Boolean,
+      required: true
+    }
   },
   data() {
     return {
@@ -131,15 +135,12 @@ export default {
 </script>
 
 <style scoped>
-.tags {
-  display: flex;
-}
-
 .tag {
   background-color: transparent;
   border: solid black 1px;
-  border-radius: 10px;
+  border-radius: 20px;
   margin-right: 10px;
+  padding: 2px 10px;
 }
 
 .tag span {
@@ -148,5 +149,9 @@ export default {
 
 .editableTag:hover span {
   display: inline-block;
+}
+
+.add-tag-btn {
+  margin-top: 5px;
 }
 </style>

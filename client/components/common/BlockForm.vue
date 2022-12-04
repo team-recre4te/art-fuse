@@ -65,7 +65,7 @@
     <button
       type="submit"
     >
-      {{ title }}
+      {{ buttonText ? buttonText : title }}
     </button>
     <section class="alerts">
       <article

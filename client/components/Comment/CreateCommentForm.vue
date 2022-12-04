@@ -19,6 +19,7 @@ export default {
       ],
       title: 'Create a comment',
       refreshFreets: true,
+      buttonText: "Submit Comment",
       callback: () => {
         const message = 'Successfully created a comment!';
         this.$set(this.alerts, message, 'success');
