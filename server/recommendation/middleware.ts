@@ -1,7 +1,7 @@
 import type {Request, Response, NextFunction} from 'express';
 import {Types} from 'mongoose';
 import PostCollection from '../post/collection';
-import UserCollection from 'server/user/collection';
+import UserCollection from '../user/collection';
 import RecommendationCollection from './collection';
 
 
