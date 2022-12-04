@@ -4,8 +4,9 @@
   >
     <header>
       <h3 class="author">
-        @ {{ comment.author }}
+        @{{ comment.author }}
       </h3>
+
       <div
         v-if="$store.state.username === comment.author"
         class="actions"
@@ -19,7 +20,7 @@
     <p
       class="content"
     >
-    Content: {{ comment.content }}
+    {{ comment.content }}
     </p>
   </article>
 </template>
@@ -79,9 +80,21 @@
 </script>
 
 <style scoped>
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .comment {
-    border: 1px solid #111;
-    padding: 20px;
-    position: relative;
+  border: 2px solid #AEAEAE;
+  border-radius: 10px;
+  padding: 0px 20px;
+  position: relative;
+  margin-top: 10px;
+}
+
+.content {
+  margin-top: 0px;
 }
 </style>

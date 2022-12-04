@@ -2,173 +2,217 @@
 
 <template>
   <article class="post">
-    <header class="post-header">
-      <input
-        v-if="editing"
-        type="text"
-        :value="draftTitle"
-        @input="draftTitle = $event.target.value"
-      >
-      <h3 v-else>
-        {{ post.title }}
-      </h3>
-      <p>
-        By {{ post.author }}
-      </p>
+    <header class="post-header columns">
+      <div>
+        <div class="top-bar">
+          <input
+            v-if="editing"
+            type="text"
+            :value="draftTitle"
+            @input="draftTitle = $event.target.value"
+          >
+          <h3 v-else>
+            {{ post.title }}
+          </h3>
+
+          <div
+            v-if="$store.state.username == post.author"
+            class="top-bar-btns"
+          >
+            <button
+              v-if="editing"
+              @click="submitEdit"
+            >
+              ✅ Save Changes
+            </button>
+            <button
+              v-if="editing"
+              @click="stopEditing"
+            >
+              🚫 Discard
+            </button>
+            <button
+              v-if="!editing"
+              @click="startEditing"
+            >
+              ✏️ Edit
+            </button>
+            <button v-if="!editing" @click="deletePost">
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+        <p>
+          By
+          <router-link class="author-link" :to="{ name: 'Profile', query: { author: post.author }}">
+            {{ post.author }}
+          </router-link>
+        </p>
+      </div>
+      <div>
+        <button class="remix-btn">Make Remix</button>
+      </div>
     </header>
 
-    <div v-if="(post.images && post.images.length > 0) || editing">
-      <h5 class="section-label">
-        Images
-      </h5>
-      <div v-if="editing">
-        <input 
-          type="file"
-          id="images"
-          name="images"
-          accept="image/png, image/jpeg, image/webp"
-          @change="uploadImages($event)"
-          ref="images"
-          style="display: none"
-          multiple
-        >
-        <input type="button" value="Choose images" @click="$refs['images'].click()" />
-        <div>
-          <img 
-            v-for="image in draftImages"
-            :key="image"
-            :src="image"
-            height=200
-            alt=""
-          >
-        </div>
-        <button v-if="draftImages.length" type="button" @click="clearImages()">Clear Images</button>
-      </div>
-      <!-- https://wlada.github.io/vue-carousel-3d/api/ -->
-      <carousel-3d v-else>
-        <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
-          <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
-            <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
-          </template>
-        </slide>
-      </carousel-3d>
-    </div>
-
-    <h5 class="section-label">Description</h5>
-    <textarea
-      v-if="editing"
-      class="description"
-      :value="draftDesc"
-      @input="draftDesc = $event.target.value"
-    />
-    <div
-      v-else
-      class="description"
-    >
-      <p>{{ post.description }}</p>
-    </div>
-
-    <div>
-      <TagsComponent 
-        :post="post"
-      />
-    </div>
-
-    <div class="actions">
-      <div v-if="$store.state.username">
-        <button
-          v-if="isLiked"
-          @click="unlikePost"
-          class="icon-btn"
-        >
-          <img src="../../public/assets/heart_filled.png" alt="">
-        </button>
-        <button
+    <div class="columns">
+      <div class="post-info">
+        <!-- Category, parent post, description, and tags on right side -->
+        <h5 class="section-label">Description</h5>
+        <textarea
+          v-if="editing"
+          class="description"
+          :value="draftDesc"
+          @input="draftDesc = $event.target.value"
+        />
+        <div
           v-else
-          @click="likePost"
-          class="icon-btn"
+          class="description"
         >
-          <img src="../../public/assets/heart_outline.png" alt="">
-        </button>
+          <p>{{ post.description }}</p>
+        </div>
+
+        <div>
+          <TagsComponent 
+            :post="post"
+            :allowAddTag="!editing"
+          />
+        </div>
       </div>
-      <p>
-        {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
-      </p>
+      <div v-if="(post.images && post.images.length > 0) || editing" class="post-images">
+        <!-- Images on left side -->
+        <div v-if="editing">
+          <input 
+            type="file"
+            id="images"
+            name="images"
+            accept="image/png, image/jpeg, image/webp"
+            @change="uploadImages($event)"
+            ref="images"
+            style="display: none"
+            multiple
+          >
+          <input type="button" value="Choose images" @click="$refs['images'].click()" />
+          <div>
+            <img 
+              v-for="image in draftImages"
+              :key="image"
+              :src="image"
+              height=200
+              alt=""
+            >
+          </div>
+          <button v-if="draftImages.length" type="button" @click="clearImages()">Clear Images</button>
+        </div>
+        <!-- https://wlada.github.io/vue-carousel-3d/api/ -->
+        <carousel-3d :width="260" :height="215" v-else>
+          <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
+            <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
+              <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
+            </template>
+          </slide>
+        </carousel-3d>
+      </div>
     </div>
 
-    <div v-if="(post.files && post.files.length) || editing">
-      <h5 class="section-label">Files</h5>
-      <div v-if="editing">
-        <input 
-          type="file"
-          id="files"
-          name="files"
-          @change="uploadFiles($event)"
-          ref="files"
-          style="display: none"
-          multiple
-        >
-        <input type="button" value="Choose files" @click="$refs['files'].click()" />
+    <div class="columns align-bottom">
+      <div>
+        <!-- Files -->
+        <div v-if="(post.files && post.files.length) || editing">
+          <div v-if="!editing">
+            <button 
+              class="files-btn"
+              @click="showFiles = !showFiles"
+            >
+              {{ showFiles ? 'Hide Files' : 'Show Files' }}
+            </button>
+          </div>
+
+          <div v-if="editing">
+            <input 
+              type="file"
+              id="files"
+              name="files"
+              @change="uploadFiles($event)"
+              ref="files"
+              style="display: none"
+              multiple
+            >
+            <input type="button" value="Choose files" @click="$refs['files'].click()" />
+          </div>
+          <ul v-if="showFiles || editing">
+            <li v-for="file in postFilesToDisplay" :key="file.index">
+              <div class="file">
+                <a :download="file.name" :href="file.file">{{file.name}}</a>
+
+                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1])" controls>
+                  <source :src="file.file">
+                </audio>
+              </div>
+            </li>
+          </ul>
+          <button v-if="editing && postFilesToDisplay.length" type="button" @click="clearFiles()">Clear Files</button>
+        </div>
       </div>
-      <ul>
-        <li v-for="file in postFilesToDisplay" :key="file.index">
-          <a :download="file.name" :href="file.file">{{file.name}}</a>
-        </li>
-      </ul>
-      <button v-if="editing && postFilesToDisplay.length" type="button" @click="clearFiles()">Clear Files</button>
+      <div v-if="!showFiles">
+        <p class="info">
+          {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
+          <i v-if="post.edited">(edited)</i>
+        </p>
+      </div>
     </div>
 
-    <div>
+    <!-- Posted at ... -->
+    <div v-if="showFiles">
       <p class="info">
         {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
         <i v-if="post.edited">(edited)</i>
       </p>
     </div>
 
-    <section class="alerts">
-      <article
-        v-for="(status, alert, index) in alerts"
-        :key="index"
-        :class="status"
-      >
-        <p>{{ alert }}</p>
-      </article>
-    </section>
-
-    <div
-      v-if="$store.state.username == post.author"
-      class="actions"
-    >
-      <button
-        v-if="editing"
-        @click="submitEdit"
-      >
-        ✅ Save
-      </button>
-      <button
-        v-if="editing"
-        @click="stopEditing"
-      >
-        🚫 Discard
-      </button>
-      <button
-        v-if="!editing"
-        @click="startEditing"
-      >
-        ✏️ Edit
-      </button>
-      <button v-if="!editing" @click="deletePost">
-        🗑️ Delete
-      </button>
+    <div class="columns bottom-bar" :class="{ 'bottom-bar-bottom-border': showComments } ">
+      <div class="right-border" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
+        <!-- Likes -->
+        <div>
+          <div class="actions" v-if="$store.state.username">
+            <button
+              v-if="isLiked"
+              @click="unlikePost"
+              class="icon-btn"
+            > 
+              💛 {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
+            </button>
+            <button
+              v-else
+              @click="likePost"
+              class="icon-btn"
+            >
+              ♡ {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
+            </button>
+          </div>
+          <div v-else>
+            <p>💛 {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="right-border">
+        <!-- Comments -->
+        <button
+          style="border: 0px;"
+          @click="showComments = !showComments" class="icon-btn">
+          💬 {{comments.length}} Comments
+        </button>
+      </div>
+      <div class="right-border">
+        <!-- Remixes -->
+        <p>🔀 0 Remixes</p>
+      </div>
+      <div style="border-bottom-right-radius: 10px;">
+        <!-- Report -->
+        <p>🚩 Report</p>
+      </div>
     </div>
 
-    <button
-      style="background-color: white; border: 0px;"
-      @click="showComments = !showComments">
-      💬 {{comments.length}} Comments
-    </button>
-
-    <div v-if="showComments">
+    <div class="comments-section" v-if="showComments">
       <section v-if="$store.state.username">
         <CreateCommentForm
           :postId=post._id
@@ -191,6 +235,17 @@
         <h3>No Comments, write the first!</h3>
       </article>
     </div>
+
+    <section class="alerts">
+      <article
+        v-for="(status, alert, index) in alerts"
+        :key="index"
+        :class="status"
+      >
+        <p>{{ alert }}</p>
+      </article>
+    </section>
+    
   </article>
 </template>
 
@@ -227,6 +282,7 @@ export default {
       alerts: {}, // Displays success/error messages encountered during post modification
       showComments: false,
       comments: [],
+      showFiles: false
     };
   },
   mounted() {
@@ -458,11 +514,11 @@ export default {
 
 <style scoped>
 .post {
-    border: 1px solid #111;
-    padding: 20px;
-    position: relative;
-    margin: 10px 0px;
-    border-radius: 12px;
+  border: 2px solid #EAEAEA;
+  padding: 20px;
+  position: relative;
+  margin: 10px 0px;
+  border-radius: 12px;
 }
 
 .author {
@@ -470,29 +526,136 @@ export default {
   padding-right: 15px;
 }
 
+.columns {
+  display: flex;
+  justify-content: space-between;
+}
+
+.align-bottom {
+  align-items: flex-end;
+}
+
+.bottom-bar {
+  justify-content: space-evenly;
+  align-items: center;
+  border-top: 2px solid #EAEAEA;
+  margin: 10px -20px;
+  padding-bottom: -10px;
+  margin-bottom: -20px;
+}
+
+.bottom-bar-bottom-border {
+  border-bottom: 2px solid #EAEAEA;
+}
+
+.bottom-bar > * {
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  padding: 2px 0px;
+  padding: auto 0;
+}
+
+.bottom-bar > *:hover {
+  background-color: #EAEAEA;
+}
+
+.bottom-bar p {
+  font-size: 14px;
+}
+
+.right-border {
+  border-right: 2px solid #EAEAEA;
+}
+
+.comments-section {
+  margin-top: 40px;
+}
+
 .post-header h3 {
   margin: 0px;
 }
 
 .post-header p {
-  margin-top: 10px;
+  margin-top: 6px;
   font-size: smaller;
+}
+
+.remix-btn {
+  background-color: #3E7DDC;
+  color: #EAEAEA;
+  padding: 5px 15px;
+  border-radius: 20px;
+  border: none;
+  font-size: 14px;
+}
+
+.post-images {
+  width: 50%;
+}
+
+.slide img {
+  width: auto;
+  height: 100%;
+}
+
+.slide {
+  text-align: center;
+  border: none;
+  background-color: #EAEAEA;
+  /* margin: 20px; */
+}
+
+.post-info {
+  width: 50%;
+  margin-right: 20px;
 }
 
 .info {
   font-size: small;
   margin-bottom: 0px;
-  color: #3B413C;
+  color: #AEAEAE;
+  text-align: end;
 }
 
-.actions {
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.top-bar p {
+  margin-bottom: 3px;
+  margin-top: 3px;
+}
+
+.top-bar-btns {
+  margin-left: 20px;
+}
+
+.top-bar-btns button {
+  margin-right: 10px;
+  font-size: 11px;
+}
+
+.file {
   display: flex;
   align-items: center;
 }
 
-.actions p {
-  margin-bottom: 3px;
-  margin-top: 3px;
+.file audio {
+  margin-left: 20px;
+  height: 36px;
+}
+
+.files-btn {
+  border: none;
+  background-color: transparent;
+  text-decoration: underline;
+  color: #CEAD92;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 20px;
 }
 
 .description {
@@ -511,20 +674,12 @@ export default {
 .icon-btn {
   border: none;
   background-color: transparent;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  font-size: 14px;
 }
 
-.icon-btn img {
-  height: 24px;
-}
-
-.slide img {
-  width: auto;
-  height: 100%;
-}
-
-.slide {
-  text-align: center;
-  border: none;
-  background-color: #EAEAEA;
+.author-link {
+  color: #904D29;
 }
 </style>

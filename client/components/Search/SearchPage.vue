@@ -116,6 +116,10 @@ export default {
 </script>
 
 <style scoped>
+header {
+  margin-top: 40px;
+}
+
 .search-alerts {
   color: red;
   font-size: small;
