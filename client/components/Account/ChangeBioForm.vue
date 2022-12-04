@@ -17,6 +17,7 @@ export default {
         {id: 'bio', label: 'Bio', value: ''}
       ],
       title: 'Change bio',
+      buttonText: 'Update bio',
       callback: () => {
         const message = 'Successfully changed bio!';
         this.$set(this.alerts, message, 'success');

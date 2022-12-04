@@ -65,7 +65,7 @@
     <button
       type="submit"
     >
-      {{ title }}
+      {{ buttonText ? buttonText : title }}
     </button>
     <section class="alerts">
       <article
@@ -194,6 +194,7 @@ export default {
         if (!r.ok) {
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
+          console.log(res);
           throw new Error(res.error);
         }
 

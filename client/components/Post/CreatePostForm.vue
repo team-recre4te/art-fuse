@@ -18,8 +18,8 @@ export default {
         {id: 'files', label: 'Files', accept: ''},
         {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'}
       ],
-      title: 'Create a new post',
-      buttonText: 'Create Post',
+      title: 'Create a New Post',
+      buttonText: 'Submit Post',
       refreshPosts: true,
       callback: () => {
         const message = 'Successfully created a post!';
