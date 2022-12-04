@@ -13,6 +13,8 @@ import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
 import {likeRouter} from '../server/like/router';
 import {commentRouter} from '../server/comment/router';
+import {remixRouter} from '../server/remix/router';
+import { recommendationRouter } from '../server/Recommendation/router';
 import * as userValidator from '../server/user/middleware';
 
 // Load environmental variables
@@ -78,6 +80,8 @@ app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
 app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
+app.use('/api/remix',remixRouter);
+app.use('/api/recommendation',recommendationRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

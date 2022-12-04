@@ -62,3 +62,5 @@ router.post('/',
           post: util.constructRemixResponse(remix)
         });
 });
+
+export { router as remixRouter};

@@ -95,6 +95,20 @@ class PostCollection {
     });
   }
 
+    /**
+   * Get all posts with given Category name
+   *
+   * @param {string} name - The tag name being searched for
+   * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
+   */
+     static async findAllWithCategory(name: string): Promise<Array<HydratedDocument<Post>>> {
+      const allPosts = this.findAll();
+      return (await allPosts).filter(post => { 
+        const postTags = post.categories.map(category => { return category.name.toLowerCase() });
+        return postTags.includes(name);
+      });
+    }
+
   /**
    * Get all remixes of given post
    * 

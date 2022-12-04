@@ -3,21 +3,21 @@ import {Schema, model} from 'mongoose';
 import type {User} from '../user/model';
 import type {Post} from '../post/model';
 
-export type Notification = {
+export type Recommendation = {
     _id: Types.ObjectId;
     userId:  Types.ObjectId;
     recommendations: Types.ObjectId[];
     dateCreated: Date;
 }
 
-export type PopulatedNotification = {
+export type PopulatedRecommendation = {
     _id: Types.ObjectId;
     userId:  User;
     recommendations: Post[];
     dateCreated: Date;
 }
 
-const NotificationSchema = new Schema<Notification>({
+const RecommendationSchema = new Schema<Recommendation>({
     userId:{
         type: Schema.Types.ObjectId,
         required: true,
@@ -33,5 +33,5 @@ const NotificationSchema = new Schema<Notification>({
     }
 });
 
-const NotificationModel = model<Notification>('Notification', NotificationSchema);
-export default NotificationModel;
+const RecommendationModel = model<Recommendation>('Recommendation', RecommendationSchema);
+export default RecommendationModel;
