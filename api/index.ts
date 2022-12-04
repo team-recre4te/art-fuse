@@ -13,7 +13,7 @@ import {tagRouter} from '../server/tag/router';
 import {likeRouter} from '../server/like/router';
 import {commentRouter} from '../server/comment/router';
 import {remixRouter} from '../server/remix/router';
-import { recommendationRouter } from '../server/Recommendation/router';
+import { recommendationRouter } from '../server/recommendation/router';
 import * as userValidator from '../server/user/middleware';
 import MongoStore from 'connect-mongo';
 import { ConnectMongoOptions } from 'connect-mongo/build/main/lib/MongoStore';

@@ -1,0 +1,58 @@
+<template>
+    <div>
+        <multiselect v-model="value" :options="options" :multiple="true"></multiselect>
+        <button @click="changePrference">Save Preferences</button>
+    <section class="alerts">
+        <article v-for="(status, alert, index) in alerts" :key="index" :class="status">
+            <p>{{ alert }}</p>
+        </article>
+    </section>
+</div>
+</template>
+
+<script>
+import Multiselect from 'vue-multiselect'
+
+export default {
+    name: 'PreferencesSelection',
+    // OR register locally
+    components: { Multiselect },
+    data() {
+        return {
+            value: [...this.$store.state.preferences],
+            options: ['Painting', 'Sculpture', 'Literature', 'Architecture', 'Cinema', 'Music', 'Theater']
+        }
+    },
+    methods: {
+        changePrference: async function () {
+            const prefEdited = !this.value.sort().join(',') === this.$store.state.preferences.sort().join(',')
+            if (!prefEdited) {
+                const error = 'Error: Edited preferences should be different than original post.';
+                this.$set(this.alerts, error, 'error'); // Set an alert to be the error text, timeout of 3000 ms
+                setTimeout(() => this.$delete(this.alerts, error), 3000);
+                return;
+            }
+
+            const params = {
+                method: 'PATCH',
+                message: 'Successfully changed Preferences!',
+                body: JSON.stringify({
+                    preferences: this.value
+                }),
+                callback: () => {
+                    this.editing = false;
+                    this.$store.commit('refreshPreferences');
+
+                    this.$set(this.alerts, params.message, 'success');
+                    setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+                }
+            };
+            this.request(`users/`, params);
+        }
+    }
+}
+</script>
+
+<style>
+
+</style>
