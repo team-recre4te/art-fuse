@@ -43,7 +43,10 @@
           </div>
         </div>
         <p>
-          By {{ post.author }}
+          By
+          <router-link class="author-link" :to="{ name: 'Profile', query: { author: post.author }}">
+            {{ post.author }}
+          </router-link>
         </p>
       </div>
       <div>
@@ -138,21 +141,32 @@
           </div>
           <ul v-if="showFiles || editing">
             <li v-for="file in postFilesToDisplay" :key="file.index">
-              <a :download="file.name" :href="file.file">{{file.name}}</a>
+              <div class="file">
+                <a :download="file.name" :href="file.file">{{file.name}}</a>
+
+                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1])" controls>
+                  <source :src="file.file">
+                </audio>
+              </div>
             </li>
           </ul>
           <button v-if="editing && postFilesToDisplay.length" type="button" @click="clearFiles()">Clear Files</button>
         </div>
       </div>
-      <div>
-        <!-- Posted at ... -->
-        <div>
-          <p class="info">
-            {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
-            <i v-if="post.edited">(edited)</i>
-          </p>
-        </div>
+      <div v-if="!showFiles">
+        <p class="info">
+          {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
+          <i v-if="post.edited">(edited)</i>
+        </p>
       </div>
+    </div>
+
+    <!-- Posted at ... -->
+    <div v-if="showFiles">
+      <p class="info">
+        {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
+        <i v-if="post.edited">(edited)</i>
+      </p>
     </div>
 
     <div class="columns bottom-bar" :class="{ 'bottom-bar-bottom-border': showComments } ">
@@ -601,6 +615,7 @@ export default {
   font-size: small;
   margin-bottom: 0px;
   color: #AEAEAE;
+  text-align: end;
 }
 
 .top-bar {
@@ -621,6 +636,16 @@ export default {
 .top-bar-btns button {
   margin-right: 10px;
   font-size: 11px;
+}
+
+.file {
+  display: flex;
+  align-items: center;
+}
+
+.file audio {
+  margin-left: 20px;
+  height: 36px;
 }
 
 .files-btn {
@@ -652,5 +677,9 @@ export default {
   margin-block-start: 1em;
   margin-block-end: 1em;
   font-size: 14px;
+}
+
+.author-link {
+  color: #904D29;
 }
 </style>
