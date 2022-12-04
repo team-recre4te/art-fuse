@@ -124,7 +124,6 @@
             </button>
           </div>
 
-          <!-- <h5 class="section-label">Files</h5> -->
           <div v-if="editing">
             <input 
               type="file"
@@ -157,7 +156,7 @@
     </div>
 
     <div class="columns bottom-bar" :class="{ 'bottom-bar-bottom-border': showComments } ">
-      <div class="right-border">
+      <div class="right-border" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
         <!-- Likes -->
         <div>
           <div class="actions" v-if="$store.state.username">
@@ -184,7 +183,7 @@
       <div class="right-border">
         <!-- Comments -->
         <button
-          style="background-color: white; border: 0px;"
+          style="border: 0px;"
           @click="showComments = !showComments" class="icon-btn">
           💬 {{comments.length}} Comments
         </button>
@@ -193,7 +192,7 @@
         <!-- Remixes -->
         <p>🔀 0 Remixes</p>
       </div>
-      <div>
+      <div style="border-bottom-right-radius: 10px;">
         <!-- Report -->
         <p>🚩 Report</p>
       </div>
@@ -539,6 +538,12 @@ export default {
   height: 100%;
   width: 100%;
   text-align: center;
+  padding: 2px 0px;
+  padding: auto 0;
+}
+
+.bottom-bar > *:hover {
+  background-color: #EAEAEA;
 }
 
 .bottom-bar p {
@@ -565,7 +570,7 @@ export default {
 .remix-btn {
   background-color: #3E7DDC;
   color: #EAEAEA;
-  padding: 10px 15px;
+  padding: 5px 15px;
   border-radius: 20px;
   border: none;
   font-size: 14px;
@@ -625,6 +630,7 @@ export default {
   color: #CEAD92;
   font-weight: 700;
   font-size: 14px;
+  margin-top: 20px;
 }
 
 .description {
@@ -645,9 +651,6 @@ export default {
   background-color: transparent;
   margin-block-start: 1em;
   margin-block-end: 1em;
-}
-
-.icon-btn img {
-  /* height: 24px; */
+  font-size: 14px;
 }
 </style>

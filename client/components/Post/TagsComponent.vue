@@ -2,6 +2,7 @@
 <template>
   <section>
     <div class="tags">
+      <h5 v-if="post.tags.length" class="section-label">Tags</h5>
       <button
         class="tag"
         :class="{ editableTag: isUsersPost }"
@@ -23,7 +24,7 @@
         <button @click="addTag()">&#x2713;</button>
         <button @click="stopAddingTag()">&#x2715;</button>
       </div>
-      <button v-else-if="allowAddTag" class="add-tag-btn" @click="startAddingTag">+ tag</button>
+      <button v-else-if="allowAddTag" class="add-tag-btn" @click="startAddingTag">&#65291; Tag</button>
       </div>
     </div>
   </section>
@@ -137,10 +138,12 @@ export default {
 <style scoped>
 .tag {
   background-color: transparent;
-  border: solid black 1px;
+  border: none;
   border-radius: 20px;
   margin-right: 10px;
-  padding: 2px 10px;
+  padding: 3px 12px;
+  background-color: #DCA73E;
+  color: white;
 }
 
 .tag span {
@@ -152,6 +155,16 @@ export default {
 }
 
 .add-tag-btn {
-  margin-top: 5px;
+  margin-top: 8px;
+  padding: 0px 7px;
+  font-size: 12px;
 }
+
+.section-label {
+  font-size: 0.83em;
+  font-weight: bold;
+  margin-right: 10px;
+  margin-bottom: 5px;
+}
+
 </style>
