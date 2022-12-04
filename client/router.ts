@@ -5,6 +5,7 @@ import CreatePostPage from './components/Post/CreatePostPage.vue';
 import AccountPage from './components/Account/AccountPage.vue';
 import LoginPage from './components/Login/LoginPage.vue';
 import SearchPage from './components/Search/SearchPage.vue';
+import RecommendationsPage from './components/Recommendations/recommendationsPage.vue';
 import NotFound from './NotFound.vue';
 
 Vue.use(VueRouter);
@@ -15,6 +16,7 @@ const routes = [
   {path: '/login', name: 'Login', component: LoginPage},
   {path: '/browse', name: 'Browse', component: SearchPage},
   {path: '/create', name: 'Create Post', component: CreatePostPage},
+  {path: '/recommendations', name: 'Recommendations', component: RecommendationsPage},
   {path: '*', name: 'Not Found', component: NotFound}
 ];
 

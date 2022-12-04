@@ -14,6 +14,8 @@ const store = new Vuex.Store({
     posts: [], // All posts created in the app
     bio: null,
     username: null, // Username of the logged in user
+    recommendations: [], //All recommendations that have been generated
+    preferences: [], //The user's preferences of what to get recommendations
     alerts: {} // global success/error messages encountered during submissions to non-visible forms
   },
   mutations: {
@@ -39,6 +41,13 @@ const store = new Vuex.Store({
        * @param username - new username to set
        */
       state.username = username;
+    },
+    setPreferences(state, preferences) {
+      /**
+       * update the stored preferences to the specified ones
+       * @param preferences - new preferences to set
+       */
+      state.preferences = preferences;
     },
     updateFilter(state, filter) {
       /**
@@ -71,12 +80,33 @@ const store = new Vuex.Store({
     },
     async refreshBio(state) {
       /**
-       * Request the server for the currently available posts.
+       * Request the server for the currently available user bio.
        */
       const url = `/api/users/session`;
       const res = await fetch(url).then(async r => r.json());
       const user = res.user;
       state.bio = user.bio;
+    },
+    async refreshRecommendations(state) {
+      /**
+       * Request the server for a new recommendation.
+       */
+      const url = `/api/recommendation`
+      const r = await fetch(url);
+      const res = await r.json();
+      if (r.ok) {
+        const recommendation = res.recommendation
+        state.recommendations.unshift(recommendation)
+      }
+    },
+    async refreshPreferences(state) {
+      const url = `/api/users/session`;
+      const r = await fetch(url);
+      const res = await r.json();
+      if (r.ok) {
+        const user = res.user;
+        state.preferences = user.preferences;
+      }
     }
   },
   // Store data across page refreshes, only discard on browser close
