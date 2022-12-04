@@ -7,13 +7,14 @@ import logger from 'morgan';
 import http from 'http';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import MongoStore from 'connect-mongo';
 import {userRouter} from '../server/user/router';
 import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
 import {likeRouter} from '../server/like/router';
 import {commentRouter} from '../server/comment/router';
 import * as userValidator from '../server/user/middleware';
+import MongoStore from 'connect-mongo';
+import { ConnectMongoOptions } from 'connect-mongo/build/main/lib/MongoStore';
 
 // Load environmental variables
 dotenv.config({});
@@ -58,16 +59,18 @@ app.use(express.urlencoded({extended: false}));
 
 // Initialize cookie session
 // https://www.npmjs.com/package/express-session#options
+// @ts-ignore
+const store = MongoStore.create({
+  clientPromise: client,
+  dbName: 'sessions',
+  autoRemove: "interval",
+  autoRemoveInterval: 10 // Minutes
+})
 app.use(session({
   secret: '61040', // Should generate a real secret
   resave: true,
   saveUninitialized: false,
-  // store: MongoStore.create({
-  //   clientPromise: client,
-  //   dbName: 'sessions',
-  //   autoRemove: 'interval',
-  //   autoRemoveInterval: 10 // Minutes
-  // })
+  store: store
 }));
 // This makes sure that if a user is logged in, they still exist in the database
 app.use(userValidator.isCurrentSessionUserExists);
