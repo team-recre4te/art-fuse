@@ -172,4 +172,25 @@ router.delete(
   }
 );
 
+/**
+ * Get the user with username
+ *
+ * @name GET /api/users?author=USERNAME
+ *
+ * @return - user object with that username
+ */
+ router.get(
+  '/',
+  [
+    userValidator.isAuthorExists
+  ],
+  async (req: Request, res: Response) => {
+    const user = await UserCollection.findOneByUsername(req.query.author as string);
+    res.status(200).json({
+      message: 'User info was found successfully.',
+      user: user ? util.constructUserResponse(user) : null
+    });
+  }
+);
+
 export {router as userRouter};
