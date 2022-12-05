@@ -30,7 +30,7 @@ const router = express.Router();
     '/',
     async (req: Request, res: Response, next: NextFunction) => {
       // Check if authorId query parameter was supplied
-      if (req.query.author !== undefined) {
+      if (req.query.author !== undefined || req.query.postId !== undefined) {
         next();
         return;
       }
@@ -38,6 +38,25 @@ const router = express.Router();
       const allPosts = await PostCollection.findAll();
       const response = allPosts.map(util.constructPostResponse);
       res.status(200).json(response);
+    },
+    [
+      postValidator.isPostQueryExists
+    ],
+    async (req: Request, res: Response, next: NextFunction) => {
+      // Check if authorId query parameter was supplied
+      if (req.query.author !== undefined) {
+        next();
+        return;
+      }
+
+      const post = await PostCollection.findOne(req.query.postId as string);
+      res.status(200).json(util.constructPostResponse(post));
+    // res.status(200).json({
+    //     message: 'Your post was updated successfully.',
+    //     post: util.constructPostResponse(post)
+    //   });
+
+      return;
     },
     [
       userValidator.isAuthorExists

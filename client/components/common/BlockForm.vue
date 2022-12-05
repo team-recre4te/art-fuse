@@ -125,6 +125,7 @@ export default {
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshPosts: false, // Whether or not stored posts should be updated after form submission
       refreshBio: false,
+      makeRemix:false,
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
       images: [],
@@ -216,7 +217,7 @@ export default {
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
 
-          console.log('options', options.body);
+          // console.log('options', options.body);
 
         } else if (this.url === '/api/comments' && this.method == 'POST') {
           const inputFields = Object.fromEntries(
@@ -260,6 +261,36 @@ export default {
           this.$store.commit('setBio', res.user ? res.user.bio : null);
         }
 
+        let newPostRes = await r.json();
+
+        if (this.makeRemix) {
+          const options = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'same-origin',
+            body: JSON.stringify({parentId: this.parentId , postId: newPostRes.post._id })
+          };
+
+          try {
+            const r2 = await fetch("/api/remix", options);
+            if (!r2.ok) {
+                // If response is not okay, we throw an error and enter the catch block
+                const res2 = await r2.json();
+                throw new Error(res2.error);
+            }
+
+            console.log('r is ok');
+              const res2 = await r2.json();
+              console.log(res2);
+              console.log("remix made");
+              this.$set(this.alerts, params.message, 'Successfully made a Remix!');
+              setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+          } catch (e) {
+              this.$set(this.alerts, e, 'error');
+              setTimeout(() => this.$delete(this.alerts, e), 3000);
+          }
+        }
+
         if (this.refreshPosts) {
           this.$store.commit('refreshPosts');
         }
@@ -273,14 +304,15 @@ export default {
         }
 
         if (this.category !== '') {
-          const p = await r.json();
-          const postId = p["post"]["id"];
+          const postId = newPostRes["post"]["id"];
+          console.log(postId)
 
           const params = {
             method: 'POST',
             message: 'added category successfully!',
             body: JSON.stringify({name: this.category, postId: postId})
           }; 
+          console.log(params)
 
           const options = {
             method: params.method, headers: {'Content-Type': 'application/json'},
