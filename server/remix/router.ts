@@ -52,10 +52,11 @@ router.get('/',
 router.post('/',
     [
     userValidator.isUserLoggedIn,
-    postValidator.isPostExists,
+    postValidator.isPostBodyExists,
     remixValidator.isValidModifier
     ]
     ,async (req: Request, res: Response, next: NextFunction) => {
+      console.log("add remix")
         const remix = await RemixCollection.addOne(req.body.parentId, req.body.postId);
         res.status(201).json({
           message: 'Your remix was created successfully.',
@@ -63,4 +64,4 @@ router.post('/',
         });
 });
 
-export { router as remixRouter};
+export { router as remixRouter };

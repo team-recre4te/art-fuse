@@ -27,10 +27,10 @@ export default {
       refreshPosts: true,
       makeRemix: true,
       callback: () => {
-        const message = 'Successfully created a remix!';
-        this.$router.push({name: 'Home'}); // Goes to Home page after creating a remix
-        this.$set(this.alerts, message, 'success');
-        setTimeout(() => this.$delete(this.alerts, message), 3000);
+        // const message = 'Successfully created a remix!';
+        // this.$router.push({name: 'Home'}); // Goes to Home page after creating a remix
+        // this.$set(this.alerts, message, 'success');
+        // setTimeout(() => this.$delete(this.alerts, message), 3000);
       }
     };
   }

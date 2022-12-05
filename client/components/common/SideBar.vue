@@ -23,14 +23,14 @@
         Browse
       </router-link>
 
-      <router-link
+      <!-- <router-link
         v-if="$store.state.username"
         to="/recommendations"
         :class="{ 'selected':(isOnRec) }"
       >
       <img :src="getRecIcon()" class="icon">
         Recommendations
-      </router-link>
+      </router-link> -->
 
       <router-link
         v-if="$store.state.username"
