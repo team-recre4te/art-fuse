@@ -22,6 +22,16 @@
         <img :src="getSearchIcon()" class="icon">
         Browse
       </router-link>
+
+      <router-link
+        v-if="$store.state.username"
+        to="/recommendations"
+        :class="{ 'selected':(isOnRec) }"
+      >
+      <img :src="getRecIcon()" class="icon">
+        Recommendations
+      </router-link>
+
       <router-link
         v-if="$store.state.username"
         to="/account"
@@ -75,6 +85,9 @@ export default {
     },
     getLoginIcon() {
       return this.isOnLogin ? './assets/login_filled.png' : './assets/login_outline.png';
+    },
+    getRecIcon(){
+      return this.isOnRec ? './assets/rec-filled.png':'./assets/rec-outline.png';
     }
   },
   computed: {
@@ -89,6 +102,9 @@ export default {
     },
     isOnLogin() {
       return this.$route.path === '/login' || this.$route.path === '/register';
+    },
+    isOnRec() {
+      return this.$route.path === '/recommendations'
     }
   }
 }

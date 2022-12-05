@@ -42,13 +42,23 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return await PostModel.findOne({_id: postId});
-    // return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
-    //   path: 'likedBy',
-    //   populate: {
-    //     path: 'userId'
-    //   }
-    // });
+    return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
+      path: 'likedBy',
+      populate: {
+        path: 'userId'
+      }
+    });
+    const post = await PostModel.findOne({_id: postId});
+    if(post){
+      return (await post.populate(['authorId', 'tags'])).populate({
+        path: 'likedBy',
+        populate: {
+          path: 'userId'
+        }
+      }); 
+    }else{
+      return post
+    }
   }
 
   /**
@@ -95,6 +105,20 @@ class PostCollection {
       return postTags.includes(name);
     });
   }
+
+    /**
+   * Get all posts with given Category name
+   *
+   * @param {string} name - The tag name being searched for
+   * @return {Promise<HydratedDocument<Post>[]>} - An array of all of the posts
+   */
+     static async findAllWithCategory(name: string): Promise<Array<HydratedDocument<Post>>> {
+      const allPosts = this.findAll();
+      return (await allPosts).filter(post => { 
+        const postTags = post.categories.map(category => { return category.name.toLowerCase() });
+        return postTags.includes(name);
+      });
+    }
 
   /**
    * Get all remixes of given post

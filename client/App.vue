@@ -23,6 +23,8 @@ export default {
       const user = res.user;
       this.$store.commit('setUsername', user ? user.username : null);
       this.$store.commit('setBio', user ? user.bio : null);
+      this.$store.commit('refreshPreferences');
+      this.$store.commit('refreshRecommendations');
     });
 
     // Clear alerts on page refresh

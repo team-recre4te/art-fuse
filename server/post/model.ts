@@ -1,6 +1,8 @@
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
 import { Tag } from '../tag/model';
+import { Category } from '../category/model';
+import {Like} from  '../like/model';
 import type {User} from '../user/model';
 
 export type Post = {
@@ -13,7 +15,9 @@ export type Post = {
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
+  likedBy?:Array<Like>;
   tags?: Array<Tag>;
+  categories?:Array<Category>;
 }
 
 export type PopulatedPost = {
@@ -70,6 +74,12 @@ const PostSchema = new Schema<Post>({
 
 PostSchema.virtual('tags', {
   ref: 'Tag',
+  localField: '_id',
+  foreignField: 'postId',
+});
+
+PostSchema.virtual('categories', {
+  ref: 'Category',
   localField: '_id',
   foreignField: 'postId',
 });
