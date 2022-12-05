@@ -399,7 +399,7 @@ export default {
       this.request(`comments?postId=${this.post._id}`, params);
     },
     getCategory() {
-      console.log("ran get category");
+      // console.log("ran get category");
       const params = {
         method: 'GET',
         callback: () => {}
