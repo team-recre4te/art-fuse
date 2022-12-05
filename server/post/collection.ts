@@ -1,5 +1,6 @@
 import type {HydratedDocument, Types} from 'mongoose';
 import type {Post} from './model';
+import type {User} from '../user/model';
 import PostModel from './model';
 import UserCollection from '../user/collection';
 
@@ -42,12 +43,17 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
-      path: 'likedBy',
-      populate: {
-        path: 'userId'
-      }
-    });
+    const post = await PostModel.findOne({_id: postId});
+    if(post){
+      return (await post.populate(['authorId', 'tags'])).populate({
+        path: 'likedBy',
+        populate: {
+          path: 'userId'
+        }
+      }); 
+    }else{
+      return post
+    }
   }
 
   /**
@@ -109,6 +115,27 @@ class PostCollection {
       }
     });
   }
+
+    /**
+   * Get all ancestors of given post
+   *
+   * @param {string} postId - The post
+   * @return {Promise<HydratedDocument<User>[]>} - An array of all of the ancestors of the post
+   */
+  static async findAllAncestors(postId:  Types.ObjectId | string): Promise<Array<HydratedDocument<User>>> {
+
+    console.log(postId)
+    let post = await PostCollection.findOne(postId);
+    let parent
+    let parents = []
+    while(post.parentId !== null){
+      post = await PostCollection.findOne(post.parentId);
+      parent = await UserCollection.findOneByUserId(post.authorId);
+      parents.push(parent);
+    }
+    return parents
+  }
+
 
   /**
    * Update a post
