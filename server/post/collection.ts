@@ -1,5 +1,6 @@
 import type {HydratedDocument, Types} from 'mongoose';
 import type {Post} from './model';
+import type {User} from '../user/model';
 import PostModel from './model';
 import UserCollection from '../user/collection';
 import CategoryModel from '../category/model';
@@ -129,6 +130,27 @@ class PostCollection {
       }
     });
   }
+
+    /**
+   * Get all ancestors of given post
+   *
+   * @param {string} postId - The post
+   * @return {Promise<HydratedDocument<User>[]>} - An array of all of the ancestors of the post
+   */
+  static async findAllAncestors(postId:  Types.ObjectId | string): Promise<Array<HydratedDocument<User>>> {
+
+    console.log(postId)
+    let post = await PostCollection.findOne(postId);
+    let parent
+    let parents = []
+    while(post.parentId !== null){
+      post = await PostCollection.findOne(post.parentId);
+      parent = await UserCollection.findOneByUserId(post.authorId);
+      parents.push(parent);
+    }
+    return parents
+  }
+
 
   /**
    * Update a post

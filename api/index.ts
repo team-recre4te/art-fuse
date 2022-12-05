@@ -15,6 +15,7 @@ import {likeRouter} from '../server/like/router';
 import {commentRouter} from '../server/comment/router';
 import {remixRouter} from '../server/remix/router';
 import { recommendationRouter } from '../server/recommendation/router';
+import {reportRouter} from '../server/report/router';
 import * as userValidator from '../server/user/middleware';
 import MongoStore from 'connect-mongo';
 import { ConnectMongoOptions } from 'connect-mongo/build/main/lib/MongoStore';
@@ -87,6 +88,7 @@ app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
 app.use('/api/remix',remixRouter);
 app.use('/api/recommendation',recommendationRouter);
+app.use('/api/reports', reportRouter);
 
 // Catch all the other routes and display error message
 app.all('*', (req: Request, res: Response) => {

@@ -1,7 +1,9 @@
 <!-- Reusable component representing a single post and its actions -->
 
 <template>
-  <article class="post">
+  <article class="post" >
+    <div :class="{'overlay-reported': reported}">
+    </div>
     <header class="post-header columns">
       <div>
         <div class="top-bar">
@@ -207,10 +209,27 @@
         <!-- Remixes -->
         <p>🔀 0 Remixes</p>
       </div>
-      <div style="border-bottom-right-radius: 10px;">
+      
+      <div style="border-bottom-right-radius: 10px;" v-if="$store.state.username && !reported">
         <!-- Report -->
-        <p>🚩 Report</p>
+        <div>
+          <div class="actions">
+            <button
+              @click="reportPost"
+              class="icon-btn"
+            > 
+              🚩 Report
+            </button>
+          </div>
+        </div>
       </div>
+      <div v-else-if="reported" style="border-bottom-right-radius: 10px;">
+        <!-- Reported -->
+        <p>
+          Reported
+        </p>
+      </div>
+
     </div>
 
     <div class="comments-section" v-if="showComments">
@@ -285,10 +304,12 @@ export default {
       comments: [],
       showFiles: false,
       category: '',
+      reported: false,
     };
   },
   mounted() {
     // console.log(this.post)
+    this.checkIfReported();
   },
   methods: {
     startEditing() {
@@ -326,6 +347,13 @@ export default {
         this.request(`likes/`, params);
         this.liking = true;
       }
+    },
+    checkIfReported(){
+      const params = {
+        method: 'GET',
+        callback: () => {}
+      };      
+      this.request(`reports?postId=${this.post._id}`, params);
     },
     unlikePost() {
       /**
@@ -405,6 +433,18 @@ export default {
         callback: () => {}
       };
       this.request(`categories?postId=${this.post._id}`, params);
+    },
+    reportPost() {
+      const params = {
+        method: 'POST',
+        message: 'Successfully reported post!',
+        body: JSON.stringify({postId: this.post._id}),
+        callback: () => {
+          console.log('reported')
+          this.reported = true;
+        }
+      }
+      this.request(`reports/`, params);
     },
     submitEdit() {
       /**
@@ -488,6 +528,13 @@ export default {
         if (path === `categories?postId=${this.post._id}`) {
           this.category = res[0]["name"] ?? '';
         }
+        
+        else if (path === `reports?postId=${this.post._id}`) {
+          if(res.length > 0){
+            this.reported = true;
+          }
+        }
+
         params.callback();
       } catch (e) {
         this.liking = false;
@@ -534,6 +581,7 @@ export default {
   position: relative;
   margin: 10px 0px;
   border-radius: 12px;
+  width:100%;
 }
 
 .author {
@@ -562,6 +610,17 @@ export default {
 .bottom-bar-bottom-border {
   border-bottom: 2px solid #EAEAEA;
 }
+
+/* .overlay-reported{
+  background-color: rgba(0,0,0.5);
+  padding: 20px;
+  margin: 10px 0px;
+  border-radius: 12px;
+  width: 100%;
+  height: 100%;
+  position:relative;
+  
+} */
 
 .bottom-bar > * {
   height: 100%;
