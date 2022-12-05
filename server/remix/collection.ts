@@ -59,7 +59,17 @@ class RemixCollection {
      * @returns 
      */
     static async findByChild(childId:Types.ObjectId | string):Promise<Array<HydratedDocument<Remix>>>{
-        return RemixModel.find({childId: childId}).populate(['parentId','childId'])
+        return RemixModel.find({childId: childId}).populate(['parentId','childId']).populate({
+            path: 'childId',
+            populate: {
+              path: 'authorId'
+            }
+        }).populate({
+            path: 'parentId',
+            populate: {
+              path: 'authorId'
+            }
+        });
     }
 
     static async deleteOne(remixId:Types.ObjectId | string): Promise<boolean> {

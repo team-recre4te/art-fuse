@@ -62,6 +62,12 @@
     <div class="columns">
       <div class="post-info">
         <!-- Category, parent post, description, and tags on right side -->
+        <h5 v-if="category" class="section-label">Category</h5>
+        <div v-if="category" style="margin-bottom: 5px;">{{category}}</div>
+
+        <h5 v-if="remixedFrom" class="section-label" style="margin-top: 10px;">Remixed From -</h5>
+        <p v-if="remixedFrom" style="margin-top: 5px;">{{ remixedFrom }}</p>
+
         <h5 class="section-label">Description</h5>
         <textarea
           v-if="editing"
@@ -75,8 +81,7 @@
         >
           <p>{{ post.description }}</p>
         </div>
-        <h5 v-if="category" class="section-label">Category</h5>
-        <div v-if="category">{{category}}</div>
+
         <div>
           <TagsComponent 
             :post="post"
@@ -293,12 +298,14 @@ export default {
       showFiles: false,
       category: '',
       showRemixes: false,
-      remixesCount: 0
+      remixesCount: 0,
+      remixedFrom: ''
     };
   },
   mounted() {
     // console.log(this.post)
-    this.getRemixes();
+    this.getRemixesOfThisPost();
+    this.getRemixedFrom();
   },
   methods: {
     startEditing() {
@@ -409,14 +416,26 @@ export default {
       this.request(`comments?postId=${this.post._id}`, params);
     },
     getCategory() {
-      console.log("ran get category");
+      // console.log("ran get category");
       const params = {
         method: 'GET',
         callback: () => {}
       };
       this.request(`categories?postId=${this.post._id}`, params);
     },
-    async getRemixes() {
+    async getRemixedFrom() {
+      // const url = `/api/remix?postId=${postId}`;
+      // const res = await fetch(url).then(async r => r.json());
+      // state.remixes = res;
+      const params = {
+        method: 'GET',
+        callback: () => {
+
+        }
+      };      
+      this.request(`remix/parent?postId=${this.post._id}`, params);
+    },
+    async getRemixesOfThisPost() {
       // const url = `/api/remix?postId=${postId}`;
       // const res = await fetch(url).then(async r => r.json());
       // state.remixes = res;
@@ -510,6 +529,11 @@ export default {
             // console.log(res);
           }
           this.remixesCount = res.length;
+        } else if (path === `remix/parent?postId=${this.post._id}`) {
+          console.log(res);
+          if (res.length > 0) {
+            this.remixedFrom = res[0].parentId.title + ' by ' + res[0].parentId.authorId.username;
+          }
         }
 
         if (path === `categories?postId=${this.post._id}`) {
