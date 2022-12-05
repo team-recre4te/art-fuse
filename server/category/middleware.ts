@@ -26,6 +26,26 @@ import CategoryCollection from '../category/collection';
     next();
 };
 
+const isValidQueryCategoryName = (req: Request, res: Response, next: NextFunction) => {
+  const {name} = req.query as {name: string};
+  console.log(name);
+  if (!name.trim()) {
+    res.status(400).json({
+      error: 'Category name must be at least one character long.'
+    });
+    return;
+  }
+
+  if (name.length > 30) {
+    res.status(413).json({
+      error: 'Category title must be no more than 30 characters.'
+    });
+    return;
+  }
+
+  next();
+};
+
 const isCategoryExists = async (req: Request, res: Response, next: NextFunction) => {
     const validFormat = Types.ObjectId.isValid(req.params.categoryId);
     const category = validFormat ? await CategoryCollection.findOne(req.params.categoryId) : '';
@@ -41,6 +61,7 @@ const isCategoryExists = async (req: Request, res: Response, next: NextFunction)
 export {
   isValidCategoryName, 
   isCategoryExists,
+  isValidQueryCategoryName,
 }
 
   

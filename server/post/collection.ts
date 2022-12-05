@@ -2,6 +2,7 @@ import type {HydratedDocument, Types} from 'mongoose';
 import type {Post} from './model';
 import PostModel from './model';
 import UserCollection from '../user/collection';
+import CategoryModel from '../category/model';
 
 class PostCollection {
   /**
@@ -42,12 +43,6 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
-      path: 'likedBy',
-      populate: {
-        path: 'userId'
-      }
-    });
     const post = await PostModel.findOne({_id: postId});
     if(post){
       return (await post.populate(['authorId', 'tags'])).populate({
@@ -167,6 +162,7 @@ class PostCollection {
    */
    static async deleteOne(postId: Types.ObjectId | string): Promise<boolean> {
     const post = await PostModel.deleteOne({_id: postId});
+    const category = await CategoryModel.deleteOne({postId: postId});
     return post !== null;
   }
 

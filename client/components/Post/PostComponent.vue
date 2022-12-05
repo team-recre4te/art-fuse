@@ -70,7 +70,8 @@
         >
           <p>{{ post.description }}</p>
         </div>
-        <div style="background-color: "></div>
+        <h5 v-if="category" class="section-label">Category</h5>
+        <div v-if="category">{{category}}</div>
         <div>
           <TagsComponent 
             :post="post"
@@ -398,6 +399,7 @@ export default {
       this.request(`comments?postId=${this.post._id}`, params);
     },
     getCategory() {
+      console.log("ran get category");
       const params = {
         method: 'GET',
         callback: () => {}
@@ -484,7 +486,7 @@ export default {
         }
 
         if (path === `categories?postId=${this.post._id}`) {
-          this.category = res[0]["name"];
+          this.category = res[0]["name"] ?? '';
         }
         params.callback();
       } catch (e) {
@@ -519,8 +521,8 @@ export default {
     }
   },
   created() {
-    this.getComments();
     this.getCategory();
+    this.getComments();
   },
 };
 </script>

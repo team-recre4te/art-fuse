@@ -225,6 +225,7 @@ export default {
         }
 
         this.posts = res;
+        console.log("this.posts", this.posts);
       } catch (e) {
 
         this.$set(this.alerts, e, 'error');

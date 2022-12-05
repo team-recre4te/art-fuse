@@ -27,8 +27,13 @@ const router = express.Router();
  */
  router.get(
     '/',
+    async (req: Request, res: Response, next: NextFunction) => {
+      if (req.query.name) next(); // skip to the next middleware in this substack
+      else if (req.query.postId) next('route'); // skip the rest of this substack, move to next substack
+      else return;
+    },
     [
-        // categoryValidator.isValidQueryCategoryName
+        categoryValidator.isValidQueryCategoryName
     ],
     async (req: Request, res: Response, next: NextFunction) => {
         const nameTags = await CategoryCollection.findAllByCategoryName(req.query.name as string);
@@ -42,6 +47,9 @@ const router = express.Router();
         const response = posts.map(postUtil.constructPostResponse);
         res.status(200).json(response);
       },
+  );
+  router.get(
+    '/',
     [
       postValidator.isPostQueryExists
     ],
@@ -49,8 +57,8 @@ const router = express.Router();
       const postIdCategories = await CategoryCollection.findAllByPostId(req.query.postId as string);
       const response = postIdCategories.map(util.constructCategoryResponse);
       res.status(200).json(response);
-    }
-  );
+    },
+  )
 
 /**
  * Create a new category.
