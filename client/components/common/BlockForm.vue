@@ -247,7 +247,8 @@ export default {
         // console.log(this.url);
         // console.log(options);
         const r = await fetch(this.url, options);
-        // console.log(r);
+
+// console.log(r);
         if (!r.ok) {
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
@@ -261,8 +262,11 @@ export default {
           this.$store.commit('setBio', res.user ? res.user.bio : null);
         }
 
-        let newPostRes = await r.json();
-
+        var newPostRes;
+        if (this.makeRemix || this.category !== '') {
+          newPostRes = await r.json();
+        }
+        
         if (this.makeRemix) {
           const options = {
             method: 'POST',

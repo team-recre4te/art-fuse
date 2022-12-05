@@ -36,6 +36,18 @@ router.get('/',
 
 });
 
+router.get('/parent',
+    [
+    userValidator.isUserLoggedIn,
+    postValidator.isPostQueryExists
+    ],
+    async (req: Request, res: Response, next: NextFunction) => {
+        const postIdTags = await RemixCollection.findByChild(req.query.postId as string);
+        const response = postIdTags.map(util.constructRemixResponse);
+        res.status(200).json(response);
+
+});
+
 /**
  * Create a new remix.
  *
