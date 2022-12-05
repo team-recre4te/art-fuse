@@ -28,6 +28,7 @@ router.get(
       next();
       return;
     }
+    console.log('hey')
     const allComments = await CommentCollection.findAll();
     const response = await Promise.all(allComments.map(util.constructCommentResponse));
     console.log('response', response);
