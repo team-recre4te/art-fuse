@@ -70,6 +70,15 @@ const store = new Vuex.Store({
        */
       state.posts = posts;
     },
+    async loadRemixes(state, postId) {
+      /**
+       * Get all the remixes made from the post with the postId
+       * @param postId - a post's id
+       */
+      const url = `/api/remix?postId=${postId}`;
+      const res = await fetch(url).then(async r => r.json());
+      state.posts = res;
+    },
     async refreshPosts(state) {
       /**
        * Request the server for the currently available posts.
