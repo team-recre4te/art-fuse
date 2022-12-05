@@ -26,6 +26,29 @@
             @searched="handleSearch" 
             placeholderText="Search by author..."
           />
+          <div class="columns">
+          <div class="category-btn">
+            <!-- <button style="background-color: #3e7ddc" @click="getDigitalArt">Digital Art</button> -->
+            <!-- <button v-else style="background-color:#ca3edc" @click="getDigitalArt">Digital Art</button> -->
+            <button v-if="category === 'Digital Art'" @click="getDigitalArt" style="background-color: #3E7DDC;">Digital Art</button>
+            <button v-else @click="getDigitalArt">Digital Art</button>
+            
+            <button v-if="category === 'Music'" @click="getMusic" style="background-color: #3E7DDC;">Music</button>
+            <button v-else @click="getMusic">Music</button>
+
+            <button v-if="category === 'Dance'" @click="getDance" style="background-color: #3E7DDC;">Dance</button>
+            <button v-else @click="getDance">Dance</button>
+            
+            <button v-if="category === '3D Modeling'" @click="get3DModeling" style="background-color: #3E7DDC;">3D Modeling</button>
+            <button @click="get3DModeling">3D Modeling</button>
+            
+            <button v-if="category === 'Drawing & Painting'" @click="getDrawingPainting" style="background-color: #3E7DDC;">Drawing & Painting</button>
+            <button v-else @click="getDrawingPainting">Drawing & Painting</button>
+            
+            <button v-if="category === 'Theater'" @click="getTheater" style="background-color: #3E7DDC;">Theater</button>
+            <button v-else @click="getTheater">Theater</button>
+          </div>
+        </div>
           <section
             v-if="Object.keys(alerts).length"
           >
@@ -46,12 +69,15 @@
             <p>placeholder</p>
           </article>  
         </div>
+        <div>
+
+        </div>
       </header>
       <section
         v-if="$store.state.posts.length"
       >
         <PostComponent
-          v-for="post in $store.state.posts"
+          v-for="post in posts"
           :key="post.id"
           :post="post"
         />
@@ -88,7 +114,9 @@ export default {
     return {
       searching: false,
       searchAuthor: '',
-      alerts: {}
+      alerts: {},
+      category: '',
+      posts:  this.$store.state.posts, 
     };
   },
   mounted() {
@@ -96,6 +124,115 @@ export default {
     this.$store.commit('refreshPosts');
   },
   methods: {
+    getDigitalArt() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = 'Digital Art';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    getMusic() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = 'Music';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    getDance() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = 'Dance';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    get3DModeling() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = '3D Modeling';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    getDrawingPainting() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = 'Drawing & Painting';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    getTheater() {
+      const params = {
+        method: 'GET',
+        callback: () => {},
+      };
+
+      if (this.category == '') {
+        this.category = 'Theater';
+        this.request(`/api/categories?name=${this.category.trim()}`, params);
+      } else {
+        this.category = '';
+        this.posts = this.$store.state.posts;
+      }
+    },
+    async request(path, params) {
+      const options = {
+        method: params.method, headers: {'Content-Type': 'application/json'}
+      };
+      if (params.body) {
+        options.body = params.body;
+      }
+
+      try {
+        const r = await fetch(path, options);
+        console.log("r", r);
+        const res = await r.json();
+        console.log("res", res);
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+
+        this.posts = res;
+      } catch (e) {
+
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+
+    },
     async handleSearch(value) {
       if (value.length > 0 && value.trim().length === 0) { // just whitespace in search
         // cannot search for empty string
@@ -140,10 +277,32 @@ export default {
 </script>
 
 <style scoped>
+.columns {
+  display: flex;
+  justify-content: space-between;
+}
+
 section {
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.btn-group {
+
+}
+.category-btn button {
+  background-color: #3e7ddc4e;
+  border: none; 
+  color: white; 
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.category-btn button:hover {
+  background-color: #3E7DDC;
 }
 
 header, header > * {

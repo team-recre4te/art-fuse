@@ -58,15 +58,40 @@
           <button type="button" @click="clearImages()">Clear Images</button>
         </div>
       </div>
+
+      <div v-if="(fields.length === 4)" class="columns">
+      
+        <div class="category-btn" v-if="category === 'Digital Art'" style="background-color: #3E7DDC;">Digital Art</div>
+        <div class="category-btn" v-else @click="addDigitalArt">Digital Art</div>
+            
+        <div class="category-btn" v-if="category === 'Music'" style="background-color: #3E7DDC;">Music</div>
+        <div class="category-btn" v-else @click="addMusic">Music</div>
+
+        <div class="category-btn" v-if="category === 'Dance'" style="background-color: #3E7DDC;">Dance</div>
+        <div class="category-btn" v-else @click="addDance">Dance</div>
+        
+        <div class="category-btn" v-if="category === '3D Modeling'" style="background-color: #3E7DDC;">3D Modeling</div>
+        <div class="category-btn" v-else @click="add3DModeling">3D Modeling</div>
+        
+        <div class="category-btn" v-if="category === 'Drawing & Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
+        <div class="category-btn" v-else @click="addDrawingPainting">Drawing & Painting</div>
+        
+        <div class="category-btn" v-if="category === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
+        <div class="category-btn" v-else @click="addTheater">Theater</div>
+    </div>
+    
     </article>
+
     <article v-else>
       <p>{{ content }}</p>
     </article>
+
     <button
       type="submit"
     >
       {{ buttonText ? buttonText : title }}
     </button>
+
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -104,7 +129,8 @@ export default {
       callback: null, // Function to run after successful form submission
       images: [],
       files: [],
-      fileNames: []
+      fileNames: [],
+      category: '',
     };
   },
   methods: {
@@ -134,6 +160,30 @@ export default {
         };
       });
     },
+    addDance() {
+      this.category = "Dance";
+      return;
+    },
+    addDigitalArt() {
+      this.category = "Digital Art";
+      return;
+    },
+    addDrawingPainting() {
+      this.category = "Drawing & Painting";
+      return;
+    },
+    add3DModeling() {
+      this.category = "3D Modeling";
+      return;
+    },
+    addMusic() {
+      this.category = "Music";
+      return;
+    },
+    addTheater() {
+      this.category = "Theater";
+      return;
+    },
     async submit() {
       /**
         * Submits a form with the specified options from data().
@@ -143,6 +193,12 @@ export default {
         headers: {'Content-Type': 'application/json'},
         credentials: 'same-origin' // Sends express-session credentials with request
       };
+
+      // temporary solution for checking if it's the create post form, will add an input variable later to specify
+      if (this.category === '' && this.fields === 4) {
+        this.$set(this.alerts, Error('Please select a category'), 'error');
+        return;
+      }
 
       if (this.hasBody) {
         if (this.url === '/api/posts') {
@@ -194,7 +250,6 @@ export default {
         if (!r.ok) {
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
-          console.log(res);
           throw new Error(res.error);
         }
 
@@ -215,6 +270,36 @@ export default {
 
         if (this.callback) {
           this.callback();
+        }
+
+        if (this.category !== '') {
+          const p = await r.json();
+          const postId = p["post"]["id"];
+
+          const params = {
+            method: 'POST',
+            message: 'added category successfully!',
+            body: JSON.stringify({name: this.category, postId: postId})
+          }; 
+
+          const options = {
+            method: params.method, headers: {'Content-Type': 'application/json'},
+            body: params.body
+          };
+
+          
+          try {
+            const r = await fetch(`/api/categories`, options);
+            console.log("got r?", r);
+            const res = await r.json();
+            console.log("got res?", res);
+            if (!r.ok) {
+              throw new Error(res.error);
+            }
+          } catch (e) {
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+          }
         }
       } catch (e) {
         console.log(e)
@@ -258,5 +343,27 @@ form h3 {
 textarea {
    font-family: inherit;
    font-size: inherit;
+}
+
+.category-btn {
+  background-color: #3e7ddc4e;
+  border: none; 
+  color: white; 
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-top: 10px;
+  display: table-cell;
+}
+
+.category-btn:hover {
+  background-color: #3E7DDC;
+}
+
+.columns {
+  display: table;
+  width: 100%; /*Optional*/
+  table-layout: fixed; /*Optional*/
+  border-spacing: 10px; /*Optional*/
 }
 </style>

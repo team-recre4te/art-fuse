@@ -1,7 +1,6 @@
 
 
 <!-- Form for creating posts (block style) -->
-
 <script>
 import BlockForm from '@/components/common/BlockForm.vue';
 export default {
@@ -16,7 +15,7 @@ export default {
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
         {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
         {id: 'files', label: 'Files', accept: ''},
-        {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'}
+        {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'},
       ],
       title: 'Create a New Post',
       buttonText: 'Submit Post',

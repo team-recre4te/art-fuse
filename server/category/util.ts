@@ -15,7 +15,7 @@ type CategoryResponse = {
  * @param {HydratedDocument<Category>} category - A category
  * @returns {CategoryResponse} - The category object formatted for the frontend
  */
-const constructCategoryResponse = (category: HydratedDocument<Tag>): TagResponse => {
+const constructCategoryResponse = (category: HydratedDocument<Category>): CategoryResponse => {
   const categoryCopy: PopulatedCategory = {
     ...category.toObject({
       versionKey: false

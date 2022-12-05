@@ -49,12 +49,12 @@ class CategoryCollection {
   }
 
   /**
-   * Get all tags by given tag name
+   * Get all categories by given tag name
    *
-   * @param {string} name - The name of the tag
-   * @return {Promise<HydratedDocument<Tag>[]>} - An array of all of the tags
+   * @param {string} name - The name of the category
+   * @return {Promise<HydratedDocument<Category>[]>} - An array of all of the tags
    */
-  static async findAllByTagName(name: string): Promise<Array<HydratedDocument<Category>>> {
+  static async findAllByCategoryName(name: string): Promise<Array<HydratedDocument<Category>>> {
     return CategoryModel.find({name}).populate('postId');
   }
 

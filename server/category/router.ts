@@ -13,7 +13,7 @@ const router = express.Router();
 /**
  * Get all posts by category name
  *
- * @name GET /api/category?name=name
+ * @name GET /api/categories?name=name
  *
  * @return {PostResponse[]} - A list of all the posts that have the category, name
  */
@@ -28,10 +28,10 @@ const router = express.Router();
  router.get(
     '/',
     [
-        categoryValidator.isValidCategoryName
+        // categoryValidator.isValidQueryCategoryName
     ],
     async (req: Request, res: Response, next: NextFunction) => {
-        const nameTags = await CategoryCollection.findAllByTagName(req.query.name as string);
+        const nameTags = await CategoryCollection.findAllByCategoryName(req.query.name as string);
         const posts = [];
         for (const tag of nameTags) {
           const post = await PostCollection.findOne(tag.postId);
@@ -64,9 +64,9 @@ const router = express.Router();
 router.post(
     '/',
     [
-      userValidator.isUserLoggedIn,
-      postValidator.isPostBodyExists,
-      categoryValidator.isValidCategoryName
+      // userValidator.isUserLoggedIn,
+      // postValidator.isPostBodyExists,
+      // categoryValidator.isValidCategoryName
     ],
   async (req: Request, res: Response) => {
     

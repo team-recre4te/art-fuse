@@ -42,12 +42,13 @@ class PostCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } - The post with the given postId, if any
    */
   static async findOne(postId: Types.ObjectId | string): Promise<HydratedDocument<Post>> {
-    return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
-      path: 'likedBy',
-      populate: {
-        path: 'userId'
-      }
-    });
+    return await PostModel.findOne({_id: postId});
+    // return (await (await PostModel.findOne({_id: postId})).populate(['authorId', 'tags'])).populate({
+    //   path: 'likedBy',
+    //   populate: {
+    //     path: 'userId'
+    //   }
+    // });
   }
 
   /**

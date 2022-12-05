@@ -10,6 +10,7 @@ import dotenv from 'dotenv';
 import {userRouter} from '../server/user/router';
 import {postRouter} from '../server/post/router';
 import {tagRouter} from '../server/tag/router';
+import {categoryRouter} from '../server/category/router';
 import {likeRouter} from '../server/like/router';
 import {commentRouter} from '../server/comment/router';
 import * as userValidator from '../server/user/middleware';
@@ -79,6 +80,7 @@ app.use(userValidator.isCurrentSessionUserExists);
 app.use('/api/users', userRouter);
 app.use('/api/posts', postRouter);
 app.use('/api/tags', tagRouter);
+app.use('/api/categories', categoryRouter);
 app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
 
