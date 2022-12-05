@@ -316,6 +316,7 @@ export default {
       comments: [],
       showFiles: false,
       category: '',
+      reported: false,
       showRemixes: false,
       remixesCount: 0,
       remixedFrom: '',
