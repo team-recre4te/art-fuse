@@ -52,7 +52,12 @@
         </p>
       </div>
       <div>
-        <button class="remix-btn">Make Remix</button>
+        <router-link 
+          v-if="$store.state.username" class="remix-btn"
+          :to="{ name: 'Create Remix', params: {postId: post._id} }"
+        >
+          Make Remix
+        </router-link>
       </div>
     </header>
 
@@ -207,7 +212,9 @@
       </div>
       <div class="right-border">
         <!-- Remixes -->
-        <p>🔀 0 Remixes</p>
+        <router-link class="remixes-link" :class="{ disabled: remixesCount == 0 }" :to="{ name: 'Remixes', query: { postId: post._id }}">
+          🔀 {{ remixesCount }} Remixes
+        </router-link>
       </div>
       
       <div style="border-bottom-right-radius: 10px;" v-if="$store.state.username && !reported">
@@ -305,11 +312,14 @@ export default {
       showFiles: false,
       category: '',
       reported: false,
+      showRemixes: false,
+      remixesCount: 0
     };
   },
   mounted() {
     // console.log(this.post)
     this.checkIfReported();
+    this.getRemixes();
   },
   methods: {
     startEditing() {
@@ -446,6 +456,18 @@ export default {
       }
       this.request(`reports/`, params);
     },
+    async getRemixes() {
+      // const url = `/api/remix?postId=${postId}`;
+      // const res = await fetch(url).then(async r => r.json());
+      // state.remixes = res;
+      const params = {
+        method: 'GET',
+        callback: () => {
+
+        }
+      };      
+      this.request(`remix?postId=${this.post._id}`, params);
+    },
     submitEdit() {
       /**
        * Updates post to have the submitted draft content.
@@ -523,6 +545,11 @@ export default {
           }
           this.comments = comments;
           // console.log(this.comments);
+        } else if (path === `remix?postId=${this.post._id}`) {
+          if (res.length > 0) {
+            // console.log(res);
+          }
+          this.remixesCount = res.length;
         }
 
         if (path === `categories?postId=${this.post._id}`) {
@@ -756,4 +783,14 @@ export default {
 .author-link {
   color: #904D29;
 }
+
+.remixes-link {
+  color: black;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.disabled {
+  pointer-events:none; 
+ }
 </style>

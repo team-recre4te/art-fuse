@@ -86,7 +86,7 @@ app.use('/api/tags', tagRouter);
 app.use('/api/categories', categoryRouter);
 app.use('/api/likes', likeRouter);
 app.use('/api/comments', commentRouter);
-app.use('/api/remix',remixRouter);
+app.use('/api/remix', remixRouter);
 app.use('/api/recommendation',recommendationRouter);
 app.use('/api/reports', reportRouter);
 

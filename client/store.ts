@@ -12,6 +12,7 @@ const store = new Vuex.Store({
     filter: null, // Username to filter shown posts by (null = show all)
     tagFilter: null, // Tag to filter shown posts by (null = show all)
     posts: [], // All posts created in the app
+    remixes: [], // All posts created in the app
     bio: null,
     username: null, // Username of the logged in user
     recommendations: [], //All recommendations that have been generated
@@ -70,6 +71,15 @@ const store = new Vuex.Store({
        */
       state.posts = posts;
     },
+    async loadRemixes(state, postId) {
+      /**
+       * Get all the remixes made from the post with the postId
+       * @param postId - a post's id
+       */
+      const url = `/api/remix?postId=${postId}`;
+      const res = await fetch(url).then(async r => r.json());
+      state.remixes = res;
+    },
     async refreshPosts(state) {
       /**
        * Request the server for the currently available posts.
@@ -103,7 +113,7 @@ const store = new Vuex.Store({
       const url = `/api/users/session`;
       const r = await fetch(url);
       const res = await r.json();
-      if (r.ok) {
+      if (r.ok && res.user) {
         const user = res.user;
         state.preferences = user.preferences;
       }

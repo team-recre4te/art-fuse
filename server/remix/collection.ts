@@ -15,8 +15,14 @@ class RemixCollection {
             parentId,
             childId,
         });
+        console.log("in remix add one")
         await remix.save();
-        return remix.populate(['parentId','childId']);
+        return (await (await remix.populate(['parentId','childId'])).populate({
+            path: 'childId',
+            populate: {
+              path: 'authorId'
+            }
+        }));
     }
 
     /**
@@ -25,7 +31,12 @@ class RemixCollection {
      * @returns 
      */
     static async findOne(remixId:Types.ObjectId | string):Promise<HydratedDocument<Remix>> {
-        return (await RemixModel.findOne({_id: remixId})).populate(['parentId','childId']);
+        return (await (await RemixModel.findOne({_id: remixId})).populate(['parentId','childId'])).populate({
+            path: 'childId',
+            populate: {
+              path: 'authorId'
+            }
+        });
     }
 
     /**
@@ -34,7 +45,12 @@ class RemixCollection {
      * @returns 
      */
     static async findByParent(parentId:Types.ObjectId | string): Promise<Array<HydratedDocument<Remix>>>{
-        return RemixModel.find({parentId: parentId}).populate(['parentId','childId'])
+        return RemixModel.find({ parentId: parentId}).populate(['parentId','childId']).populate({
+            path: 'childId',
+            populate: {
+              path: 'authorId'
+            }
+        });
     }
 
     /**
