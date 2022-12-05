@@ -125,6 +125,8 @@ export default {
       setUsername: false, // Whether or not stored username should be updated after form submission
       refreshPosts: false, // Whether or not stored posts should be updated after form submission
       refreshBio: false,
+      makeRemix:false,
+      parentId: null, //parameter to get the parent of a remix
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
       images: [],
@@ -258,6 +260,30 @@ export default {
           const res = text ? JSON.parse(text) : {user: null};
           this.$store.commit('setUsername', res.user ? res.user.username : null);
           this.$store.commit('setBio', res.user ? res.user.bio : null);
+        }
+
+        if(this.makeRemix){
+          const post = await r.json().post;
+          const options = {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'same-origin',
+                body: JSON.stringify({parentId: this.parentId , postId: post._id })
+            };
+            try {
+                const r = await fetch("/api/remix", options);
+                if (!r.ok) {
+                    // If response is not okay, we throw an error and enter the catch block
+                    const res = await r.json();
+                    throw new Error(res.error);
+                }
+                const res = await r.json();
+                this.$set(this.alerts, params.message, 'successfully made a Remix!');
+                setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+            } catch (e) {
+                this.$set(this.alerts, e, 'error');
+                setTimeout(() => this.$delete(this.alerts, e), 3000);
+            }
         }
 
         if (this.refreshPosts) {

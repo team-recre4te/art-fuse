@@ -7,6 +7,7 @@ import LoginPage from './components/Login/LoginPage.vue';
 import SearchPage from './components/Search/SearchPage.vue';
 import ProfilePage from './components/Profile/ProfilePage.vue';
 import RecommendationsPage from './components/Recommendations/recommendationsPage.vue';
+import CreateRemixPage from './components/Remix/makeRemix.vue';
 import NotFound from './NotFound.vue';
 
 Vue.use(VueRouter);
@@ -19,7 +20,7 @@ const routes = [
   {path: '/create', name: 'Create Post', component: CreatePostPage},
   {path: '/profile', name: 'Profile', component: ProfilePage},
   {path: '/recommendations', name: 'Recommendations', component: RecommendationsPage},
-
+  {path: '/make-remix/:postId', name:'CreateRemix', component: CreateRemixPage},
   {path: '*', name: 'Not Found', component: NotFound}
 ];
 

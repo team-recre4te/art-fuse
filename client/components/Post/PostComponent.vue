@@ -50,7 +50,7 @@
         </p>
       </div>
       <div>
-        <button class="remix-btn">Make Remix</button>
+        <button class="remix-btn" :to="{name: 'CreateRemix', params: {postId: post._id}}">Make Remix</button>
       </div>
     </header>
 
@@ -205,7 +205,10 @@
       </div>
       <div class="right-border">
         <!-- Remixes -->
-        <p>🔀 0 Remixes</p>
+        <button style="border: 0px;"
+          @click="showRemixes = !showRemixes" class="icon-btn">
+          🔀 {{remixes.length}} Remixes
+        </button>
       </div>
       <div style="border-bottom-right-radius: 10px;">
         <!-- Report -->
