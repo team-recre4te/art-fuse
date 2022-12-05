@@ -24,10 +24,16 @@ export default {
     components: {
         RecommendationComponent,
         PreferencesSelection
-    }
+    },
+    mounted() {
+    this.$store.commit('refreshPreferences');
+  },
 }
 </script>
 
-<style>
-
+<style scoped>
+header{
+  padding: 15px;
+  text-align: left;
+}
 </style>
