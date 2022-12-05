@@ -40,7 +40,7 @@
             <button v-else @click="getDance">Dance</button>
             
             <button v-if="category === '3D Modeling'" @click="get3DModeling" style="background-color: #3E7DDC;">3D Modeling</button>
-            <button @click="get3DModeling">3D Modeling</button>
+            <button v-else @click="get3DModeling">3D Modeling</button>
             
             <button v-if="category === 'Drawing & Painting'" @click="getDrawingPainting" style="background-color: #3E7DDC;">Drawing & Painting</button>
             <button v-else @click="getDrawingPainting">Drawing & Painting</button>
