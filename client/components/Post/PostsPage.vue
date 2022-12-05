@@ -130,7 +130,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== 'Digital Art') {
         this.category = 'Digital Art';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -144,7 +144,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== 'Music') {
         this.category = 'Music';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -158,7 +158,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== 'Dance') {
         this.category = 'Dance';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -172,7 +172,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== '3D Modeling') {
         this.category = '3D Modeling';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -186,7 +186,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== 'Drawing & Painting') {
         this.category = 'Drawing & Painting';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -200,7 +200,7 @@ export default {
         callback: () => {},
       };
 
-      if (this.category == '') {
+      if (this.category !== 'Theater') {
         this.category = 'Theater';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
@@ -208,6 +208,7 @@ export default {
         this.posts = this.$store.state.posts;
       }
     },
+
     async request(path, params) {
       const options = {
         method: params.method, headers: {'Content-Type': 'application/json'}
@@ -218,9 +219,7 @@ export default {
 
       try {
         const r = await fetch(path, options);
-        console.log("r", r);
         const res = await r.json();
-        console.log("res", res);
         if (!r.ok) {
           throw new Error(res.error);
         }

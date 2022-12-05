@@ -70,7 +70,7 @@
         >
           <p>{{ post.description }}</p>
         </div>
-
+        <div style="background-color: "></div>
         <div>
           <TagsComponent 
             :post="post"
@@ -282,7 +282,8 @@ export default {
       alerts: {}, // Displays success/error messages encountered during post modification
       showComments: false,
       comments: [],
-      showFiles: false
+      showFiles: false,
+      category: '',
     };
   },
   mounted() {
@@ -396,6 +397,13 @@ export default {
       };      
       this.request(`comments?postId=${this.post._id}`, params);
     },
+    getCategory() {
+      const params = {
+        method: 'GET',
+        callback: () => {}
+      };
+      this.request(`categories?postId=${this.post._id}`, params);
+    },
     submitEdit() {
       /**
        * Updates post to have the submitted draft content.
@@ -474,6 +482,10 @@ export default {
           this.comments = comments;
           // console.log(this.comments);
         }
+
+        if (path === `categories?postId=${this.post._id}`) {
+          this.category = res[0]["name"];
+        }
         params.callback();
       } catch (e) {
         this.liking = false;
@@ -508,6 +520,7 @@ export default {
   },
   created() {
     this.getComments();
+    this.getCategory();
   },
 };
 </script>
