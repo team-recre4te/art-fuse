@@ -42,7 +42,7 @@
             <button v-if="category === '3D Modeling'" @click="get3DModeling" style="background-color: #3E7DDC;">3D Modeling</button>
             <button v-else @click="get3DModeling">3D Modeling</button>
             
-            <button v-if="category === 'Drawing & Painting'" @click="getDrawingPainting" style="background-color: #3E7DDC;">Drawing & Painting</button>
+            <button v-if="category === 'Drawing Painting'" @click="getDrawingPainting" style="background-color: #3E7DDC;">Drawing & Painting</button>
             <button v-else @click="getDrawingPainting">Drawing & Painting</button>
             
             <button v-if="category === 'Theater'" @click="getTheater" style="background-color: #3E7DDC;">Theater</button>
@@ -200,10 +200,15 @@ export default {
         callback: () => {},
       };
 
-      if (this.category !== 'Drawing & Painting') {
-        this.category = 'Drawing & Painting';
+      console.log("drawing painting cat", this.category);
+
+      if (this.category !== 'Drawing Painting') {
+        console.log("nooo");
+        this.category = 'Drawing Painting';
+        console.log(this.category);
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
+        console.log("yesss");
         this.category = '';
         this.postsInCategory = [];
       }
@@ -232,8 +237,11 @@ export default {
       }
 
       try {
+        console.log('path', path);
         const r = await fetch(path, options);
+        console.log('r', r);
         const res = await r.json();
+        console.log("res", res);
         if (!r.ok) {
           throw new Error(res.error);
         }

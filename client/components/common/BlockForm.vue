@@ -73,7 +73,7 @@
         <div class="category-btn" v-if="category === '3D Modeling'" style="background-color: #3E7DDC;">3D Modeling</div>
         <div class="category-btn" v-else @click="add3DModeling">3D Modeling</div>
         
-        <div class="category-btn" v-if="category === 'Drawing & Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
+        <div class="category-btn" v-if="category === 'Drawing Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
         <div class="category-btn" v-else @click="addDrawingPainting">Drawing & Painting</div>
         
         <div class="category-btn" v-if="category === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
@@ -170,7 +170,7 @@ export default {
       return;
     },
     addDrawingPainting() {
-      this.category = "Drawing & Painting";
+      this.category = "Drawing Painting";
       return;
     },
     add3DModeling() {

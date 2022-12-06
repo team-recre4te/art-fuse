@@ -579,7 +579,7 @@ export default {
 
         if (path === `categories?postId=${this.post._id}`) {
           if (res.length > 0) {
-            this.category = res[0]["name"] ?? '';
+            this.category = res[0]["name"] == 'Drawing Painting' ? 'Drawing & Painting' : (res[0]["name"] ?? '');
           }
         }
         
