@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import createPersistedState from 'vuex-persistedstate';
 
 Vue.use(Vuex);
+Vue.config.devtools = true
 
 /**
  * Storage for data that needs to be accessed from various compoentns.

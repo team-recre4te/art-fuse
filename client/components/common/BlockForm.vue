@@ -185,6 +185,31 @@ export default {
       this.category = "Theater";
       return;
     },
+    async saveCategory(newPostRes) {
+      const postId = newPostRes["post"]["id"];
+      const params = {
+        method: 'POST',
+        message: 'added category successfully!',
+        body: JSON.stringify({name: this.category, postId: postId})
+      }; 
+
+      const options = {
+        method: params.method, headers: {'Content-Type': 'application/json'},
+        body: params.body
+      };
+
+      try {
+        const r = await fetch(`/api/categories`, options);
+        const res = await r.json();
+        
+        if (!r.ok) {
+          throw new Error(res.error);
+        }
+      } catch (e) {
+        this.$set(this.alerts, e, 'error');
+        setTimeout(() => this.$delete(this.alerts, e), 3000);
+      }
+    },
     async submit() {
       /**
         * Submits a form with the specified options from data().
@@ -217,8 +242,6 @@ export default {
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
 
-          // console.log('options', options.body);
-
         } else if (this.url === '/api/comments' && this.method == 'POST') {
           const inputFields = Object.fromEntries(
             this.fields.map(field => {
@@ -231,7 +254,6 @@ export default {
           const idField = {postId: this.postId}
 
           options.body = JSON.stringify(Object.assign({}, inputFields, idField));
-          console.log(options.body);
         } else {
           options.body = JSON.stringify(Object.fromEntries(
             this.fields.map(field => {
@@ -244,11 +266,8 @@ export default {
       }
 
       try {
-        // console.log(this.url);
-        // console.log(options);
         const r = await fetch(this.url, options);
 
-// console.log(r);
         if (!r.ok) {
           // If response is not okay, we throw an error and enter the catch block
           const res = await r.json();
@@ -266,6 +285,10 @@ export default {
         if (this.makeRemix || this.category !== '') {
           newPostRes = await r.json();
         }
+
+        if (this.category !== '') {
+          await this.saveCategory(newPostRes);
+        }
         
         if (this.makeRemix) {
           const options = {
@@ -278,20 +301,17 @@ export default {
           try {
             const r2 = await fetch("/api/remix", options);
             if (!r2.ok) {
-                // If response is not okay, we throw an error and enter the catch block
-                const res2 = await r2.json();
-                throw new Error(res2.error);
-            }
-
-            console.log('r is ok');
+              // If response is not okay, we throw an error and enter the catch block
               const res2 = await r2.json();
-              console.log(res2);
-              console.log("remix made");
-              this.$set(this.alerts, params.message, 'Successfully made a Remix!');
-              setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+              throw new Error(res2.error);
+            }
+            const message = 'Successfully created a remix!';
+            this.$router.push({name: 'Home'}); // Goes to Home page after creating a post
+            this.$set(this.alerts, message, 'success');
+            setTimeout(() => this.$delete(this.alerts, message), 3000);
           } catch (e) {
-              this.$set(this.alerts, e, 'error');
-              setTimeout(() => this.$delete(this.alerts, e), 3000);
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
           }
         }
 
@@ -305,37 +325,6 @@ export default {
 
         if (this.callback) {
           this.callback();
-        }
-
-        if (this.category !== '') {
-          const postId = newPostRes["post"]["id"];
-          console.log(postId)
-
-          const params = {
-            method: 'POST',
-            message: 'added category successfully!',
-            body: JSON.stringify({name: this.category, postId: postId})
-          }; 
-          console.log(params)
-
-          const options = {
-            method: params.method, headers: {'Content-Type': 'application/json'},
-            body: params.body
-          };
-
-          
-          try {
-            const r = await fetch(`/api/categories`, options);
-            console.log("got r?", r);
-            const res = await r.json();
-            console.log("got res?", res);
-            if (!r.ok) {
-              throw new Error(res.error);
-            }
-          } catch (e) {
-            this.$set(this.alerts, e, 'error');
-            setTimeout(() => this.$delete(this.alerts, e), 3000);
-          }
         }
       } catch (e) {
         console.log(e)

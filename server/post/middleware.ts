@@ -86,7 +86,7 @@ const isValidPostTitle = (req: Request, res: Response, next: NextFunction) => {
     return;
   }
 
-  if (description.length > 60) {
+  if (description.length > 200) {
     res.status(413).json({
       error: 'Post description must be no more than 200 characters.'
     });
@@ -102,9 +102,6 @@ const isValidPostTitle = (req: Request, res: Response, next: NextFunction) => {
  const isValidPostImageOrFile = (req: Request, res: Response, next: NextFunction) => {
   const {files} = req.body as {files: string[]};
   const {images} = req.body as {images: string[]};
-
-  console.log(files);
-  console.log(images)
 
   if (files.length + images.length == 0) {
     res.status(400).json({

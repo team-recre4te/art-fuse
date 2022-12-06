@@ -578,7 +578,9 @@ export default {
         }
 
         if (path === `categories?postId=${this.post._id}`) {
-          this.category = res[0]["name"] ?? '';
+          if (res.length > 0) {
+            this.category = res[0]["name"] ?? '';
+          }
         }
         
         else if (path === `reports?postId=${this.post._id}`) {

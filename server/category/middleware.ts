@@ -8,7 +8,6 @@ import CategoryCollection from '../category/collection';
  */
  const isValidCategoryName = (req: Request, res: Response, next: NextFunction) => {
     const {name} = req.body as {name: string};
-    console.log(name);
     if (!name.trim()) {
       res.status(400).json({
         error: 'Category name must be at least one character long.'
@@ -28,7 +27,6 @@ import CategoryCollection from '../category/collection';
 
 const isValidQueryCategoryName = (req: Request, res: Response, next: NextFunction) => {
   const {name} = req.query as {name: string};
-  console.log(name);
   if (!name.trim()) {
     res.status(400).json({
       error: 'Category name must be at least one character long.'

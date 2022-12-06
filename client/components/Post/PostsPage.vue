@@ -74,13 +74,27 @@
         </div>
       </header>
       <section
-        v-if="$store.state.posts.length"
+        v-if="$store.state.posts.length && category === ''"
       >
         <PostComponent
-          v-for="post in posts"
+          v-for="post in $store.state.posts"
           :key="post.id"
           :post="post"
         />
+      </section>
+      <section
+        v-else-if="category !== ''"
+      >
+        <div v-if="postsInCategory.length">
+          <PostComponent
+            v-for="post in postsInCategory"
+            :key="post.id"
+            :post="post"
+          />
+        </div>
+        <div v-else>
+          No posts in selected category
+        </div>
       </section>
       <article
         v-else
@@ -116,7 +130,7 @@ export default {
       searchAuthor: '',
       alerts: {},
       category: '',
-      posts:  this.$store.state.posts, 
+      postsInCategory: [],
     };
   },
   mounted() {
@@ -135,7 +149,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
     getMusic() {
@@ -149,7 +163,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
     getDance() {
@@ -163,7 +177,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
     get3DModeling() {
@@ -177,7 +191,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
     getDrawingPainting() {
@@ -191,7 +205,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
     getTheater() {
@@ -205,7 +219,7 @@ export default {
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
         this.category = '';
-        this.posts = this.$store.state.posts;
+        this.postsInCategory = [];
       }
     },
 
@@ -224,8 +238,7 @@ export default {
           throw new Error(res.error);
         }
 
-        this.posts = res;
-        console.log("this.posts", this.posts);
+        this.postsInCategory = res;
       } catch (e) {
 
         this.$set(this.alerts, e, 'error');

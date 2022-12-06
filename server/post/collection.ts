@@ -138,8 +138,6 @@ class PostCollection {
    * @return {Promise<HydratedDocument<User>[]>} - An array of all of the ancestors of the post
    */
   static async findAllAncestors(postId:  Types.ObjectId | string): Promise<Array<HydratedDocument<User>>> {
-
-    console.log(postId)
     let post = await PostCollection.findOne(postId);
     let parent
     let parents = []
