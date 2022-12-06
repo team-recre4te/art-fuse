@@ -140,7 +140,7 @@ h3 {
 }
 
 h3 span {
-  color: #9DB5B2;
+  color: #CEAD92;
   font-weight: 500;
 }
 </style>

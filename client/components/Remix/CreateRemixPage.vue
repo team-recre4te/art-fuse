@@ -41,7 +41,7 @@ export default {
         }
 
         try {
-            const r = await fetch(`/api/posts?postId=${this.$route.params.postId}`, options);
+            const r = await fetch(`/api/posts/id/${this.$route.params.postId}`, options);
             const res = await r.json();
             this.parentPost = res;
 

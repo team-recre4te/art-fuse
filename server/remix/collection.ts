@@ -77,6 +77,15 @@ class RemixCollection {
         return remix !== null;
     }
 
+    /**
+     * Delete all the posts made by the user.
+     *  
+     * @param userId - The userId of user requesting deletion
+     */
+    static async deleteManyRemixesByPostId(postId:Types.ObjectId | string): Promise<void> {
+      await RemixModel.deleteMany({ childId: postId });
+    }
+
 }
 
 export default RemixCollection;

@@ -5,6 +5,7 @@ import * as userValidator from '../user/middleware';
 import * as postValidator from '../post/middleware';
 import * as tagValidator from '../tag/middleware';
 import * as util from './util';
+import RemixCollection from '../remix/collection';
 
 const router = express.Router();
 
@@ -30,7 +31,7 @@ const router = express.Router();
     '/',
     async (req: Request, res: Response, next: NextFunction) => {
       // Check if authorId query parameter was supplied
-      if (req.query.author !== undefined || req.query.postId !== undefined) {
+      if (req.query.author !== undefined) {
         next();
         return;
       }
@@ -38,25 +39,6 @@ const router = express.Router();
       const allPosts = await PostCollection.findAll();
       const response = allPosts.map(util.constructPostResponse);
       res.status(200).json(response);
-    },
-    [
-      postValidator.isPostQueryExists
-    ],
-    async (req: Request, res: Response, next: NextFunction) => {
-      // Check if authorId query parameter was supplied
-      if (req.query.author !== undefined) {
-        next();
-        return;
-      }
-
-      const post = await PostCollection.findOne(req.query.postId as string);
-      res.status(200).json(util.constructPostResponse(post));
-    // res.status(200).json({
-    //     message: 'Your post was updated successfully.',
-    //     post: util.constructPostResponse(post)
-    //   });
-
-      return;
     },
     [
       userValidator.isAuthorExists
@@ -69,6 +51,29 @@ const router = express.Router();
       return;
     }
   );
+
+/**
+ * Get post with post id.
+ *
+ * @name GET /api/posts/:postId
+ *
+ * @return {PostResponse[]} - An array of posts created by user with username, author
+ * @throws {400} - If author is not given
+ * @throws {404} - If no user has given author
+ *
+ */
+ router.get(
+  '/id/:postId?',
+  [
+    postValidator.isPostExists
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const post = await PostCollection.findOne(req.params.postId as string);
+    res.status(200).json(util.constructPostResponse(post));
+
+    return;
+  }
+);
 
 /**
  * Get all posts with tag
@@ -137,10 +142,10 @@ router.delete(
   [
     userValidator.isUserLoggedIn,
     postValidator.isPostExists,
-    // postValidator.isValidPostModifier
   ],
   async (req: Request, res: Response) => {
     await PostCollection.deleteOne(req.params.postId);
+    await RemixCollection.deleteOne
     res.status(200).json({
       message: 'Your post was deleted successfully.'
     });

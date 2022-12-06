@@ -106,7 +106,7 @@ class UserCollection {
    * @param userId - The userId of user requesting deletion
    */
   static async deleteAllPosts(userId:Types.ObjectId | string): Promise<void> {
-    await PostModel.deleteMany({userId});
+    await PostModel.deleteMany({ authorId: userId });
   }
 }
 
