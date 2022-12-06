@@ -85,7 +85,7 @@ const isValidPassword = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const isValidPreferences = (req: Request, res: Response, next: NextFunction) => {
-  const catagories = ['Painting','Sculpture','Literature','Architecture','Cinema','Music','Theater']
+  const catagories = ['Drawing & Painting','Theater','3D Modeling','Dance','Digital Art','Music']
   if (req.body.preferences !== undefined){
     const preferences = req.body.preferences
     const notShared = preferences.filter((x: string) => !catagories.includes(x)).length

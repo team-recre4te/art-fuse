@@ -20,7 +20,7 @@ export default {
     data() {
         return {
             value: [...this.$store.state.preferences],
-            options: ['Painting', 'Sculpture', 'Literature', 'Architecture', 'Cinema', 'Music', 'Theater'],
+            options: ['Drawing & Painting','Theater','3D Modeling','Dance','Digital Art','Music'],
             alerts:{}
         }
     },
@@ -34,9 +34,9 @@ export default {
                 setTimeout(() => this.$delete(this.alerts, error), 3000);
                 return;
             }
-            console.log('has been edited');
-            console.log('value',this.value);
-            console.log('stored',this.$store.state.preferences);
+            // console.log('has been edited');
+            // console.log('value',this.value);
+            // console.log('stored',this.$store.state.preferences);
             const params = {
                 method: 'PATCH',
                 message: 'Successfully changed Preferences!',
@@ -46,7 +46,6 @@ export default {
                 callback: () => {
                     this.editing = false;
                     this.$store.commit('refreshPreferences');
-
                     this.$set(this.alerts, params.message, 'success');
                     setTimeout(() => this.$delete(this.alerts, params.message), 3000);
                 }
@@ -60,4 +59,10 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css">
+.multiselect__tags {
+        min-height: 32px;
+        width: 250px;
+        display: block;
+        padding: 3px 40px 0 8px;
+        border-radius: 5px;}
 </style>
