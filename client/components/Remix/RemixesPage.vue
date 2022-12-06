@@ -48,7 +48,7 @@ export default {
             }
 
             try {
-                const r = await fetch(`/api/posts?postId=${id}`, options);
+                const r = await fetch(`/api/posts/id/${id}`, options);
                 const res = await r.json();
 
                 if (!r.ok) {
