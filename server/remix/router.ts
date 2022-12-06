@@ -9,44 +9,42 @@ import * as util from './util';
 const router = express.Router();
 
 /**
- * Get all the remixes
- *
- * @name GET /api/remix
- *
- * @return {RemixResponse[]} - A list of all the tags
- */
-/**
  * Get all remixes from a post.
  *
  * @name GET /api/remix?postId=postId
  *
  * @return {RemixResponse[]} - An array of tags associated with post by postId, postId
- * @throws {403} - If user is not logged in
- * @throws {404} - If the post doesnot exist
+ * @throws {404} - If the post does not exist
  */
 router.get('/',
-    [
-    userValidator.isUserLoggedIn,
+  [
     postValidator.isPostQueryExists
-    ],
-    async (req: Request, res: Response, next: NextFunction) => {
-        const postIdTags = await RemixCollection.findByParent(req.query.postId as string);
-        const response = postIdTags.map(util.constructRemixResponse);
-        res.status(200).json(response);
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const postIdTags = await RemixCollection.findByParent(req.query.postId as string);
+    const response = postIdTags.map(util.constructRemixResponse);
+    res.status(200).json(response);
+  }
+);
 
-});
-
+/**
+ * Get all parent post of a remix
+ *
+ * @name GET /api/remix?postId=postId
+ *
+ * @return {RemixResponse[]} - An array of tags associated with post by postId, postId
+ * @throws {404} - If the post does not exist
+ */
 router.get('/parent',
-    [
-    userValidator.isUserLoggedIn,
+  [
     postValidator.isPostQueryExists
-    ],
-    async (req: Request, res: Response, next: NextFunction) => {
-        const postIdTags = await RemixCollection.findByChild(req.query.postId as string);
-        const response = postIdTags.map(util.constructRemixResponse);
-        res.status(200).json(response);
-
-});
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const postIdTags = await RemixCollection.findByChild(req.query.postId as string);
+    const response = postIdTags.map(util.constructRemixResponse);
+    res.status(200).json(response);
+  }
+);
 
 /**
  * Create a new remix.
