@@ -228,6 +228,19 @@ export default {
 
       if (this.hasBody) {
         if (this.url === '/api/posts') {
+          
+          if (this.title === ''){
+            this.$set(this.alerts, Error('Please insert a title'), 'error');
+            return;
+          }
+          if (this.description === ''){
+            this.$set(this.alerts, Error('Please add a description'), 'error');
+            return;
+          }
+          if (this.images.length === 0 && this.files.length === 0){
+            this.$set(this.alerts, Error('A post must contain either images or files'), 'error');
+            return;
+          }
 
           const inputFields = Object.fromEntries(
             this.fields.map(field => {

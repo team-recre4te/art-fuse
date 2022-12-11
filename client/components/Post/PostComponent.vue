@@ -217,7 +217,7 @@
       </div>
       <div class="right-border">
         <!-- Remixes -->
-        <router-link class="remixes-link" :class="{ disabled: remixesCount == 0 }" :to="{ name: 'Remixes', query: { postId: post._id }}">
+        <router-link class="remixes-link" :to="{ name: 'Remixes', query: { postId: post._id }}">
           🔀 {{ remixesCount }} Remixes
         </router-link>
       </div>

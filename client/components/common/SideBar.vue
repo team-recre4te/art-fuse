@@ -1,24 +1,16 @@
 <template>
   <div class="sidebar">
     <div class="top">
-      <router-link 
-        to="/"
-      >
+      <router-link to="/">
         <img src="../../public/assets/other-logo-transparent.png">
       </router-link>
     </div>
     <div class="middle">
-      <router-link 
-        to="/"
-        :class="{ 'selected':(isOnHome) }"
-      >
+      <router-link to="/" :class="{ 'selected': (isOnHome) }">
         <img :src="getHomeIcon()" class="icon">
         Home
       </router-link>
-      <router-link
-        to="/browse"
-        :class="{ 'selected':(isOnBrowse) }"
-      >
+      <router-link to="/browse" :class="{ 'selected': (isOnBrowse) }">
         <img :src="getSearchIcon()" class="icon">
         Browse
       </router-link>
@@ -31,39 +23,27 @@
       <img :src="getRecIcon()" class="icon">
         Recommendations
       </router-link> -->
-
-      <router-link
-        v-if="$store.state.username"
-        to="/account"
-        :class="{ 'selected':(isOnProfile) }"
-      >
+      <router-link v-if="$store.state.username" :to="{ name: 'Profile', query: { author: $store.state.username } }"
+        :class="{ 'selected': (isOnProfile) }">
         <img :src="getUserIcon()" class="icon">
         Profile
       </router-link>
-      <router-link
-        v-else
-        to="/login"
-        :class="{ 'selected':(isOnLogin) }"
-      >
+      <router-link v-if="$store.state.username" to="/account" :class="{ 'selected': (isOnSettings) }">
+        <img :src="getSettingsIcon()" class="icon">
+        Settings
+      </router-link>
+      <router-link v-else to="/login" :class="{ 'selected': (isOnLogin) }">
         <img :src="getLoginIcon()" class="icon">
         Login
       </router-link>
 
-      <router-link
-        v-if="$store.state.username"
-        id="create-post"
-        to="/create"
-      >
+      <router-link v-if="$store.state.username" id="create-post" to="/create">
         Create Post
       </router-link>
     </div>
 
     <section class="alerts">
-      <article
-        v-for="(status, alert, index) in $store.state.alerts"
-        :key="index"
-        :class="status"
-      >
+      <article v-for="(status, alert, index) in $store.state.alerts" :key="index" :class="status">
         <p>{{ alert }}</p>
       </article>
     </section>
@@ -86,8 +66,11 @@ export default {
     getLoginIcon() {
       return this.isOnLogin ? './assets/login_filled.png' : './assets/login_outline.png';
     },
-    getRecIcon(){
-      return this.isOnRec ? './assets/rec-filled.png':'./assets/rec-outline.png';
+    getRecIcon() {
+      return this.isOnRec ? './assets/rec-filled.png' : './assets/rec-outline.png';
+    },
+    getSettingsIcon() {
+      return this.isOnSettings ? './assets/settings-filled.png' : './assets/settings-outline.png';
     }
   },
   computed: {
@@ -98,13 +81,16 @@ export default {
       return this.$route.path === '/browse';
     },
     isOnProfile() {
-      return this.$route.path === '/account';
+      return this.$route.path.includes('/profile');
     },
     isOnLogin() {
       return this.$route.path === '/login' || this.$route.path === '/register';
     },
     isOnRec() {
-      return this.$route.path === '/recommendations'
+      return this.$route.path === '/recommendations';
+    }, 
+    isOnSettings() {
+      return this.$route.path === '/account';
     }
   }
 }
@@ -147,7 +133,7 @@ img {
 }
 
 .middle {
-	display: flex;
+  display: flex;
   flex-direction: column;
   margin-bottom: 30px;
 }
