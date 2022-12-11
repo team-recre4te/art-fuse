@@ -265,7 +265,7 @@
         v-else
       >
         <h3 v-if="$store.state.username">No Comments, write the first!</h3>
-        <h3 v-else>No Comments. Login to write one!</h3>
+        <h3 v-else>No Comments. <router-link to="/login">Sign in</router-link> to write one!</h3>
       </article>
     </div>
 
