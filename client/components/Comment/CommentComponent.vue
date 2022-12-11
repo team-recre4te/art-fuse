@@ -87,11 +87,12 @@ header {
 }
 
 .comment {
-  border: 2px solid #AEAEAE;
-  border-radius: 10px;
-  padding: 0px 20px;
+  border: 2px solid #EAEAEA;
+  padding: 20px;
   position: relative;
-  margin-top: 10px;
+  margin: 10px 0px;
+  border-radius: 12px;
+  width:100%;
 }
 
 .content {
