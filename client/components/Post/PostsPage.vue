@@ -24,7 +24,7 @@
         <div>
           <SearchBar 
             @searched="handleSearch" 
-            placeholderText="Search by author..."
+            placeholderText="Search by author or tag..."
           />
           <div class="columns">
           <div class="category-btn">
@@ -127,7 +127,7 @@ export default {
   data() {
     return {
       searching: false,
-      searchAuthor: '',
+      search: '',
       alerts: {},
       category: '',
       postsInCategory: [],
@@ -261,7 +261,7 @@ export default {
         this.$set(this.alerts, e, 'error');
         setTimeout(() => this.$delete(this.alerts, e), 3000);
         
-        this.searchAuthor = '';
+        this.search = '';
         return;
       }
 
@@ -270,21 +270,38 @@ export default {
       // clear old alerts
       this.alerts = {};
 
-      this.searchAuthor = value.trim();
+      this.search = value.trim();
 
-      this.$store.state.filter = this.searchAuthor;
+      this.$store.state.filter = this.search;
 
-      const url = this.searchAuthor ? `/api/posts?author=${this.searchAuthor}` : '/api/posts';
+      const author_url = this.search ? `/api/posts?author=${this.search}` : '/api/posts';
+      const tag_url = this.search ? `/api/tags?name=${this.search}` : '/api/posts';
+
+      console.log("before try");
+
       try {
-        const r = await fetch(url);
-        const res = await r.json();
-        if (!r.ok) {
-          throw new Error(res.error);
+        const author_r = await fetch(author_url);
+        const author_res = await author_r.json();
+        if (!author_r.ok) {
+          throw new Error(author_res.error);
+        }
+        
+        if (author_url !== '/api/posts') {
+          this.searching = false;
+          this.$store.commit('updateFilter', this.search);
+          this.$store.commit('updatePosts', author_res);
+        }
+
+        const tag_r = await fetch(tag_url);
+        const tag_res = await tag_r.json();
+        if (!tag_r.ok) {
+          throw new Error(tag_res.error);
         }
 
         this.searching = false;
 
-        this.$store.commit('updateFilter', this.searchAuthor);
+        const res = author_res.concat(tag_res);
+        this.$store.commit('updateFilter', this.search);
         this.$store.commit('updatePosts', res);
       } catch (e) {
         this.searching = false;

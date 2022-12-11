@@ -79,6 +79,7 @@ class PostCollection {
    */
    static async findAllByUsername(username: string): Promise<Array<HydratedDocument<Post>>> {
     const author = await UserCollection.findOneByUsername(username);
+    if (!author) return [];
     return PostModel.find({authorId: author._id}).sort({dateModified: -1}).populate(['authorId', 'parentId', 'tags']).populate({
       path: 'likedBy',
       populate: {
