@@ -4,6 +4,10 @@ import type {User} from '../user/model';
 import PostModel from './model';
 import UserCollection from '../user/collection';
 import CategoryModel from '../category/model';
+import CommentModel from '../comment/model';
+import TagModel from '../tag/model';
+import LikeModel from '../like/model';
+import ReportModel from '../report/model';
 
 class PostCollection {
   /**
@@ -183,7 +187,11 @@ class PostCollection {
    static async deleteOne(postId: Types.ObjectId | string): Promise<boolean> {
     const post = await PostModel.deleteOne({_id: postId});
     const category = await CategoryModel.deleteOne({postId: postId});
-    return post !== null;
+    const comments = await CommentModel.deleteMany({postId: postId});
+    const tags = await TagModel.deleteMany({postId: postId});
+    const likes = await LikeModel.deleteMany({postId: postId});
+    const reports = await ReportModel.deleteMany({postId: postId});
+    return (post && category && comments && tags && likes && reports) !== null;
   }
 
   /**
@@ -192,7 +200,12 @@ class PostCollection {
    * @param {string} authorId - The id of author of posts
    */
    static async deleteMany(authorId: Types.ObjectId | string): Promise<void> {
-    await PostModel.deleteMany({authorId});
+    // await PostModel.deleteMany({authorId});
+    const posts = await PostModel.find({authorId: authorId});
+    for (const post of posts){
+      await this.deleteOne(post._id);
+    }
+    return;
   }
 
 }

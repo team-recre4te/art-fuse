@@ -14,8 +14,8 @@ export default {
       fields: [
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
         {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
-        {id: 'files', label: 'Files', accept: ''},
-        {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'},
+        {id: 'files', label: 'Attach Supporting Files', accept: 'image/png, image/jpeg, image/webp, audio/mp3, audio/wav, audio/ogg, .pdf'},
+        {id: 'images', label: 'Add displayed Images', accept: 'image/png, image/jpeg, image/webp'},
       ],
       title: 'Create a New Post',
       buttonText: 'Submit Post',

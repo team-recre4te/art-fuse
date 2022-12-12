@@ -145,7 +145,7 @@ router.delete(
   ],
   async (req: Request, res: Response) => {
     await PostCollection.deleteOne(req.params.postId);
-    await RemixCollection.deleteOne
+    // await RemixCollection.deleteOne
     res.status(200).json({
       message: 'Your post was deleted successfully.'
     });

@@ -220,11 +220,11 @@ export default {
         credentials: 'same-origin' // Sends express-session credentials with request
       };
 
-      // temporary solution for checking if it's the create post form, will add an input variable later to specify
-      if (this.category === '' && this.fields === 4) {
-        this.$set(this.alerts, Error('Please select a category'), 'error');
-        return;
-      }
+      // // temporary solution for checking if it's the create post form, will add an input variable later to specify
+      // if (this.category === '' && this.fields === 4) {
+      //   this.$set(this.alerts, Error('Please select a category'), 'error');
+      //   return;
+      // }
 
       if (this.hasBody) {
         if (this.url === '/api/posts') {
@@ -239,6 +239,10 @@ export default {
           }
           if (this.images.length === 0 && this.files.length === 0){
             this.$set(this.alerts, Error('A post must contain either images or files'), 'error');
+            return;
+          }
+          if (this.category === ''){
+            this.$set(this.alerts, Error('Please select a category'), 'error');
             return;
           }
 
