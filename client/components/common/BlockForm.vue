@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div v-if="(fields.length === 4)" class="columns">
+      <div v-if="(fields.length === 5)" class="columns">
       
         <div class="category-btn" v-if="category === 'Digital Art'" style="background-color: #3E7DDC;">Digital Art</div>
         <div class="category-btn" v-else @click="addDigitalArt">Digital Art</div>
