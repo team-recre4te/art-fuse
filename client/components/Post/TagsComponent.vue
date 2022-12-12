@@ -2,30 +2,30 @@
 <template>
   <section>
     <div class="tags">
-      <h5 v-if="post.tags.length" class="section-label">Tags</h5>
       <button
         class="tag"
-        :class="{ editableTag: isUsersPost }"
-        v-for="tag in post.tags"
+        :class="{ editableTag: editing }"
+        v-for="tag in tagsToDisplay"
         :key="tag._id"
         :tag="tag"
-        @click="removeTag(tag)"
+        @click="removeTagFromDrafts(tag)"
       >
-        {{tag.name}} <span>x</span>
+        #{{tag.name}} <span>x</span>
       </button>
       
-      <!-- Must be logged in and author of the post to edit its tags -->
-      <div v-if="isUsersPost">
-        <div v-if="addingTag">
+      <div v-if="editing" :class="{ 'display-inline': displayInline }">
         <input type="text" 
               :value="newTag"
               @input="newTag = $event.target.value"
         >
-        <button @click="addTag()">&#x2713;</button>
-        <button @click="stopAddingTag()">&#x2715;</button>
+        <div>
+          <button @click="addTagToDrafts()" style="margin-right: 8px;" type="button">Add Tag</button>
+          <button @click="clearAllTagsFromDrafts()" type="button">Clear Tags</button>
+        </div>
       </div>
-      <button v-else-if="allowAddTag" class="add-tag-btn" @click="startAddingTag">&#65291; Tag</button>
-      </div>
+
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+      <p v-else style="opacity: 0;" class="error">placeholder</p>
     </div>
   </section>
 </template>
@@ -36,67 +36,94 @@ export default {
   props: {
     post: {
       type: Object,
+      required: false
+    },
+    editing: {
+      type: Boolean,
       required: true
     },
-    allowAddTag: {
+    displayInline: {
       type: Boolean,
       required: true
     }
   },
   data() {
     return {
-      addingTag: false,
       newTag: '',
+      draftTags: this.post ? this.post.tags : [],
+      errorMessage: '',
       alerts: {}, // Displays success/error messages encountered during post modification
     }
   },
+  mounted() {
+    this.draftTags = this.post ? this.post.tags.slice() : [];
+  },
   methods: {
-    startAddingTag() {
-      if (this.isUsersPost) {
-        this.addingTag = true;
+    // TODO: force tag to be one word ??
+    // TODO: maybe move save changes / discard changes button to bottom ??
+    addTagToDrafts() {
+      if (this.newTag.trim() == '') {
+        this.errorMessage = 'Tag name cannot be empty';
+        setTimeout(() => this.errorMessage = '', 3000);
+      } else if (this.newTag.trim().length > 30) {
+        this.errorMessage = 'Tag name cannot be longer than 30 characters';
+        setTimeout(() => this.errorMessage = '', 3000);
+      } else if (this.newTag.includes(' ')) {
+        this.errorMessage = 'Tag name must be one word';
+        setTimeout(() => this.errorMessage = '', 3000);
+      } else {
+        this.draftTags.push({ name: this.newTag.trim() })
+        this.newTag = '';
       }
     },
-    stopAddingTag() {
-      this.newTag = '';
-      this.addingTag = false;
+    removeTagFromDrafts(tag) {
+      if (this.editing && this.draftTags.includes(tag)) {
+        this.draftTags.splice(this.draftTags.indexOf(tag), 1);
+      }
     },
-    addTag() {
+    clearAllTagsFromDrafts() {
+      this.draftTags = [];
+    },
+    saveTags(postId) {
       /**
        * Add tag to post
        */
-      const params = {
-        method: 'POST',
-        message: 'Successfully added tag!',
-        body: JSON.stringify({ name: this.newTag, postId: this.post._id }),
-        callback: () => {
-          this.stopAddingTag()
+      console.log(postId)
+      if (postId !== undefined) {
+        const draftTagNames = this.draftTags.map(tag => { return tag.name });
+        const params = {
+          method: 'POST',
+          message: 'Successfully added tag!',
+          body: JSON.stringify({ names: draftTagNames, postId: postId }),
+          callback: () => {
+            this.$store.commit('refreshPosts');
 
-          this.$store.commit('refreshPosts');
-
-          this.$set(this.alerts, params.message, 'success');
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
-        }
-      };
-      this.request(`tags`, params);
+            this.$set(this.alerts, params.message, 'success');
+            setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+          }
+        };
+        this.request(`tags`, params);
+        console.log('adding tags')
+        console.log(this.draftTags)
+      }
     },
     removeTag(tag) {
       /**
        * Remove tag from post
        */
-      console.log("remove tag w/ query param");
-      console.log("id - " + tag._id)
+      if (this.editing) { // must be signed in and author of post to delete its tag
+        const params = {
+          method: 'DELETE',
+          message: 'Successfully removed tag!',
+          callback: () => {
+            this.$store.commit('refreshPosts');
 
-      const params = {
-        method: 'DELETE',
-        message: 'Successfully removed tag!',
-        callback: () => {
-          this.$store.commit('refreshPosts');
-
-          this.$set(this.alerts, params.message, 'success');
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
-        }
-      };
-      this.request(`tags/${tag._id}`, params);
+            this.$set(this.alerts, params.message, 'success');
+            setTimeout(() => this.$delete(this.alerts, params.message), 3000);
+          }
+        };
+        this.request(`tags/${tag._id}`, params);
+      }
     },
     async request(path, params) {
       /**
@@ -115,6 +142,7 @@ export default {
       try {
         const r = await fetch(`/api/${path}`, options);
         const res = await r.json();
+        console.log(res)
         if (!r.ok) {
           throw new Error(res.error);
         }
@@ -127,9 +155,8 @@ export default {
     }
   },
   computed: {
-    isUsersPost() {
-      // If user is signed in and this is their post, they can edit its tags
-      return this.$store.state.username && this.post.author === this.$store.state.username;
+    tagsToDisplay() {
+      return this.editing ? this.draftTags : this.post.tags;
     }
   }
 };
@@ -139,11 +166,14 @@ export default {
 .tag {
   background-color: transparent;
   border: none;
-  border-radius: 20px;
-  margin-right: 10px;
-  padding: 3px 12px;
-  background-color: #DCA73E;
-  color: white;
+  margin-right: 5px;
+  padding: 0px;
+  color: #DCA73E;
+  font-size: 14px;
+}
+
+.tags {
+  margin-top: 10px;
 }
 
 .tag span {
@@ -161,10 +191,22 @@ export default {
 }
 
 .section-label {
-  font-size: 0.83em;
-  font-weight: bold;
+  margin-top: 10px;
   margin-right: 10px;
   margin-bottom: 5px;
 }
 
+input {
+  margin-right: 5px;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+  margin: 4px 0px 4px 0px; /* top, right, bottom, left */
+}
+
+.display-inline {
+  display: inline-flex;
+}
 </style>

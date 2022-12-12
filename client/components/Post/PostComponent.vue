@@ -31,7 +31,7 @@
               v-if="editing"
               @click="stopEditing"
             >
-              🚫 Discard
+              🚫 Discard Changes
             </button>
             <button
               v-if="!editing"
@@ -86,8 +86,10 @@
 
         <div>
           <TagsComponent 
+            ref="tagsChildRef"
             :post="post"
-            :allowAddTag="!editing"
+            :editing="editing"
+            :displayInline="false"
           />
         </div>
       </div>
@@ -326,9 +328,17 @@ export default {
   },
   mounted() {
     // console.log(this.post)
-    this.getRemixesOfThisPost();
-    this.getRemixedFrom();
-    this.checkIfReported();
+    // TODO: temporary
+    // this.getRemixesOfThisPost();
+    // this.getRemixedFrom();
+    // this.checkIfReported();
+
+    // TODO: temporary, don't think this lets comments update when needed
+    this.getCategory();
+    this.getComments();
+
+    const tagNames = this.post.tags.map(tag => { return tag.name });
+    console.log(tagNames);
   },
   methods: {
     startEditing() {
@@ -340,6 +350,8 @@ export default {
       this.draftDesc = this.post.description; // The content of our current "draft" while being edited
       this.draftFiles = this.post.files.slice();
       this.draftImages = this.post.images.slice();
+      this.$refs.tagsChildRef.draftTags = this.post.tags.slice();
+
     },
     stopEditing() {
       /**
@@ -454,26 +466,16 @@ export default {
       this.request(`categories?postId=${this.post._id}`, params);
     },
     async getRemixedFrom() {
-      // const url = `/api/remix?postId=${postId}`;
-      // const res = await fetch(url).then(async r => r.json());
-      // state.remixes = res;
       const params = {
         method: 'GET',
-        callback: () => {
-
-        }
+        callback: () => { }
       };      
       this.request(`remix/parent?postId=${this.post._id}`, params);
     },
     async getRemixesOfThisPost() {
-      // const url = `/api/remix?postId=${postId}`;
-      // const res = await fetch(url).then(async r => r.json());
-      // state.remixes = res;
       const params = {
         method: 'GET',
-        callback: () => {
-
-        }
+        callback: () => { }
       };      
       this.request(`remix?postId=${this.post._id}`, params);
     },
@@ -497,7 +499,7 @@ export default {
       var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length;
 
       if (!postEdited) {
-        // Check if images or files were edited
+        // Check if images, files, or tags were edited
         this.draftImages.forEach(image => {
           if (!this.post.images.includes(image)) {
             postEdited = true;
@@ -505,6 +507,13 @@ export default {
         });
         this.draftFiles.forEach(file => {
           if (!this.post.files.includes(file)) {
+            postEdited = true;
+          }
+        });
+        const draftTagNames = this.$refs.tagsChildRef.draftTags.map(tag => { return tag.name });
+        const postTagNames = this.post.tags.map(tag => { return tag.name });
+        draftTagNames.forEach(tag => {
+          if (!postTagNames.includes(tag)) {
             postEdited = true;
           }
         });
@@ -535,6 +544,8 @@ export default {
         }
       };
       this.request(`posts/${this.post._id}`, params);
+
+      this.$refs.tagsChildRef.saveTags(this.post._id);
     },
     async request(path, params) {
       /**
@@ -607,7 +618,7 @@ export default {
     //   return this.post.parentId.username;
     // },
     postDate() {
-      return this.post.dateCreated;
+      return this.post.dateModified != this.post.dateCreated ? this.post.dateModified : this.post.dateCreated;
     },
     isLiked() {
       return this.postLikedBy.includes(this.$store.state.username);
@@ -623,8 +634,8 @@ export default {
     }
   },
   created() {
-    this.getCategory();
-    this.getComments();
+    // this.getCategory();
+    // this.getComments();
   },
 };
 </script>
@@ -794,10 +805,12 @@ export default {
 
 .section-label {
   margin: 0px;
+  margin-top: 10px;
 }
 
 .description p {
   margin-top: 5px;
+  margin-bottom: 0px;
 }
 
 .icon-btn {

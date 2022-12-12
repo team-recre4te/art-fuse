@@ -31,6 +31,13 @@
           >
           <input type="button" :value="'Choose ' + field.id" @click="$refs[field.id][0].click()" />
         </div>
+        <div v-else-if="field.id === 'tags'">
+          <TagsComponent 
+            ref="tagsChildRef"
+            :editing="true"
+            :displayInline="true"
+          />
+        </div>
         <input
           v-else
           :type="field.id === 'password' ? 'password' : 'text'"
@@ -105,6 +112,8 @@
 </template>
 
 <script>
+import TagsComponent from '@/components/Post/TagsComponent.vue';
+
 
 export default {
   name: 'BlockForm',
@@ -113,6 +122,9 @@ export default {
       type: String,
       required: false,
     }
+  },
+  components: {
+    TagsComponent,
   },
   data() {
     /**
@@ -214,6 +226,7 @@ export default {
       /**
         * Submits a form with the specified options from data().
         */
+
       const options = {
         method: this.method,
         headers: {'Content-Type': 'application/json'},
@@ -253,8 +266,7 @@ export default {
           const idField = {images: this.images}
           const fileField = {files: this.files}
 
-          options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
-
+          options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));          
         } else if (this.url === '/api/comments' && this.method == 'POST') {
           const inputFields = Object.fromEntries(
             this.fields.map(field => {
@@ -295,12 +307,18 @@ export default {
         }
 
         var newPostRes;
-        if (this.makeRemix || this.category !== '') {
+        if (this.makeRemix || this.category !== '' || this.$refs.tagsChildRef[0].draftTags.length > 0) {
           newPostRes = await r.json();
         }
 
         if (this.category !== '') {
           await this.saveCategory(newPostRes);
+        }
+
+        // save tags
+        if (this.$refs.tagsChildRef[0].draftTags.length > 0) {
+          const postId = newPostRes["post"]["id"];
+          this.$refs.tagsChildRef[0].saveTags(postId);
         }
         
         if (this.makeRemix) {
