@@ -11,7 +11,7 @@ export type Post = {
   title: string;
   description: string;
   files: any[];
-  images: string[];
+  images: any[];
   dateCreated: Date;
   dateModified: Date;
   parentId: Types.ObjectId;
@@ -26,7 +26,7 @@ export type PopulatedPost = {
   title: string;
   description: string;
   files: any[],
-  images: string[],
+  images: any[],
   dateCreated: Date;
   dateModified: Date
   parentId: Post; 
@@ -51,7 +51,7 @@ const PostSchema = new Schema<Post>({
     required: true,
   },
   images: {
-    type: [String],
+    type: [],
     required: true
   },
   dateCreated: {

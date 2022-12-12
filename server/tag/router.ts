@@ -57,24 +57,23 @@ const router = express.Router();
  *
  * @name POST /api/tags
  *
- * @param {string} name - The name of the tag
- * @param {string} postId - The id of the post that has the tag
+ * @param {string} names - The tag names to add
+ * @param {string} postId - The id of the post to add tags to
  * @return {TagResponse} - The created tag
  */
 router.post(
-    '/',
-    [
-      userValidator.isUserLoggedIn,
-      postValidator.isPostBodyExists,
-      tagValidator.isValidTagName
-    ],
+  '/',
+  [
+    userValidator.isUserLoggedIn,
+    postValidator.isPostBodyExists,
+    tagValidator.isValidTagNames
+  ],
   async (req: Request, res: Response) => {
-    
-    const tag = await TagCollection.addOne(req.body.name, req.body.postId);
+    const tags = await TagCollection.addMany(req.body.names, req.body.postId);
   
     res.status(201).json({
       message: 'Your tag was created successfully.',
-      tag: util.constructTagResponse(tag)
+      tags: tags.map(util.constructTagResponse)
     });
   }
 );

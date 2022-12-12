@@ -41,7 +41,7 @@ const router = express.Router();
       res.status(200).json(response);
     },
     [
-      userValidator.isAuthorExists
+      // userValidator.isAuthorExists
     ],
     async (req: Request, res: Response) => {
       const authorPosts = await PostCollection.findAllByUsername(req.query.author as string);
@@ -114,7 +114,7 @@ router.post(
       userValidator.isUserLoggedIn,
       postValidator.isValidPostTitle,
       postValidator.isValidPostDescription,
-      postValidator.isValidPostImageOrFile
+      // postValidator.isValidPostImageOrFile
     ],
   async (req: Request, res: Response) => {
     
@@ -145,7 +145,7 @@ router.delete(
   ],
   async (req: Request, res: Response) => {
     await PostCollection.deleteOne(req.params.postId);
-    await RemixCollection.deleteOne
+    // await RemixCollection.deleteOne
     res.status(200).json({
       message: 'Your post was deleted successfully.'
     });

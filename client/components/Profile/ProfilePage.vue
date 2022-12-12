@@ -6,13 +6,15 @@
     <header>
       <h2 class="title">@{{ $route.query.author }}</h2>
       <p class="date-joined" v-if="dateJoined">Joined at {{ dateJoined }}</p>
+      <section class="bio" v-if="bio.length">
+        <h3>Bio:</h3>
+        <p>{{ bio }}</p>
+      </section>
+      <section class="bio" v-else>
+        <h3>Bio:</h3>
+        <router-link to="/account">Add Bio</router-link>
+      </section>
     </header>
-
-    <section class="bio" v-if="bio.length">
-      <h3>Bio</h3>
-      <p>{{ bio }}</p>
-    </section>
-
     <section>
       <h3>Posts</h3>
       <section
@@ -28,6 +30,13 @@
         <p>No posts</p>
       </article>
     </section>
+    <!-- <section>
+      <h3>Comments</h3>
+
+    </section>
+    <section>
+      <h3>Liked Posts</h3>
+    </section> -->
   </main>
 </template>
 
@@ -99,16 +108,20 @@ export default {
 
 <style scoped>
 .title {
-  font-weight: 400;
-  margin: 0px;
+  font-size: xx-large;
+  font-weight: 650;
+  margin: 0px;  
 }
 
 header {
   margin-top: 20px;
+  border: solid 1px rgb(0, 0, 0);
+  border-radius: 15px;
+  padding: 15px;
 }
 
 header p {
-  font-size: 14px;
+  font-size: 20px;
 }
 
 .bio p {

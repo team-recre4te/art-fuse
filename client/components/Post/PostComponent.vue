@@ -31,7 +31,7 @@
               v-if="editing"
               @click="stopEditing"
             >
-              🚫 Discard
+              🚫 Discard Changes
             </button>
             <button
               v-if="!editing"
@@ -62,7 +62,7 @@
     </header>
 
     <div class="columns">
-      <div class="post-info">
+      <div :class="{ 'post-info': post.images.length > 0 }">
         <!-- Category, parent post, description, and tags on right side -->
         <h5 v-if="category" class="section-label">Category</h5>
         <div v-if="category" style="margin-bottom: 5px;">{{category}}</div>
@@ -86,8 +86,12 @@
 
         <div>
           <TagsComponent 
+            ref="tagsChildRef"
+            @searchFor="handleSearch" 
             :post="post"
-            :allowAddTag="!editing"
+            :editing="editing"
+            :displayInline="false"
+            :searchText="searchText"
           />
         </div>
       </div>
@@ -108,8 +112,8 @@
           <div>
             <img 
               v-for="image in draftImages"
-              :key="image"
-              :src="image"
+              :key="image.name"
+              :src="image.file"
               height=200
               alt=""
             >
@@ -120,7 +124,7 @@
         <carousel-3d :width="260" :height="215" v-else>
           <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
             <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
-              <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
+              <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image.file">
             </template>
           </slide>
         </carousel-3d>
@@ -130,7 +134,7 @@
     <div class="columns align-bottom">
       <div>
         <!-- Files -->
-        <div v-if="(post.files && post.files.length) || editing">
+        <div v-if="(postFilesToDisplay.length) || editing">
           <div v-if="!editing">
             <button 
               class="files-btn"
@@ -157,7 +161,7 @@
               <div class="file">
                 <a :download="file.name" :href="file.file">{{file.name}}</a>
 
-                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1])" controls>
+                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1]) && !editing" controls>
                   <source :src="file.file">
                 </audio>
               </div>
@@ -309,6 +313,10 @@ export default {
     post: {
       type: Object,
       required: true
+    },
+    searchText: {
+      type: String,
+      required: true
     }
   },
   components: {
@@ -341,11 +349,15 @@ export default {
   },
   mounted() {
     // console.log(this.post)
+    // TODO: temporary
     this.getRemixesOfThisPost();
     this.getRemixedFrom();
     this.checkIfReported();
   },
   methods: {
+    handleSearch(value) {
+      this.$emit('searchFor', value);
+    },
     startEditing() {
       /**
        * Enables edit mode on this post.
@@ -355,6 +367,8 @@ export default {
       this.draftDesc = this.post.description; // The content of our current "draft" while being edited
       this.draftFiles = this.post.files.slice();
       this.draftImages = this.post.images.slice();
+      this.$refs.tagsChildRef.draftTags = this.post.tags.slice();
+
     },
     stopEditing() {
       /**
@@ -469,26 +483,16 @@ export default {
       this.request(`categories?postId=${this.post._id}`, params);
     },
     async getRemixedFrom() {
-      // const url = `/api/remix?postId=${postId}`;
-      // const res = await fetch(url).then(async r => r.json());
-      // state.remixes = res;
       const params = {
         method: 'GET',
-        callback: () => {
-
-        }
+        callback: () => { }
       };      
       this.request(`remix/parent?postId=${this.post._id}`, params);
     },
     async getRemixesOfThisPost() {
-      // const url = `/api/remix?postId=${postId}`;
-      // const res = await fetch(url).then(async r => r.json());
-      // state.remixes = res;
       const params = {
         method: 'GET',
-        callback: () => {
-
-        }
+        callback: () => { }
       };      
       this.request(`remix?postId=${this.post._id}`, params);
     },
@@ -512,7 +516,7 @@ export default {
       var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length;
 
       if (!postEdited) {
-        // Check if images or files were edited
+        // Check if images, files, or tags were edited
         this.draftImages.forEach(image => {
           if (!this.post.images.includes(image)) {
             postEdited = true;
@@ -520,6 +524,13 @@ export default {
         });
         this.draftFiles.forEach(file => {
           if (!this.post.files.includes(file)) {
+            postEdited = true;
+          }
+        });
+        const draftTagNames = this.$refs.tagsChildRef.draftTags.map(tag => { return tag.name });
+        const postTagNames = this.post.tags.map(tag => { return tag.name });
+        draftTagNames.forEach(tag => {
+          if (!postTagNames.includes(tag)) {
             postEdited = true;
           }
         });
@@ -550,6 +561,8 @@ export default {
         }
       };
       this.request(`posts/${this.post._id}`, params);
+
+      this.$refs.tagsChildRef.saveTags(this.post._id);
     },
     async request(path, params) {
       /**
@@ -622,7 +635,7 @@ export default {
     //   return this.post.parentId.username;
     // },
     postDate() {
-      return this.post.dateCreated;
+      return this.post.dateModified != this.post.dateCreated ? this.post.dateModified : this.post.dateCreated;
     },
     isLiked() {
       return this.postLikedBy.includes(this.$store.state.username);
@@ -631,7 +644,7 @@ export default {
       return this.post.likedBy.map(like => { return like.userId.username });
     },
     postFilesToDisplay() {
-      return this.editing ? this.draftFiles : this.post.files;
+      return this.editing ? this.draftFiles : this.post.files.concat(this.post.images);
     },
     postImagesToDisplay() {
       return this.editing ? this.draftImages : this.post.images;
@@ -813,10 +826,12 @@ export default {
 
 .section-label {
   margin: 0px;
+  margin-top: 10px;
 }
 
 .description p {
   margin-top: 5px;
+  margin-bottom: 0px;
 }
 
 .icon-btn {

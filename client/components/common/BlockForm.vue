@@ -31,6 +31,13 @@
           >
           <input type="button" :value="'Choose ' + field.id" @click="$refs[field.id][0].click()" />
         </div>
+        <div v-else-if="field.id === 'tags'">
+          <TagsComponent 
+            ref="tagsChildRef"
+            :editing="true"
+            :displayInline="true"
+          />
+        </div>
         <input
           v-else
           :type="field.id === 'password' ? 'password' : 'text'"
@@ -50,8 +57,8 @@
         <div v-if="field.id === 'images' && images.length">
           <img 
             v-for="image in images"
-            :key="image"
-            :src="image"
+            :key="image.name"
+            :src="image.file"
             height=200
             alt=""
           > 
@@ -105,6 +112,8 @@
 </template>
 
 <script>
+import TagsComponent from '@/components/Post/TagsComponent.vue';
+
 
 export default {
   name: 'BlockForm',
@@ -113,6 +122,9 @@ export default {
       type: String,
       required: false,
     }
+  },
+  components: {
+    TagsComponent,
   },
   data() {
     /**
@@ -130,7 +142,6 @@ export default {
       callback: null, // Function to run after successful form submission
       images: [],
       files: [],
-      fileNames: [],
       category: '',
     };
   },
@@ -148,7 +159,7 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(image);
         reader.onload = e =>{
-          this.images.push(e.target.result);
+          this.images.push({ name: image.name, file: e.target.result });
         };
       });
     },
@@ -214,17 +225,18 @@ export default {
       /**
         * Submits a form with the specified options from data().
         */
+
       const options = {
         method: this.method,
         headers: {'Content-Type': 'application/json'},
         credentials: 'same-origin' // Sends express-session credentials with request
       };
 
-      // temporary solution for checking if it's the create post form, will add an input variable later to specify
-      if (this.category === '' && this.fields === 4) {
-        this.$set(this.alerts, Error('Please select a category'), 'error');
-        return;
-      }
+      // // temporary solution for checking if it's the create post form, will add an input variable later to specify
+      // if (this.category === '' && this.fields === 4) {
+      //   this.$set(this.alerts, Error('Please select a category'), 'error');
+      //   return;
+      // }
 
       if (this.hasBody) {
         if (this.url === '/api/posts') {
@@ -241,6 +253,10 @@ export default {
             this.$set(this.alerts, Error('A post must contain either images or files'), 'error');
             return;
           }
+          if (this.category === ''){
+            this.$set(this.alerts, Error('Please select a category'), 'error');
+            return;
+          }
 
           const inputFields = Object.fromEntries(
             this.fields.map(field => {
@@ -250,11 +266,10 @@ export default {
             })
           );
 
-          const idField = {images: this.images}
+          const imagesField = {images: this.images}
           const fileField = {files: this.files}
 
-          options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));
-
+          options.body = JSON.stringify(Object.assign({}, inputFields, imagesField, fileField));          
         } else if (this.url === '/api/comments' && this.method == 'POST') {
           const inputFields = Object.fromEntries(
             this.fields.map(field => {
@@ -295,12 +310,18 @@ export default {
         }
 
         var newPostRes;
-        if (this.makeRemix || this.category !== '') {
+        if (this.makeRemix || this.category !== '' || this.$refs.tagsChildRef[0].draftTags.length > 0) {
           newPostRes = await r.json();
         }
 
         if (this.category !== '') {
           await this.saveCategory(newPostRes);
+        }
+
+        // save tags
+        if (this.$refs.tagsChildRef[0].draftTags.length > 0) {
+          const postId = newPostRes["post"]["id"];
+          this.$refs.tagsChildRef[0].saveTags(postId);
         }
         
         if (this.makeRemix) {

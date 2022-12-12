@@ -6,7 +6,7 @@
     <div class="flex-container">
         <input
           class="search-bar"
-          :value="searchText"
+          :value="searchTextToDisplay"
           type="search"
           :placeholder="placeholderText"
           @input="updateSearchText"
@@ -30,6 +30,10 @@ export default {
     };
   },
   props: {
+    currentSearchText: {
+      type: String,
+      default: ''
+    },
     placeholderText: {
       type: String,
       default: 'Type something...'
@@ -44,6 +48,11 @@ export default {
     },
     async submit() {
       this.$emit('searched', this.searchText);
+    }
+  },
+  computed: {
+    searchTextToDisplay() {
+      return this.currentSearchText ? this.currentSearchText : this.searchText;
     }
   }
 };
