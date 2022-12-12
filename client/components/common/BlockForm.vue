@@ -57,8 +57,8 @@
         <div v-if="field.id === 'images' && images.length">
           <img 
             v-for="image in images"
-            :key="image"
-            :src="image"
+            :key="image.name"
+            :src="image.file"
             height=200
             alt=""
           > 
@@ -142,7 +142,6 @@ export default {
       callback: null, // Function to run after successful form submission
       images: [],
       files: [],
-      fileNames: [],
       category: '',
     };
   },
@@ -160,7 +159,7 @@ export default {
         const reader = new FileReader();
         reader.readAsDataURL(image);
         reader.onload = e =>{
-          this.images.push(e.target.result);
+          this.images.push({ name: image.name, file: e.target.result });
         };
       });
     },
@@ -267,10 +266,10 @@ export default {
             })
           );
 
-          const idField = {images: this.images}
+          const imagesField = {images: this.images}
           const fileField = {files: this.files}
 
-          options.body = JSON.stringify(Object.assign({}, inputFields, idField, fileField));          
+          options.body = JSON.stringify(Object.assign({}, inputFields, imagesField, fileField));          
         } else if (this.url === '/api/comments' && this.method == 'POST') {
           const inputFields = Object.fromEntries(
             this.fields.map(field => {

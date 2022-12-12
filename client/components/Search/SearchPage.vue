@@ -6,6 +6,7 @@
     <header>
       <SearchBar 
         @searched="handleSearch" 
+        :searchText="searchTag"
         placeholderText="Search by tag..."
       />
       <section

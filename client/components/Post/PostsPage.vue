@@ -24,6 +24,7 @@
         <div>
           <SearchBar 
             @searched="handleSearch" 
+            :currentSearchText="search"
             placeholderText="Search by author or tag..."
           />
           <div class="columns">
@@ -80,6 +81,8 @@
           v-for="post in $store.state.posts"
           :key="post.id"
           :post="post"
+          :searchText="search"
+          @searchFor="handleSearch"
         />
       </section>
       <section
@@ -90,6 +93,8 @@
             v-for="post in postsInCategory"
             :key="post.id"
             :post="post"
+            :searchText="search"
+            @searchFor="handleSearch"
           />
         </div>
         <div v-else>
@@ -255,6 +260,7 @@ export default {
 
     },
     async handleSearch(value) {
+      // console.log("search for on posts page " + value)
       if (value.length > 0 && value.trim().length === 0) { // just whitespace in search
         // cannot search for empty string
         const e = ('status', 'empty_text_alert', 'Search text for author name cannot be empty');
@@ -276,8 +282,6 @@ export default {
 
       const author_url = this.search ? `/api/posts?author=${this.search}` : '/api/posts';
       const tag_url = this.search ? `/api/tags?name=${this.search}` : '/api/posts';
-
-      console.log("before try");
 
       try {
         const author_r = await fetch(author_url);

@@ -4,11 +4,11 @@
     <div class="tags">
       <button
         class="tag"
-        :class="{ editableTag: editing }"
+        :class="{ editableTag: editing, selected: searchText == tag.name }"
         v-for="tag in tagsToDisplay"
         :key="tag._id"
         :tag="tag"
-        @click="removeTagFromDrafts(tag)"
+        @click="editing ? removeTagFromDrafts(tag) : searchForTag(tag)"
       >
         #{{tag.name}} <span>x</span>
       </button>
@@ -45,6 +45,10 @@ export default {
     displayInline: {
       type: Boolean,
       required: true
+    },
+    searchText: {
+      type: String,
+      required: false
     }
   },
   data() {
@@ -59,20 +63,23 @@ export default {
     this.draftTags = this.post ? this.post.tags.slice() : [];
   },
   methods: {
-    // TODO: force tag to be one word ??
-    // TODO: maybe move save changes / discard changes button to bottom ??
     addTagToDrafts() {
-      if (this.newTag.trim() == '') {
+      this.newTag = this.newTag.trim();
+      const draftTagNames = this.draftTags.map(tag => { return tag.name });
+      if (this.newTag == '') {
         this.errorMessage = 'Tag name cannot be empty';
         setTimeout(() => this.errorMessage = '', 3000);
-      } else if (this.newTag.trim().length > 30) {
+      } else if (this.newTag.length > 30) {
         this.errorMessage = 'Tag name cannot be longer than 30 characters';
         setTimeout(() => this.errorMessage = '', 3000);
       } else if (this.newTag.includes(' ')) {
         this.errorMessage = 'Tag name must be one word';
         setTimeout(() => this.errorMessage = '', 3000);
+      } else if (draftTagNames.includes(this.newTag)) {
+        this.errorMessage = 'Tag already exists';
+        setTimeout(() => this.errorMessage = '', 3000);
       } else {
-        this.draftTags.push({ name: this.newTag.trim() })
+        this.draftTags.push({ name: this.newTag })
         this.newTag = '';
       }
     },
@@ -84,11 +91,19 @@ export default {
     clearAllTagsFromDrafts() {
       this.draftTags = [];
     },
+    searchForTag(tag) {
+      if (this.searchText == tag.name) {
+        // clear old search
+        this.$emit('searchFor', '');
+      } else {
+        // make new search
+        this.$emit('searchFor', tag.name);
+      }
+    },
     saveTags(postId) {
       /**
        * Add tag to post
        */
-      console.log(postId)
       if (postId !== undefined) {
         const draftTagNames = this.draftTags.map(tag => { return tag.name });
         const params = {
@@ -103,8 +118,6 @@ export default {
           }
         };
         this.request(`tags`, params);
-        console.log('adding tags')
-        console.log(this.draftTags)
       }
     },
     removeTag(tag) {
@@ -142,7 +155,6 @@ export default {
       try {
         const r = await fetch(`/api/${path}`, options);
         const res = await r.json();
-        console.log(res)
         if (!r.ok) {
           throw new Error(res.error);
         }
@@ -169,7 +181,7 @@ export default {
   margin-right: 5px;
   padding: 0px;
   color: #DCA73E;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .tags {
@@ -178,6 +190,10 @@ export default {
 
 .tag span {
   display: none;
+}
+
+.tag:hover {
+  opacity: 0.6;
 }
 
 .editableTag:hover span {
@@ -208,5 +224,9 @@ input {
 
 .display-inline {
   display: inline-flex;
+}
+
+.selected {
+  font-weight: 600;
 }
 </style>

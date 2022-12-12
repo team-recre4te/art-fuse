@@ -62,7 +62,7 @@
     </header>
 
     <div class="columns">
-      <div class="post-info">
+      <div :class="{ 'post-info': post.images.length > 0 }">
         <!-- Category, parent post, description, and tags on right side -->
         <h5 v-if="category" class="section-label">Category</h5>
         <div v-if="category" style="margin-bottom: 5px;">{{category}}</div>
@@ -87,9 +87,11 @@
         <div>
           <TagsComponent 
             ref="tagsChildRef"
+            @searchFor="handleSearch" 
             :post="post"
             :editing="editing"
             :displayInline="false"
+            :searchText="searchText"
           />
         </div>
       </div>
@@ -110,8 +112,8 @@
           <div>
             <img 
               v-for="image in draftImages"
-              :key="image"
-              :src="image"
+              :key="image.name"
+              :src="image.file"
               height=200
               alt=""
             >
@@ -122,7 +124,7 @@
         <carousel-3d :width="260" :height="215" v-else>
           <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
             <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
-              <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image">
+              <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image.file">
             </template>
           </slide>
         </carousel-3d>
@@ -132,7 +134,7 @@
     <div class="columns align-bottom">
       <div>
         <!-- Files -->
-        <div v-if="(post.files && post.files.length) || editing">
+        <div v-if="(postFilesToDisplay.length) || editing">
           <div v-if="!editing">
             <button 
               class="files-btn"
@@ -159,7 +161,7 @@
               <div class="file">
                 <a :download="file.name" :href="file.file">{{file.name}}</a>
 
-                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1])" controls>
+                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1]) && !editing" controls>
                   <source :src="file.file">
                 </audio>
               </div>
@@ -297,6 +299,10 @@ export default {
     post: {
       type: Object,
       required: true
+    },
+    searchText: {
+      type: String,
+      required: true
     }
   },
   components: {
@@ -329,18 +335,14 @@ export default {
   mounted() {
     // console.log(this.post)
     // TODO: temporary
-    // this.getRemixesOfThisPost();
-    // this.getRemixedFrom();
-    // this.checkIfReported();
-
-    // TODO: temporary, don't think this lets comments update when needed
-    this.getCategory();
-    this.getComments();
-
-    const tagNames = this.post.tags.map(tag => { return tag.name });
-    console.log(tagNames);
+    this.getRemixesOfThisPost();
+    this.getRemixedFrom();
+    this.checkIfReported();
   },
   methods: {
+    handleSearch(value) {
+      this.$emit('searchFor', value);
+    },
     startEditing() {
       /**
        * Enables edit mode on this post.
@@ -627,15 +629,15 @@ export default {
       return this.post.likedBy.map(like => { return like.userId.username });
     },
     postFilesToDisplay() {
-      return this.editing ? this.draftFiles : this.post.files;
+      return this.editing ? this.draftFiles : this.post.files.concat(this.post.images);
     },
     postImagesToDisplay() {
       return this.editing ? this.draftImages : this.post.images;
     }
   },
   created() {
-    // this.getCategory();
-    // this.getComments();
+    this.getCategory();
+    this.getComments();
   },
 };
 </script>
