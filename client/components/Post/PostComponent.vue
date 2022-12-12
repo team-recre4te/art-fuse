@@ -64,9 +64,12 @@
     <div class="columns">
       <div :class="{ 'post-info': post.images.length > 0 }">
         <!-- Category, parent post, description, and tags on right side -->
-        <h5 v-if="category" class="section-label">Category</h5>
-        <div v-if="category" style="margin-bottom: 5px;">{{category}}</div>
-
+        <div v-if="category !== ''" class="columns">
+          <div class="category-btn">
+            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{category}}</button>
+            <button v-else @click="getCategoryPosts">{{category}}</button>
+          </div>
+          </div>
         <h5 v-if="remixedFrom" class="section-label" style="margin-top: 10px;">Remixed From -</h5>
         <p v-if="remixedFrom" style="margin-top: 5px;">{{ remixedFrom }}</p>
 
@@ -303,6 +306,34 @@ export default {
     searchText: {
       type: String,
       required: true
+    },
+    getDigitalArt: {
+      type: Function, 
+      required: false
+    },
+    getMusic: {
+      type: Function, 
+      required: false
+    },
+    getDance: {
+      type: Function, 
+      required: false
+    },
+    get3DModeling: {
+      type: Function, 
+      required: false
+    },
+    getDrawingPainting: {
+      type: Function, 
+      required: false
+    },
+    getTheater: {
+      type: Function, 
+      required: false
+    },
+    selected: {
+      type: Boolean,
+      required: false
     }
   },
   components: {
@@ -333,15 +364,42 @@ export default {
     };
   },
   mounted() {
-    // console.log(this.post)
     // TODO: temporary
     this.getRemixesOfThisPost();
     this.getRemixedFrom();
     this.checkIfReported();
+
+    // // TODO: temporary, don't think this lets comments update when needed
+    // this.getCategory();
+    // this.getComments();
+
+    // const tagNames = this.post.tags.map(tag => { return tag.name });
   },
   methods: {
     handleSearch(value) {
       this.$emit('searchFor', value);
+    },
+    getCategoryPosts() {
+      switch (this.category) {
+        case 'Digital Art':
+          this.getDigitalArt();
+          break;
+        case 'Music': 
+          this.getMusic();
+          break;
+        case 'Dance':
+          this.getDance();
+          break;
+        case '3D Modeling':
+          this.get3DModeling();
+          break;
+        case 'Drawing Painting':
+          this.getDrawingPainting();
+          break;
+        case 'Theater':
+          this.getTheater();
+          break;
+      }
     },
     startEditing() {
       /**
@@ -460,7 +518,6 @@ export default {
       this.request(`comments?postId=${this.post._id}`, params);
     },
     getCategory() {
-      // console.log("ran get category");
       const params = {
         method: 'GET',
         callback: () => {}
@@ -487,7 +544,6 @@ export default {
         message: 'Successfully reported post!',
         body: JSON.stringify({postId: this.post._id}),
         callback: () => {
-          console.log('reported')
           this.reported = true;
         }
       }
@@ -578,14 +634,11 @@ export default {
             comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
           }
           this.comments = comments;
-          // console.log(this.comments);
         } else if (path === `remix?postId=${this.post._id}`) {
           if (res.length > 0) {
-            // console.log(res);
           }
           this.remixesCount = res.length;
         } else if (path === `remix/parent?postId=${this.post._id}`) {
-          // console.log(res);
           if (res.length > 0) {
             this.remixedFrom = res[0].parentId.title + ' by ' + res[0].parentId.authorId.username;
           }
@@ -643,6 +696,20 @@ export default {
 </script>
 
 <style scoped>
+.category-btn button {
+  background-color: #923edcab;
+  border: none; 
+  color: white; 
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.category-btn button:hover {
+  background-color: #923edc;
+}
+
 .post {
   border: 2px solid #EAEAEA;
   padding: 20px;

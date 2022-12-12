@@ -31,22 +31,22 @@
           <div class="category-btn">
             <!-- <button style="background-color: #3e7ddc" @click="getDigitalArt">Digital Art</button> -->
             <!-- <button v-else style="background-color:#ca3edc" @click="getDigitalArt">Digital Art</button> -->
-            <button v-if="category === 'Digital Art'" @click="getDigitalArt" style="background-color: #3E7DDC;">Digital Art</button>
+            <button v-if="category === 'Digital Art'" @click="getDigitalArt" style="background-color: #923edc;">Digital Art</button>
             <button v-else @click="getDigitalArt">Digital Art</button>
             
-            <button v-if="category === 'Music'" @click="getMusic" style="background-color: #3E7DDC;">Music</button>
+            <button v-if="category === 'Music'" @click="getMusic" style="background-color: #923edc;">Music</button>
             <button v-else @click="getMusic">Music</button>
 
-            <button v-if="category === 'Dance'" @click="getDance" style="background-color: #3E7DDC;">Dance</button>
+            <button v-if="category === 'Dance'" @click="getDance" style="background-color: #923edc;">Dance</button>
             <button v-else @click="getDance">Dance</button>
             
-            <button v-if="category === '3D Modeling'" @click="get3DModeling" style="background-color: #3E7DDC;">3D Modeling</button>
+            <button v-if="category === '3D Modeling'" @click="get3DModeling" style="background-color: #923edc;">3D Modeling</button>
             <button v-else @click="get3DModeling">3D Modeling</button>
             
-            <button v-if="category === 'Drawing Painting'" @click="getDrawingPainting" style="background-color: #3E7DDC;">Drawing & Painting</button>
+            <button v-if="category === 'Drawing Painting'" @click="getDrawingPainting" style="background-color: #923edc;">Drawing & Painting</button>
             <button v-else @click="getDrawingPainting">Drawing & Painting</button>
             
-            <button v-if="category === 'Theater'" @click="getTheater" style="background-color: #3E7DDC;">Theater</button>
+            <button v-if="category === 'Theater'" @click="getTheater" style="background-color: #923edc;">Theater</button>
             <button v-else @click="getTheater">Theater</button>
           </div>
         </div>
@@ -83,6 +83,13 @@
           :post="post"
           :searchText="search"
           @searchFor="handleSearch"
+          :selected="selected"
+          :getDigitalArt="getDigitalArt"
+          :getMusic="getMusic"
+          :getDance="getDance"
+          :get3DModeling="get3DModeling"
+          :getDrawingPainting="getDrawingPainting"
+          :getTheater="getTheater"
         />
       </section>
       <section
@@ -95,6 +102,12 @@
             :post="post"
             :searchText="search"
             @searchFor="handleSearch"
+            :selected="selected"
+            :getMusic="getMusic"
+            :getDance="getDance"
+            :get3DModeling="get3DModeling"
+            :getDrawingPainting="getDrawingPainting"
+            :getTheater="getTheater"
           />
         </div>
         <div v-else>
@@ -135,6 +148,7 @@ export default {
       search: '',
       alerts: {},
       category: '',
+      selected: false,
       postsInCategory: [],
     };
   },
@@ -152,9 +166,11 @@ export default {
       if (this.category !== 'Digital Art') {
         this.category = 'Digital Art';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
+        this.selected = true;
       } else {
         this.category = '';
         this.postsInCategory = [];
+        this.selected = false;
       }
     },
     getMusic() {
@@ -166,9 +182,11 @@ export default {
       if (this.category !== 'Music') {
         this.category = 'Music';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
+        this.selected = true;
       } else {
         this.category = '';
         this.postsInCategory = [];
+        this.selected = false;
       }
     },
     getDance() {
@@ -180,9 +198,11 @@ export default {
       if (this.category !== 'Dance') {
         this.category = 'Dance';
         this.request(`/api/categories?name=${this.category.trim()}`, params);
+        this.selected = true;
       } else {
         this.category = '';
         this.postsInCategory = [];
+        this.selected = false;
       }
     },
     get3DModeling() {
@@ -205,15 +225,10 @@ export default {
         callback: () => {},
       };
 
-      console.log("drawing painting cat", this.category);
-
       if (this.category !== 'Drawing Painting') {
-        console.log("nooo");
         this.category = 'Drawing Painting';
-        console.log(this.category);
         this.request(`/api/categories?name=${this.category.trim()}`, params);
       } else {
-        console.log("yesss");
         this.category = '';
         this.postsInCategory = [];
       }
@@ -242,11 +257,8 @@ export default {
       }
 
       try {
-        console.log('path', path);
         const r = await fetch(path, options);
-        console.log('r', r);
         const res = await r.json();
-        console.log("res", res);
         if (!r.ok) {
           throw new Error(res.error);
         }
@@ -283,6 +295,7 @@ export default {
       const author_url = this.search ? `/api/posts?author=${this.search}` : '/api/posts';
       const tag_url = this.search ? `/api/tags?name=${this.search}` : '/api/posts';
 
+      
       try {
         const author_r = await fetch(author_url);
         const author_res = await author_r.json();
@@ -335,7 +348,7 @@ section {
 
 }
 .category-btn button {
-  background-color: #3e7ddc4e;
+  background-color: #923edcab;
   border: none; 
   color: white; 
   padding: 10px 15px;
@@ -345,8 +358,9 @@ section {
 }
 
 .category-btn button:hover {
-  background-color: #3E7DDC;
+  background-color: #923edc;
 }
+
 
 header, header > * {
   display: flex;
