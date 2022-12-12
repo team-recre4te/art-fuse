@@ -226,12 +226,21 @@
         <!-- Report -->
         <div>
           <div class="actions">
-            <button
-              @click="reportPost"
-              class="icon-btn"
-            > 
-              🚩 Report
-            </button>
+
+            <b-dropdown :triggers="['hover']" aria-role="list" paddingless="true">
+            <template #trigger>
+                <b-button
+                    label="🚩 Report "
+                    icon-right="menu-down" 
+                    class="icon-btn"/>
+            </template>
+
+            <b-dropdown-item aria-role="listitem" @click="reportPost">Plagiarism</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost">Offensive/ Inappropriate Content</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost">Unrelated Content</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost">Other</b-dropdown-item>
+            </b-dropdown>
+
           </div>
         </div>
       </div>
@@ -283,10 +292,15 @@
 </template>
 
 <script>
+import Vue from 'vue'
+import Buefy from 'buefy'
+import Dropdown from 'buefy'
+import 'buefy/dist/buefy.css'
 import { Carousel3d, Slide } from 'vue-carousel-3d';
 import TagsComponent from '@/components/Post/TagsComponent.vue';
 import CommentComponent from '@/components/Comment/CommentComponent.vue';
 import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
+Vue.use(Buefy)
 
 export default {
   name: 'PostComponent',
@@ -299,6 +313,7 @@ export default {
   },
   components: {
     TagsComponent,
+    Dropdown,
     Carousel3d,
     Slide,
     CommentComponent, 
@@ -638,6 +653,10 @@ export default {
   border-radius: 12px;
   width:100%;
 }
+
+.tag {
+        cursor: pointer;
+    }
 
 .author {
   margin: 0px;
