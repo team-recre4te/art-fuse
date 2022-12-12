@@ -10,10 +10,6 @@
         <img :src="getHomeIcon()" class="icon">
         Home
       </router-link>
-      <router-link to="/browse" :class="{ 'selected': (isOnBrowse) }">
-        <img :src="getSearchIcon()" class="icon">
-        Browse
-      </router-link>
 
       <!-- <router-link
         v-if="$store.state.username"

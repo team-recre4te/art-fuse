@@ -4,7 +4,6 @@ import PostsPage from './components/Post/PostsPage.vue';
 import CreatePostPage from './components/Post/CreatePostPage.vue';
 import AccountPage from './components/Account/AccountPage.vue';
 import LoginPage from './components/Login/LoginPage.vue';
-import SearchPage from './components/Search/SearchPage.vue';
 import ProfilePage from './components/Profile/ProfilePage.vue';
 import RecommendationsPage from './components/Recommendations/recommendationsPage.vue';
 import CreateRemixPage from './components/Remix/CreateRemixPage.vue';
@@ -17,7 +16,6 @@ const routes = [
   {path: '/', name: 'Home', component: PostsPage},
   {path: '/account', name: 'Account', component: AccountPage},
   {path: '/login', name: 'Login', component: LoginPage},
-  {path: '/browse', name: 'Browse', component: SearchPage},
   {path: '/create', name: 'Create Post', component: CreatePostPage},
   {path: '/profile', name: 'Profile', component: ProfilePage},
   {path: '/recommendations', name: 'Recommendations', component: RecommendationsPage},
