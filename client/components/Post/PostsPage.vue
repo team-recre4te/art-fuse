@@ -286,10 +286,11 @@ export default {
           throw new Error(author_res.error);
         }
         
-        if (author_url !== '/api/posts') {
+        if (author_url === '/api/posts') {
           this.searching = false;
           this.$store.commit('updateFilter', this.search);
           this.$store.commit('updatePosts', author_res);
+          return;
         }
 
         const tag_r = await fetch(tag_url);
