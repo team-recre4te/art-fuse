@@ -6,21 +6,31 @@ import TagCollection from '../tag/collection';
  * Checks if the name of the tag in req.body is valid, i.e not a stream of empty
  * spaces and not more than 30 characters
  */
- const isValidTagName = (req: Request, res: Response, next: NextFunction) => {
-    const {name} = req.body as {name: string};
-    if (!name.trim()) {
-      res.status(400).json({
-        error: 'Tag name must be at least one character long.'
-      });
-      return;
-    }
-  
-    if (name.length > 30) {
-      res.status(413).json({
-        error: 'Tag title must be no more than 30 characters.'
-      });
-      return;
-    }
+ const isValidTagNames = (req: Request, res: Response, next: NextFunction) => {
+    const {names} = req.body as {names: string[]};
+
+    names.forEach(name => {
+      if (!name.trim()) {
+        res.status(400).json({
+          error: 'Tag name must be at least one character long.'
+        });
+        return;
+      }
+    
+      if (name.length > 30) {
+        res.status(413).json({
+          error: 'Tag title must be no more than 30 characters.'
+        });
+        return;
+      }
+    
+      if (name.includes(' ')) {
+        res.status(400).json({
+          error: 'Tag title must be one word.'
+        });
+        return;
+      }
+    });
   
     next();
 };
@@ -61,7 +71,7 @@ const isTagExists = async (req: Request, res: Response, next: NextFunction) => {
   }
 
 export {
-  isValidTagName, 
+  isValidTagNames, 
   isTagExists,
   isValidQueryTagName
 }
