@@ -671,7 +671,7 @@ export default {
         }
 
         if (path === `comments?postId=${this.post._id}`) {
-          this.post.comments = res;
+          this.post.comments = res
         }
 
         params.callback(res);

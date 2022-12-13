@@ -22,6 +22,9 @@
     >
     {{ comment.content }}
     </p>
+    <p class="info">
+      {{comment.dateCommented}}
+    </p>
   </article>
 </template>
 
@@ -94,6 +97,12 @@ header {
   width:100%;
 }
 
+.info {
+  font-size: small;
+  margin-bottom: 0px;
+  color: #AEAEAE;
+  text-align: end;
+}
 .content {
   margin-top: 0px;
 }

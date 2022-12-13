@@ -40,7 +40,7 @@ class CommentCollection {
    */
      static async findAll(): Promise<Array<HydratedDocument<Comment>>> {
       // Retrieves posts and sorts them from most to least recent
-      return CommentModel.find({}).sort({dateCreated: -1}).populate(['userId', 'postId']);
+      return CommentModel.find({}).sort({dateCommented: -1}).populate(['userId', 'postId']);
     }
 
    /**
@@ -60,7 +60,7 @@ class CommentCollection {
    * @return {Promise<HydratedDocument<Comments>[]>} - An array of all of the posts
    */
   static async findAllByPost(postIdToSearchFor: Types.ObjectId| string): Promise<Array<HydratedDocument<Comment>>> {
-    return CommentModel.find({postId: postIdToSearchFor}).sort({dateCreated: -1}).populate(['userId', 'postId']);
+    return CommentModel.find({postId: postIdToSearchFor}).sort({dateCommented: -1}).populate(['userId', 'postId']);
   }
 
     /**
