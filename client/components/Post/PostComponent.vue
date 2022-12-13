@@ -36,15 +36,16 @@
             <button
               v-if="!editing"
               @click="startEditing"
+              class="top-buttons"
             >
               ✏️ Edit
             </button>
-            <button v-if="!editing" @click="deletePost">
+            <button v-if="!editing" @click="deletePost" class="top-buttons">
               🗑️ Delete
             </button>
           </div>
         </div>
-        <p>
+        <p class="posted-by">
           By
           <router-link class="author-link" :to="{ name: 'Profile', query: { author: post.author }}">
             {{ post.author }}
@@ -67,7 +68,7 @@
         <h5 v-if="post.parentId" class="section-label" style="margin-top: 10px;">Remixed From</h5>
         <p v-if="post.parentId" style="margin: 5px 0px;">{{ post.parentId.title }}</p>
 
-        <h5 class="section-label">Description</h5>
+        <!-- <h5 class="section-label">Description</h5> -->
         <textarea
           v-if="editing"
           class="description"
@@ -82,27 +83,27 @@
         </div>
 
         <div v-if="editing" class="columns">
-          <div class="category-btn" v-if="draftCategory === 'Digital Art'" style="background-color: #3E7DDC;">Digital Art</div>
-          <div class="category-btn" v-else @click="editDigitalArt">Digital Art</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Digital Art'" >Digital Art</div>
+          <div class="category-btn-edit" v-else @click="editDigitalArt">Digital Art</div>
             
-          <div class="category-btn" v-if="draftCategory === 'Music'" style="background-color: #3E7DDC;">Music</div>
-          <div class="category-btn" v-else @click="editMusic">Music</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Music'" >Music</div>
+          <div class="category-btn-edit" v-else @click="editMusic">Music</div>
 
-          <div class="category-btn" v-if="draftCategory === 'Dance'" style="background-color: #3E7DDC;">Dance</div>
-          <div class="category-btn" v-else @click="editDance">Dance</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Dance'" >Dance</div>
+          <div class="category-btn-edit" v-else @click="editDance">Dance</div>
         
-          <div class="category-btn" v-if="draftCategory === '3D Modeling'" style="background-color: #3E7DDC;">3D Modeling</div>
-          <div class="category-btn" v-else @click="edit3DModeling">3D Modeling</div>
+          <div class="category-btn-edit" v-if="draftCategory === '3D Modeling'" >3D Modeling</div>
+          <div class="category-btn-edit" v-else @click="edit3DModeling">3D Modeling</div>
         
-          <div class="category-btn" v-if="draftCategory === 'Drawing Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
-          <div class="category-btn" v-else @click="editDrawingPainting">Drawing & Painting</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Drawing Painting'" >Drawing & Painting</div>
+          <div class="category-btn-edit" v-else @click="editDrawingPainting">Drawing & Painting</div>
           
-          <div class="category-btn" v-if="draftCategory === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
-          <div class="category-btn" v-else @click="editTheater">Theater</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Theater'" >Theater</div>
+          <div class="category-btn-edit" v-else @click="editTheater">Theater</div>
         </div>
         <div v-else-if="(post.category && post.category.name !== '')" class="columns">
           <div class="category-btn">
-            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{post.category.name}}</button>
+            <button v-if="selected" @click="getCategoryPosts" >{{post.category.name}}</button>
             <button v-else @click="getCategoryPosts">{{post.category.name}}</button>
           </div>
         </div>
@@ -327,7 +328,7 @@ import { Carousel3d, Slide } from 'vue-carousel-3d';
 import TagsComponent from '@/components/Post/TagsComponent.vue';
 import CommentComponent from '@/components/Comment/CommentComponent.vue';
 import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
-Vue.use(Buefy)
+Vue.use(Dropdown)
 
 export default {
   name: 'PostComponent',
@@ -697,23 +698,63 @@ export default {
 </script>
 
 <style scoped>
-.category-btn button {
+h3 {
+  border-radius: 20px;
+  font-size: 24px;
+  font-weight: bold;
+}
+.posted-by{
+  font-size: 20px;
+}
+
+.description{
+  font-size: 18px;
+}
+.top-buttons button{
+  border-width: 0px; 
+  border-radius: 10px;
+  font-size: 16px;
+  padding: 5px 20px 5px 10px;
+}
+
+.top-buttons button:hover{
+  opacity: 0.8;
+}
+.category-btn-edit{
   background-color: #923edcab;
   border: none; 
   color: white; 
   padding: 10px 15px;
   border-radius: 20px;
   font-size: 12px;
-  margin-top: 10px;
+  margin-top: 20px;
+  margin-right: auto;
+}
+
+.category-btn-edit :hover{
+  background-color: #923edc;
+}
+
+.category-btn button {
+  background-color: #923edcab;
+  border: none; 
+  color: white;
+  margin-top: 100px; 
+  padding: 10px 15px;
+  border-radius: 20px;
+  font-size: 12px;
+  margin-top: 20px;
 }
 
 .category-btn button:hover {
   background-color: #923edc;
 }
 
+
 .post {
   border: 2px solid #EAEAEA;
-  padding: 20px;
+  padding: 30px;
+  padding-bottom: 10px;
   position: relative;
   margin: 10px 0px;
   border-radius: 12px;
@@ -721,12 +762,14 @@ export default {
 }
 
 .author {
+  font-size: 20px;
   margin: 0px;
   padding-right: 15px;
 }
 
 .columns {
   display: flex;
+  margin-left: 0px;
   justify-content: space-between;
 }
 
@@ -788,7 +831,7 @@ export default {
 
 .post-header p {
   margin-top: 6px;
-  font-size: smaller;
+  font-size: 20px;
 }
 
 .remix-btn {
@@ -897,10 +940,12 @@ export default {
 }
 
 .author-link {
+  font-size: 20px;
   color: #904D29;
 }
 
 .author-link:hover {
+  font-size: 20px;
   opacity: 0.6;
 }
 

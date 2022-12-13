@@ -395,6 +395,8 @@ export default {
 .columns {
   display: flex;
   justify-content: space-between;
+  margin-left: 0px;
+  margin-top: 0px;
 }
 
 section {
