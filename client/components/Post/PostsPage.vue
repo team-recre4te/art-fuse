@@ -55,7 +55,7 @@
       </div>
 
       <div class="row" id="scrollBtn">
-        <button onclick="document.getElementById('posts').scrollIntoView({behavior: 'smooth'});" id="myBtn" title="Browse Posts">Browse ⬇️</button>
+        <button onclick="document.getElementById('posts').scrollIntoView({behavior: 'smooth'});" id="myBtn" title="Browse Posts">Browse Posts ⬇️</button>
       </div>
         
   
@@ -467,7 +467,7 @@ export default {
 
 #scrollBtn{
   text-align: center;
-  padding: 5%;
+  padding-bottom: 6%;
 }
 
 #myBtn{
