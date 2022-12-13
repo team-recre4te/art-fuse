@@ -104,6 +104,7 @@
             :searchText="search"
             @searchFor="handleSearch"
             :selected="selected"
+            :getDigitalArt="getDigitalArt"
             :getMusic="getMusic"
             :getDance="getDance"
             :get3DModeling="get3DModeling"

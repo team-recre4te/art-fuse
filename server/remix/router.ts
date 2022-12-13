@@ -60,18 +60,18 @@ router.get('/parent',
  * @throws {405} - If the user is not the author of the new post
  */
 router.post('/',
-    [
+  [
     userValidator.isUserLoggedIn,
     postValidator.isPostBodyExists,
-    remixValidator.isValidModifier
-    ]
-    ,async (req: Request, res: Response, next: NextFunction) => {
-      console.log("add remix")
-        const remix = await RemixCollection.addOne(req.body.parentId, req.body.postId);
-        res.status(201).json({
-          message: 'Your remix was created successfully.',
-          post: util.constructRemixResponse(remix)
-        });
-});
+  remixValidator.isValidModifier
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const remix = await RemixCollection.addOne(req.body.parentId, req.body.postId);
+    res.status(201).json({
+      message: 'Your remix was created successfully.',
+      post: util.constructRemixResponse(remix)
+    });
+  }
+);
 
 export { router as remixRouter };

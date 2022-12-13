@@ -15,7 +15,6 @@ class RemixCollection {
             parentId,
             childId,
         });
-        console.log("in remix add one")
         await remix.save();
         return (await (await remix.populate(['parentId','childId'])).populate({
             path: 'childId',

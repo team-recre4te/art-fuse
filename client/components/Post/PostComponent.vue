@@ -100,10 +100,10 @@
           <div class="category-btn" v-if="draftCategory === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
           <div class="category-btn" v-else @click="editTheater">Theater</div>
         </div>
-        <div v-else-if="(category !== '')" class="columns">
+        <div v-else-if="(post.category && post.category.name !== '')" class="columns">
           <div class="category-btn">
-            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{category}}</button>
-            <button v-else @click="getCategoryPosts">{{category}}</button>
+            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{post.category.name}}</button>
+            <button v-else @click="getCategoryPosts">{{post.category.name}}</button>
           </div>
         </div>
 
@@ -390,8 +390,6 @@ export default {
       showComments: false,
       comments: [],
       showFiles: false,
-      category: '',
-      categoryId: '',
       draftCategory: '',
       showRemixes: false,
     };
@@ -404,7 +402,7 @@ export default {
       this.$emit('searchFor', value);
     },
     getCategoryPosts() {
-      switch (this.category) {
+      switch (this.post.category.name) {
         case 'Digital Art':
           this.getDigitalArt();
           break;
@@ -435,7 +433,7 @@ export default {
       this.draftFiles = this.post.files.slice();
       this.draftImages = this.post.images.slice();
       this.$refs.tagsChildRef.draftTags = this.post.tags.slice();
-      this.draftCategory = this.category;
+      this.draftCategory = this.post.category ? this.post.category.name : '';
     },
     editDance() {
       this.draftCategory = "Dance";
@@ -576,7 +574,7 @@ export default {
        * Updates post to have the submitted draft content.
        */
       // Check if description, title, or number of files/images was edited
-      var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length || this.draftCategory != this.category;
+      var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length || this.draftCategory != (this.post.category && this.post.category.name);
 
       if (!postEdited) {
         // Check if images, files, or tags were edited
@@ -606,8 +604,8 @@ export default {
         return;
       }
 
-      if (this.category !== this.draftCategory) {
-        this.category = this.draftCategory;
+      if (this.post.category.name !== this.draftCategory) {
+        this.post.category.name = this.draftCategory;
         const params = {
           method: 'PATCH',
           message: 'Successfully edited category!',
@@ -616,7 +614,7 @@ export default {
           }),
           callback: () => {}
         };
-        this.request(`categories/${this.categoryId}`, params);
+        this.request(`categories/${this.post.category._id}`, params);
       }
 
       const params = {
@@ -666,13 +664,6 @@ export default {
           this.post.comments = res;
         }
 
-        if (path === `categories?postId=${this.post._id}`) {
-          if (res.length > 0) {
-            this.category = res[0]["name"] == 'Drawing Painting' ? 'Drawing & Painting' : (res[0]["name"] ?? '');
-            this.categoryId = res[0]["_id"];
-          }
-        }
-
         params.callback(res);
       } catch (e) {
         this.liking = false;
@@ -683,12 +674,6 @@ export default {
     },
   },
   computed: {
-    // postAuthorUsername() {
-    //   return this.post.authorId.username;
-    // },
-    // postParentUsername() {
-    //   return this.post.parentId.username;
-    // },
     postDate() {
       return this.post.dateModified != this.post.dateCreated ? this.post.dateModified : this.post.dateCreated;
     },

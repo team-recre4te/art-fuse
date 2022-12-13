@@ -69,9 +69,7 @@ const router = express.Router();
   ],
   async (req: Request, res: Response, next: NextFunction) => {
     const post = await PostCollection.findOne(req.params.postId as string);
-    console.log("get a post")
     const response = util.constructPostResponse(post);
-    console.log(response);
     res.status(200).json(response);
 
     return;
