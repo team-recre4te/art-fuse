@@ -19,6 +19,7 @@
       <img :src="getRecIcon()" class="icon">
         Recommendations
       </router-link> -->
+      
       <router-link v-if="$store.state.username" :to="{ name: 'Profile', query: { author: $store.state.username } }"
         :class="{ 'selected': (isOnProfile) }">
         <img :src="getUserIcon()" class="icon">
@@ -53,9 +54,6 @@ export default {
     getHomeIcon() {
       return this.isOnHome ? './assets/home_filled.png' : './assets/home_outline.png';
     },
-    getSearchIcon() {
-      return this.isOnBrowse ? './assets/search_bold.png' : './assets/search.png';
-    },
     getUserIcon() {
       return this.isOnProfile ? './assets/user_filled.png' : './assets/user_outline.png';
     },
@@ -72,9 +70,6 @@ export default {
   computed: {
     isOnHome() {
       return this.$route.path === '/';
-    },
-    isOnBrowse() {
-      return this.$route.path === '/browse';
     },
     isOnProfile() {
       return this.$route.path.includes('/profile');

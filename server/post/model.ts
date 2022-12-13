@@ -1,9 +1,12 @@
 import type {Types} from 'mongoose';
 import {Schema, model} from 'mongoose';
-import { Tag } from '../tag/model';
-import { Category } from '../category/model';
+import {Tag} from '../tag/model';
+import {Category} from '../category/model';
 import {Like} from  '../like/model';
 import type {User} from '../user/model';
+import type {Comment} from '../comment/model';
+import type {Report} from '../report/model';
+import { Remix } from '../remix/model';
 
 export type Post = {
   _id: Types.ObjectId;
@@ -14,10 +17,16 @@ export type Post = {
   images: any[];
   dateCreated: Date;
   dateModified: Date;
-  parentId: Types.ObjectId;
+
+  parentId: Post;
   likedBy?:Array<Like>;
   tags?: Array<Tag>;
-  categories?:Array<Category>;
+  category?: Category;
+  comments?: Array<Comment>;
+  likes?: Array<Like>;
+  reports?: Array<Report>;
+  remix?: Remix;
+  remixes?: Array<Remix>;
 }
 
 export type PopulatedPost = {
@@ -28,8 +37,17 @@ export type PopulatedPost = {
   files: any[],
   images: any[],
   dateCreated: Date;
-  dateModified: Date
-  parentId: Post; 
+  dateModified: Date;
+
+  parentId: Post;
+  likedBy:Array<Like>;
+  tags: Array<Tag>;
+  category: Category;
+  comments: Array<Comment>;
+  likes: Array<Like>;
+  reports: Array<Report>;
+  remix: Remix;
+  remixes: Array<Remix>;
 }
 
 const PostSchema = new Schema<Post>({

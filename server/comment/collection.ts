@@ -22,11 +22,7 @@ class CommentCollection {
    * @return {Promise<HydratedDocument<Comment>>} - The newly created comment
    */
   static async addOne(userId: Types.ObjectId | string, postId: Types.ObjectId | string, content: string): Promise<HydratedDocument<Comment>> {
-    // console.log(await PostCollection.findOne('6350918ff70365dc2a7dad40'))
     const date = new Date();
-
-    const commentObj = await CommentCollection.findOne(postId);
-
     const comment = new CommentModel({
       userId,
       postId,
@@ -34,7 +30,7 @@ class CommentCollection {
       dateCommented: date,
     });
     await comment.save(); // Saves like to MongoDB
-    return comment.populate('userId');
+    return comment.populate(['userId', 'postId']);
   }
   
     /**
@@ -44,7 +40,7 @@ class CommentCollection {
    */
      static async findAll(): Promise<Array<HydratedDocument<Comment>>> {
       // Retrieves posts and sorts them from most to least recent
-      return CommentModel.find({}).sort({dateCreated: -1}).populate('userId');
+      return CommentModel.find({}).sort({dateCreated: -1}).populate(['userId', 'postId']);
     }
 
    /**
@@ -54,7 +50,7 @@ class CommentCollection {
    * @return {Promise<HydratedDocument<Post>> | Promise<null> } 
    */
     static async findOne(commentId: Types.ObjectId | string): Promise<HydratedDocument<Comment>> {
-      return CommentModel.findOne({_id: commentId}).populate('userId');
+      return CommentModel.findOne({_id: commentId}).populate(['userId', 'postId']);
     }
 
   /**
@@ -64,8 +60,7 @@ class CommentCollection {
    * @return {Promise<HydratedDocument<Comments>[]>} - An array of all of the posts
    */
   static async findAllByPost(postIdToSearchFor: Types.ObjectId| string): Promise<Array<HydratedDocument<Comment>>> {
-    return CommentModel.find({postId: postIdToSearchFor}).populate('userId');
-    // return CommentModel.find({}).populate('userId');
+    return CommentModel.find({postId: postIdToSearchFor}).sort({dateCreated: -1}).populate(['userId', 'postId']);
   }
 
     /**

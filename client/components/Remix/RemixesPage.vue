@@ -1,14 +1,17 @@
 <template>
-    <main v-if="parentPost">
+    <main>
         <div class="parent">
             <h3>Parent Post</h3>
-            <PostComponent :key="parentPost.id" :post="parentPost" />
+            <div v-if="loading">
+                Loading post information...
+            </div>
+            <PostComponent v-else :key="parentPost.id" :post="parentPost" />
         </div>
         <section v-if="childPosts.length">
             <h3>Remixes of Parent Post</h3>
             <PostComponent v-for="remix in childPosts" :key="remix.id" :post="remix" />
         </section>
-        <section v-else>
+        <section v-else-if="!loading">
             <p>No Remixes for this post</p>
         </section>
     </main>
@@ -24,7 +27,8 @@ export default {
         return {
             parentPost: null,
             childPosts: [],
-            childPostIds: []
+            childPostIds: [],
+            loading: true
         }
     },
     methods: {
@@ -50,6 +54,7 @@ export default {
             try {
                 const r = await fetch(`/api/posts/id/${id}`, options);
                 const res = await r.json();
+                this.loading = false;
 
                 if (!r.ok) {
                 throw new Error(res.error);
@@ -109,6 +114,7 @@ export default {
         }
     },
     mounted() {
+        this.loading = true;
         this.getPost(this.$route.query.postId, true);
         this.getChildPosts();
         this.$store.commit('loadRemixes', this.$route.query.postId);

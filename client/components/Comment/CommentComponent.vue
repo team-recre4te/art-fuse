@@ -36,10 +36,12 @@
       }
     },
     data() {
-        return {}
+        return {
+          alerts: {}
+        }
     },
     methods: {
-        deleteComment() {
+      deleteComment() {
         /**
          * Deletes this comment.
          */
@@ -47,8 +49,8 @@
             method: 'DELETE',
         };
         this.comment_request(params);
-        },
-        async comment_request(params) {
+      },
+      async comment_request(params) {
         /**
          * Submits a request to the comment's endpoint
          * @param params - Options for the request
@@ -58,23 +60,20 @@
         const options = {
             method: params.method, headers: {'Content-Type': 'application/json'}
         };
-        console.log(options);
         
         try {
-            const r = await fetch(`/api/comments/${this.comment.id}`, options);
+            const r = await fetch(`/api/comments/${this.comment._id}`, options);
             if (!r.ok) {
             const res = await r.json();
             throw new Error(res.error);
             }
-            // console.log(r);
 
-            // add something here to refresh??
             this.$emit('comment_deleted');
         } catch (e) {
             this.$set(this.alerts, e, 'error');
             setTimeout(() => this.$delete(this.alerts, e), 3000);
         }
-        },
+      },
     },
   };
 </script>

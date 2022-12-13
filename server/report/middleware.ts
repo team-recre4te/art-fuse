@@ -73,36 +73,36 @@ const isNotReported = async (req: Request, res: Response, next: NextFunction) =>
   /**
  * Checks if a postId in req.body is valid, that is, it matches the username regex
  */
-  const isAncestorOfPost = async (req: Request, res: Response, next: NextFunction) => {
-    console.log(req.params.postId)
-  const user = await UserCollection.findOneByUserId(req.session.userId);
-  const validFormat = Types.ObjectId.isValid(req.params.postId);
-  const ancestors = validFormat ? await PostCollection.findAllAncestors(req.params.postId) : '';
+//   const isAncestorOfPost = async (req: Request, res: Response, next: NextFunction) => {
+//     console.log(req.params.postId)
+//   const user = await UserCollection.findOneByUserId(req.session.userId);
+//   const validFormat = Types.ObjectId.isValid(req.params.postId);
+//   const ancestors = validFormat ? await PostCollection.findAllAncestors(req.params.postId) : '';
   
-  console.log(ancestors)
-  if (ancestors === '') {
-    res.status(404).json({
-      error: `Post with post ID ${req.body.postId} does not exist.`
-    });
-    return;
-  }
+//   console.log(ancestors)
+//   if (ancestors === '') {
+//     res.status(404).json({
+//       error: `Post with post ID ${req.body.postId} does not exist.`
+//     });
+//     return;
+//   }
 
-  if(!ancestors.includes(user)) {
-    res.status(304).json({
-      error: 'You must be an ancestor of this post to report it.'
-    });
-    return;
-  }
+//   if(!ancestors.includes(user)) {
+//     res.status(304).json({
+//       error: 'You must be an ancestor of this post to report it.'
+//     });
+//     return;
+//   }
 
-  next();
-};
+//   next();
+// };
 
 export {
   isNotReported, 
   isReported,
   isValidPostId,
   isPostExists,
-  isAncestorOfPost
+  // isAncestorOfPost
 }
 
   

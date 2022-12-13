@@ -182,6 +182,7 @@ export default {
   padding: 0px;
   color: #DCA73E;
   font-size: 16px;
+  cursor: pointer;
 }
 
 .tags {

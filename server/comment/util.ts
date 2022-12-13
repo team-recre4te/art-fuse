@@ -11,8 +11,8 @@ import type {Post, PopulatedPost} from '../post/model';
 
 type CommentResponse = {
   _id: string;
-  user: string;
-  post: PostResponse | null;
+  author: string;
+  postId: Post;
   content: string;
   dateCommented: string;
 };
@@ -32,7 +32,7 @@ const formatDate = (date: Date): string => moment(date).format('MMMM Do YYYY, h:
  * @param {HydratedDocument<Comment>} comment - A comment
  * @returns {CommentResponse} - The comment object formatted for the frontend
  */
- const constructCommentResponse = async (comment: HydratedDocument<Comment>): Promise<CommentResponse> => {
+ const constructCommentResponse = (comment: HydratedDocument<Comment>): CommentResponse => {
     const commentCopy: PopulatedComment = {
       ...comment.toObject({
         versionKey: false // Cosmetics; prevents returning of __v property
@@ -41,18 +41,18 @@ const formatDate = (date: Date): string => moment(date).format('MMMM Do YYYY, h:
     const {username} = commentCopy.userId;
     // const {content} = commentCopy.content;
 
-    let post = null;
-    const target_post = await PostModel.findOne({_id: commentCopy.postId});
-    post = constructPostResponse(target_post); //inside constructPostResponse we don't use await 
+    // let post = null;
+    // const target_post = await PostModel.findOne({_id: commentCopy.postId});
+    // post = constructPostResponse(target_post); //inside constructPostResponse we don't use await 
   
     delete commentCopy.userId;
     
     return {
       ...commentCopy, // return all the fields of comment copy
       _id: commentCopy._id.toString(),
-      user: username,
+      author: username,
       // content: content,
-      post: post,
+      // post: null,
       dateCommented: formatDate(comment.dateCommented),
     };
   };

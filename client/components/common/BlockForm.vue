@@ -240,6 +240,8 @@ export default {
 
       if (this.hasBody) {
         if (this.url === '/api/posts') {
+          this.title = this.title ? this.title.trim() : null;
+          this.description = this.description ? this.description.trim() : null;
           
           if (this.title === ''){
             this.$set(this.alerts, Error('Please insert a title'), 'error');
@@ -310,7 +312,8 @@ export default {
         }
 
         var newPostRes;
-        if (this.makeRemix || this.category !== '' || this.$refs.tagsChildRef[0].draftTags.length > 0) {
+        const tagsCompRef = this.$refs.tagsChildRef !== undefined && this.$refs.tagsChildRef.length > 0 ? this.$refs.tagsChildRef[0] : this.$refs.tagsChildRef;
+        if (this.makeRemix || this.category !== '' || (this.$refs.tagsChildRef !== undefined && tagsCompRef.draftTags.length > 0)) {
           newPostRes = await r.json();
         }
 
@@ -319,9 +322,9 @@ export default {
         }
 
         // save tags
-        if (this.$refs.tagsChildRef[0].draftTags.length > 0) {
+        if (this.$refs.tagsChildRef !== undefined && tagsCompRef.draftTags.length > 0) {
           const postId = newPostRes["post"]["id"];
-          this.$refs.tagsChildRef[0].saveTags(postId);
+          tagsCompRef.saveTags(postId);
         }
         
         if (this.makeRemix) {

@@ -43,6 +43,16 @@ import LikeModel from './model';
     }
 
     /**
+     * Find all likes for postId.
+     *
+     * @param {string} postId - The postId of the post to find the like on
+     * @return {Promise<HydratedDocument<Like>> | Promise<null>} - The like with the given postId, if any
+     */
+    static async findAllByPostId(postId: Types.ObjectId | string): Promise<Array<HydratedDocument<Like>>> {
+        return LikeModel.find({postId}).populate('userId');
+    }
+
+    /**
      * Delete all the likes by a given user
      *
      * @param {string} userId - The id of the user

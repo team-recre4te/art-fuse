@@ -21,7 +21,7 @@ export type Comment = {
 export type PopulatedComment = {
   _id: Types.ObjectId; // MongoDB assigns each object this ID on creation
   userId: User; // the user who comments on the Post
-  postId: Post
+  postId: Post;
   content: string;
   dateCommented: Date;
 };

@@ -2,7 +2,19 @@ import type {HydratedDocument} from 'mongoose';
 import moment from 'moment';
 import type {Post, PopulatedPost} from '../post/model';
 
+import type {Comment} from '../comment/model';
+import * as commentUtil from '../comment/util';
+import { CommentResponse } from '../comment/util';
+import type {User} from '../user/model';
+import { Category } from '../category/model';
+import { Tag } from '../tag/model';
+import { Like } from '../like/model';
+import { Remix } from '../remix/model';
+import * as remixUtil from '../remix/util';
+import { Report } from '../report/model';
+
 type PostResponse = {
+  // main post info
   _id: string;
   author: string;
   title: string;
@@ -11,9 +23,15 @@ type PostResponse = {
   images: string[];
   dateCreated: string;
   dateModified: string;
-  parentTitle?: string;
-  parent?: string;
-  // reportStatus? 
+
+  // other post info
+  parentId: Post;
+  category: Category;
+  tags: Tag[];
+  likes: Like[];
+  comments: CommentResponse[];
+  remixes: Remix[];
+  reports: Report[];
 };
 
 /**
@@ -40,6 +58,7 @@ const constructPostResponse = (post: HydratedDocument<Post>): PostResponse => {
 
   const {username} = postCopy.authorId;
   delete postCopy.authorId;
+  const postComments = post.comments ? post.comments.map(commentUtil.constructCommentResponse) : [];
 
   return {
     ...postCopy,
@@ -47,10 +66,16 @@ const constructPostResponse = (post: HydratedDocument<Post>): PostResponse => {
     author: username,
     dateCreated: formatDate(post.dateCreated),
     dateModified: formatDate(post.dateModified),
+    parentId: post.parentId,
+    category: post.category,  
+    likes: post.likes,
+    comments: postComments,
+    remixes: post.remixes,
+    reports: post.reports
   };
 };
 
 export {
-    constructPostResponse,
-    PostResponse
+  constructPostResponse,
+  PostResponse
 };

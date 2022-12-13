@@ -22,6 +22,7 @@
     <section>
       <header class="post-header">
         <h3>Posts</h3>
+        
         <div>
           <SearchBar 
             @searched="handleSearch" 
@@ -442,12 +443,14 @@ section .scrollbox {
 
 .post-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
+  flex-direction: column;
 }
 
 .post-header div {
   display: block;
   min-width: 280px;
+  width: 100%;
 }
 
 .post-header h3 {

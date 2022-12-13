@@ -19,6 +19,7 @@ export default {
       fields: [
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
         {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
+        {id: 'tags', label: 'Tags'},
         {id: 'files', label: 'Files', accept: ''},
         {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'}
       ],

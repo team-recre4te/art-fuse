@@ -47,7 +47,7 @@ class ReportCollection {
    * @param {string} postId - The postId of post that reports are being searched for
    * @return {Promise<HydratedDocument<Report>[]>} - An array of all of the posts
    */
-   static async findAllByPostId(postId: string): Promise<Array<HydratedDocument<Report>>> {
+   static async findAllByPostId(postId: Types.ObjectId | string): Promise<Array<HydratedDocument<Report>>> {
     return ReportModel.find({postId}).populate('postId');
   }
 

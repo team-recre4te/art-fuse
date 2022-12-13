@@ -2,7 +2,7 @@
 
 <template>
   <article class="post" >
-    <div :class="{'overlay-reported': reported}">
+    <div :class="{'overlay-reported': postIsReported}">
     </div>
     <header class="post-header columns">
       <div>
@@ -64,6 +64,8 @@
     <div class="columns">
       <div :class="{ 'post-info': post.images.length > 0 }">
         <!-- Category, parent post, description, and tags on right side -->
+        <h5 v-if="post.parentId" class="section-label" style="margin-top: 10px;">Remixed From</h5>
+        <p v-if="post.parentId" style="margin: 5px 0px;">{{ post.parentId.title }}</p>
 
         <h5 class="section-label">Description</h5>
         <textarea
@@ -103,9 +105,8 @@
             <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{category}}</button>
             <button v-else @click="getCategoryPosts">{{category}}</button>
           </div>
-          </div>
-        <h5 v-if="remixedFrom" class="section-label" style="margin-top: 10px;">Remixed From -</h5>
-        <p v-if="remixedFrom" style="margin-top: 5px;">{{ remixedFrom }}</p>
+        </div>
+
         <div>
           <TagsComponent 
             ref="tagsChildRef"
@@ -218,18 +219,18 @@
               @click="unlikePost"
               class="icon-btn"
             > 
-              💛 {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
+              💛 {{ post.likes.length }} {{ post.likes.length == 1 ? 'Like' : 'Likes' }}
             </button>
             <button
               v-else
               @click="likePost"
               class="icon-btn"
             >
-              ♡ {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}
+              ♡ {{ post.likes.length }} {{ post.likes.length == 1 ? 'Like' : 'Likes' }}
             </button>
           </div>
           <div v-else>
-            <p>💛 {{ post.likedBy.length }} {{ post.likedBy.length == 1 ? 'Like' : 'Likes' }}</p>
+            <p>💛 {{ post.likes.length }} {{ post.likes.length == 1 ? 'Like' : 'Likes' }}</p>
           </div>
         </div>
       </div>
@@ -238,17 +239,17 @@
         <button
           style="border: 0px;"
           @click="showComments = !showComments" class="icon-btn">
-          💬 {{comments.length}} Comments
+          💬 {{post.comments.length}} Comments
         </button>
       </div>
       <div class="right-border">
         <!-- Remixes -->
         <router-link class="remixes-link" :to="{ name: 'Remixes', query: { postId: post._id }}">
-          🔀 {{ remixesCount }} Remixes
+          🔀 {{ post.remixes.length }} Remixes
         </router-link>
       </div>
       
-      <div style="border-bottom-right-radius: 10px;" v-if="$store.state.username && !reported">
+      <div style="border-bottom-right-radius: 10px;" v-if="$store.state.username && !postIsReported">
         <!-- Report -->
         <div>
           <div class="actions">
@@ -270,10 +271,10 @@
           </div>
         </div>
       </div>
-      <div v-else-if="reported" style="border-bottom-right-radius: 10px;">
+      <div v-else-if="postIsReported" style="border-bottom-right-radius: 10px;">
         <!-- Reported -->
         <p>
-          Reported
+          🚩 Reported
         </p>
       </div>
 
@@ -287,10 +288,10 @@
         />
       </section>
       <section
-        v-if="comments.length"
+        v-if="post.comments.length"
       >
         <CommentComponent
-          v-for="comment in comments"
+          v-for="comment in post.comments"
           :key="comment.id"
           :comment="comment"
           @comment_deleted="getComments"
@@ -392,24 +393,11 @@ export default {
       category: '',
       categoryId: '',
       draftCategory: '',
-      reported: false,
       showRemixes: false,
-      remixesCount: 0,
-      remixedFrom: '',
-      reported: false,
     };
   },
   mounted() {
-    // TODO: temporary
-    this.getRemixesOfThisPost();
-    this.getRemixedFrom();
-    this.checkIfReported();
-
-    // // TODO: temporary, don't think this lets comments update when needed
-    // this.getCategory();
-    // this.getComments();
-
-    // const tagNames = this.post.tags.map(tag => { return tag.name });
+    
   },
   methods: {
     handleSearch(value) {
@@ -487,8 +475,9 @@ export default {
         method: 'POST',
         message: 'Successfully liked post!',
         body: JSON.stringify({postId: this.post._id}),
-        callback: () => {
+        callback: (res) => {
           this.liking = false;
+          this.post.likes.push(res.like);
           this.$store.commit('refreshPosts');
         }
       };
@@ -499,13 +488,6 @@ export default {
         this.liking = true;
       }
     },
-    checkIfReported(){
-      const params = {
-        method: 'GET',
-        callback: () => {}
-      };      
-      this.request(`reports?postId=${this.post._id}`, params);
-    },
     unlikePost() {
       /**
        * Unlikes this post.
@@ -514,6 +496,7 @@ export default {
         method: 'DELETE',
         message: 'Successfully unliked post!',
         callback: () => {
+          // TODO: make unlike faster ??
           this.liking = false;
           this.$store.commit('refreshPosts');
         }
@@ -577,34 +560,13 @@ export default {
       };      
       this.request(`comments?postId=${this.post._id}`, params);
     },
-    getCategory() {
-      const params = {
-        method: 'GET',
-        callback: () => {}
-      };
-      this.request(`categories?postId=${this.post._id}`, params);
-    },
-    async getRemixedFrom() {
-      const params = {
-        method: 'GET',
-        callback: () => { }
-      };      
-      this.request(`remix/parent?postId=${this.post._id}`, params);
-    },
-    async getRemixesOfThisPost() {
-      const params = {
-        method: 'GET',
-        callback: () => { }
-      };      
-      this.request(`remix?postId=${this.post._id}`, params);
-    },
     reportPost() {
       const params = {
         method: 'POST',
         message: 'Successfully reported post!',
         body: JSON.stringify({postId: this.post._id}),
-        callback: () => {
-          this.reported = true;
+        callback: (res) => {
+          this.post.reports.push(res.report)
         }
       }
       this.request(`reports/`, params);
@@ -701,20 +663,7 @@ export default {
         }
 
         if (path === `comments?postId=${this.post._id}`) {
-          const comments = [];
-
-          for (var i = 0; i < res.length; i++) {
-            comments.push({author: res[i]['user'], content: res[i]['content'], dateCreated: res[i]['dateCreated'], id:  res[i]['_id'], freetId:  res[i]['freetId']});
-          }
-          this.comments = comments;
-        } else if (path === `remix?postId=${this.post._id}`) {
-          if (res.length > 0) {
-          }
-          this.remixesCount = res.length;
-        } else if (path === `remix/parent?postId=${this.post._id}`) {
-          if (res.length > 0) {
-            this.remixedFrom = res[0].parentId.title + ' by ' + res[0].parentId.authorId.username;
-          }
+          this.post.comments = res;
         }
 
         if (path === `categories?postId=${this.post._id}`) {
@@ -723,14 +672,8 @@ export default {
             this.categoryId = res[0]["_id"];
           }
         }
-        
-        else if (path === `reports?postId=${this.post._id}`) {
-          if(res.length > 0){
-            this.reported = true;
-          }
-        }
 
-        params.callback();
+        params.callback(res);
       } catch (e) {
         this.liking = false;
 
@@ -753,19 +696,17 @@ export default {
       return this.postLikedBy.includes(this.$store.state.username);
     },
     postLikedBy() {
-      return this.post.likedBy.map(like => { return like.userId.username });
+      return this.post.likes.map(like => { return like.userId.username });
     },
     postFilesToDisplay() {
       return this.editing ? this.draftFiles : this.post.files.concat(this.post.images);
     },
     postImagesToDisplay() {
       return this.editing ? this.draftImages : this.post.images;
+    },
+    postIsReported() {
+      return this.post.reports.length > 0;
     }
-  },
-  created() {
-    // remove
-    this.getCategory();
-    this.getComments();
   },
 };
 </script>
@@ -793,10 +734,6 @@ export default {
   border-radius: 12px;
   width:100%;
 }
-
-.tag {
-        cursor: pointer;
-    }
 
 .author {
   margin: 0px;
@@ -944,6 +881,11 @@ export default {
   font-weight: 700;
   font-size: 14px;
   margin-top: 20px;
+  padding-left: 0px;
+}
+
+.files-btn:hover {
+  opacity: 0.8;
 }
 
 .description {
@@ -971,6 +913,10 @@ export default {
 
 .author-link {
   color: #904D29;
+}
+
+.author-link:hover {
+  opacity: 0.6;
 }
 
 .remixes-link {
