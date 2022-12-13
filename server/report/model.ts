@@ -7,6 +7,7 @@ export type Report = {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   postId: Types.ObjectId;
+  reason: string;
 }
 
 export type PopulatedReport = {
@@ -14,6 +15,8 @@ export type PopulatedReport = {
   userId: User;
   postId: Post;
   reportStatus: Boolean;
+  reason: string;
+
 }
 
 const ReportSchema = new Schema<Report>({
@@ -27,6 +30,10 @@ const ReportSchema = new Schema<Report>({
     required: true,
     ref: 'Post'
   },
+  reason: {
+    type: String,
+    required: false // true,
+  }
 });
 
 const ReportModel = model<Report>('Report', ReportSchema);

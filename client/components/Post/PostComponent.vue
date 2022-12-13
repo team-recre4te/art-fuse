@@ -64,14 +64,6 @@
     <div class="columns">
       <div :class="{ 'post-info': post.images.length > 0 }">
         <!-- Category, parent post, description, and tags on right side -->
-        <div v-if="category !== ''" class="columns">
-          <div class="category-btn">
-            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{category}}</button>
-            <button v-else @click="getCategoryPosts">{{category}}</button>
-          </div>
-          </div>
-        <h5 v-if="remixedFrom" class="section-label" style="margin-top: 10px;">Remixed From -</h5>
-        <p v-if="remixedFrom" style="margin-top: 5px;">{{ remixedFrom }}</p>
 
         <h5 class="section-label">Description</h5>
         <textarea
@@ -87,6 +79,33 @@
           <p>{{ post.description }}</p>
         </div>
 
+        <div v-if="editing" class="columns">
+          <div class="category-btn" v-if="draftCategory === 'Digital Art'" style="background-color: #3E7DDC;">Digital Art</div>
+          <div class="category-btn" v-else @click="editDigitalArt">Digital Art</div>
+            
+          <div class="category-btn" v-if="draftCategory === 'Music'" style="background-color: #3E7DDC;">Music</div>
+          <div class="category-btn" v-else @click="editMusic">Music</div>
+
+          <div class="category-btn" v-if="draftCategory === 'Dance'" style="background-color: #3E7DDC;">Dance</div>
+          <div class="category-btn" v-else @click="editDance">Dance</div>
+        
+          <div class="category-btn" v-if="draftCategory === '3D Modeling'" style="background-color: #3E7DDC;">3D Modeling</div>
+          <div class="category-btn" v-else @click="edit3DModeling">3D Modeling</div>
+        
+          <div class="category-btn" v-if="draftCategory === 'Drawing Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
+          <div class="category-btn" v-else @click="editDrawingPainting">Drawing & Painting</div>
+          
+          <div class="category-btn" v-if="draftCategory === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
+          <div class="category-btn" v-else @click="editTheater">Theater</div>
+        </div>
+        <div v-else-if="(category !== '')" class="columns">
+          <div class="category-btn">
+            <button v-if="selected" @click="getCategoryPosts" style="background-color: #923edc;">{{category}}</button>
+            <button v-else @click="getCategoryPosts">{{category}}</button>
+          </div>
+          </div>
+        <h5 v-if="remixedFrom" class="section-label" style="margin-top: 10px;">Remixed From -</h5>
+        <p v-if="remixedFrom" style="margin-top: 5px;">{{ remixedFrom }}</p>
         <div>
           <TagsComponent 
             ref="tagsChildRef"
@@ -319,7 +338,7 @@ export default {
     },
     searchText: {
       type: String,
-      required: true
+      required: false
     },
     getDigitalArt: {
       type: Function, 
@@ -371,6 +390,8 @@ export default {
       comments: [],
       showFiles: false,
       category: '',
+      categoryId: '',
+      draftCategory: '',
       reported: false,
       showRemixes: false,
       remixesCount: 0,
@@ -426,7 +447,31 @@ export default {
       this.draftFiles = this.post.files.slice();
       this.draftImages = this.post.images.slice();
       this.$refs.tagsChildRef.draftTags = this.post.tags.slice();
-
+      this.draftCategory = this.category;
+    },
+    editDance() {
+      this.draftCategory = "Dance";
+      return;
+    },
+    editDigitalArt() {
+      this.draftCategory = "Digital Art";
+      return;
+    },
+    editDrawingPainting() {
+      this.draftCategory = "Drawing Painting";
+      return;
+    },
+    edit3DModeling() {
+      this.draftCategory = "3D Modeling";
+      return;
+    },
+    editMusic() {
+      this.draftCategory = "Music";
+      return;
+    },
+    editTheater() {
+      this.draftCategory = "Theater";
+      return;
     },
     stopEditing() {
       /**
@@ -569,7 +614,7 @@ export default {
        * Updates post to have the submitted draft content.
        */
       // Check if description, title, or number of files/images was edited
-      var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length;
+      var postEdited = this.post.description !== this.draftDesc || this.post.title !== this.draftTitle || this.post.images.length != this.draftImages.length || this.post.files.length != this.draftFiles.length || this.draftCategory != this.category;
 
       if (!postEdited) {
         // Check if images, files, or tags were edited
@@ -597,6 +642,19 @@ export default {
         this.$set(this.alerts, error, 'error'); // Set an alert to be the error text, timeout of 3000 ms
         setTimeout(() => this.$delete(this.alerts, error), 3000);
         return;
+      }
+
+      if (this.category !== this.draftCategory) {
+        this.category = this.draftCategory;
+        const params = {
+          method: 'PATCH',
+          message: 'Successfully edited category!',
+          body: JSON.stringify({ 
+            name: this.draftCategory, 
+          }),
+          callback: () => {}
+        };
+        this.request(`categories/${this.categoryId}`, params);
       }
 
       const params = {
@@ -662,6 +720,7 @@ export default {
         if (path === `categories?postId=${this.post._id}`) {
           if (res.length > 0) {
             this.category = res[0]["name"] == 'Drawing Painting' ? 'Drawing & Painting' : (res[0]["name"] ?? '');
+            this.categoryId = res[0]["_id"];
           }
         }
         
@@ -704,6 +763,7 @@ export default {
     }
   },
   created() {
+    // remove
     this.getCategory();
     this.getComments();
   },

@@ -8,13 +8,15 @@ class ReportCollection {
      *
      * @param {string} userId - The userId of the person reporting the post
      * @param {string} postId - The postId of the post to report
+     * @param {string} reason - The reason for the report or type of report 
      * @return {Promise<HydratedDocument<Like>>} - The newly created report
      */
-  static async addOne(userId: Types.ObjectId | string, postId: Types.ObjectId | string): Promise<HydratedDocument<Report>> {
+  static async addOne(userId: Types.ObjectId | string, postId: Types.ObjectId | string, reason: string): Promise<HydratedDocument<Report>> {
 
     const report = new ReportModel({
         userId,
         postId,
+        reason,
     });
     await report.save();
     return report.populate('postId');

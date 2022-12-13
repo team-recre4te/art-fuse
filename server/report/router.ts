@@ -37,6 +37,7 @@ router.get(
  * @name POST /api/reports
  *
  * @param {string} postId - The id of the post to be reported
+ * @param {string} reportType - The type of the report, explains what harm the post causes
  * @return {ReportResponse} - An object with report details
  * @throws {403} - If the user is not logged in
  * @throws {400} - If postId is not in the correct format or missing in the req
@@ -56,7 +57,7 @@ router.post(
   ],
   async (req: Request, res: Response) => {
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
-    const report = await ReportCollection.addOne(userId, req.body.postId);
+    const report = await ReportCollection.addOne(userId, req.body.postId, req.body.reportType);
 
     res.status(200).json({
       message: 'Your report was added successfully',

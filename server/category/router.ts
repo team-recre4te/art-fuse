@@ -88,6 +88,27 @@ router.post(
 );
 
 /**
+ * Modify a category
+ *
+ * @name PATCH /api/categories/:id
+ *
+ * @param {string} name - the new name for the category
+\ * @return {CategoryResponse} - the updated category
+ */
+ router.patch(
+  '/:categoryId?',
+  [
+  ],
+  async (req: Request, res: Response) => {
+    const category = await CategoryCollection.updateOne(req.params.categoryId, req.body.name);
+    res.status(200).json({
+        message: 'Your post was updated successfully.',
+        post: util.constructCategoryResponse(category)
+      });
+    }
+  );
+
+/**
  * Delete a category
  *
  * @name DELETE /api/categories/:id

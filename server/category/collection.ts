@@ -78,6 +78,20 @@ class CategoryCollection {
     await CategoryModel.deleteMany({postId});
   }
 
+  /**
+   * Update a category
+   *
+   * @param {string} categoryId - The id of the category to be updated
+   * @param {string} name - The new name of the category
+   * @return {Promise<HydratedDocument<Category>>} - The newly updated category
+   */
+   static async updateOne(categoryId: Types.ObjectId | string, name: string, ): Promise<HydratedDocument<Category>> {
+    const category = await CategoryModel.findOne({_id: categoryId});
+    category.name = name;
+    await category.save();
+    return category;
+  }
+
 }
 
 export default CategoryCollection;
