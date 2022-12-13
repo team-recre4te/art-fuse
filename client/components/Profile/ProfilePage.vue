@@ -7,11 +7,9 @@
       <h2 class="title">@{{ $route.query.author }}</h2>
       <p class="date-joined" v-if="dateJoined">Joined at {{ dateJoined }}</p>
       <section class="bio" v-if="bio.length">
-        <h3>Bio:</h3>
-        <p>{{ bio }}</p>
+        <h3>Bio: {{ bio }}</h3>
       </section>
       <section class="bio" v-else>
-        <h3>Bio:</h3>
         <router-link to="/account">Add Bio</router-link>
       </section>
     </header>

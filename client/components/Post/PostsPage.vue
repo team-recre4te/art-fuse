@@ -4,20 +4,11 @@
   <main>
     <section v-if="$store.state.username">
       <header>
-        <h2>Welcome @{{ $store.state.username }}</h2>
+        <div style="font-size: 40px; padding-top: 30px; ">Welcome @{{ $store.state.username }}</div>
       </header>
     </section>
-    <section v-else>
-      <!-- <header>
-        <h2>Art Fuse</h2>
-      </header>
-      <article>
-        <h4>
-          <router-link to="/login">Sign in</router-link>
-          to create your own posts.
-        </h4>
-      </article> -->
-      <div class = "row" id="info">
+    <section v-else style="height: 100vh;">
+      <div class = "row" style="height: 85vh;" id="info">
 
         <div class="first-column">
         <header>
@@ -54,7 +45,7 @@
 
       </div>
 
-      <div class="row" id="scrollBtn">
+      <div class="row" style="height: 15vh;" id="scrollBtn">
         <button onclick="document.getElementById('posts').scrollIntoView({behavior: 'smooth'});" id="myBtn" title="Browse Posts">Browse Posts ⬇️</button>
       </div>
         
@@ -462,7 +453,7 @@ export default {
   margin-left: -5em;
   margin-right: -5em;
   padding: 2%;
-
+  height: 80vh;
 }
 
 #scrollBtn{
@@ -558,7 +549,7 @@ section .scrollbox {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  padding: 2%;
+  padding: 30px;
 }
 
 .post-header div {
