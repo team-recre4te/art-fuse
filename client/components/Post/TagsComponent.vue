@@ -2,30 +2,36 @@
 <template>
   <section>
     <div class="tags">
-      <button
-        class="tag"
-        :class="{ editableTag: editing, selected: searchText == tag.name }"
-        v-for="tag in tagsToDisplay"
-        :key="tag._id"
-        :tag="tag"
-        @click="editing ? removeTagFromDrafts(tag) : searchForTag(tag)"
-      >
-        #{{tag.name}} <span>x</span>
-      </button>
-      
       <div v-if="editing" :class="{ 'display-inline': displayInline }">
         <input type="text" 
               :value="newTag"
               @input="newTag = $event.target.value"
+              placeholder="Type tag"
         >
         <div>
           <button @click="addTagToDrafts()" style="margin-right: 8px;" type="button">Add Tag</button>
           <button @click="clearAllTagsFromDrafts()" type="button">Clear Tags</button>
         </div>
+
+        <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
+        <p v-else style="opacity: 0;" class="error">placeholder</p>
       </div>
 
-      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
-      <p v-else style="opacity: 0;" class="error">placeholder</p>
+      <div>
+        <button
+          class="tag"
+          :class="{ 'clickable-tag': clickable, selected: searchText == tag.name }"
+          v-for="tag in tagsToDisplay"
+          :key="tag._id"
+          :tag="tag"
+          @click="editing ? removeTagFromDrafts(tag) : searchForTag(tag)"
+          :disabled="!clickable"
+        >
+          #{{tag.name}}
+        </button>
+        <!-- placeholder for spacing -->
+        <button class="tag" style="opacity:0;">#</button>
+      </div>
     </div>
   </section>
 </template>
@@ -49,6 +55,10 @@ export default {
     searchText: {
       type: String,
       required: false
+    },
+    clickable: {
+      type: Boolean,
+      required: true
     }
   },
   data() {
@@ -175,30 +185,32 @@ export default {
 </script>
 
 <style scoped>
+.tags {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 .tag {
   background-color: transparent;
   border: none;
   margin-right: 5px;
+  margin-bottom: 0px;
   padding: 0px;
   color: #DCA73E;
   font-size: 16px;
-  cursor: pointer;
 }
 
-.tags {
-  margin-top: 10px;
+.clickable-tag {
+  cursor: pointer;
 }
 
 .tag span {
   display: none;
 }
 
-.tag:hover {
+.clickable-tag:hover {
   opacity: 0.6;
-}
-
-.editableTag:hover span {
-  display: inline-block;
 }
 
 .add-tag-btn {
@@ -215,12 +227,14 @@ export default {
 
 input {
   margin-right: 5px;
+  font-size: 1em;
 }
 
 .error {
   color: red;
   font-size: 12px;
-  margin: 4px 0px 4px 0px; /* top, right, bottom, left */
+  margin: 4px 0px 4px 6px; /* top, right, bottom, left */
+
 }
 
 .display-inline {

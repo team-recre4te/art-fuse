@@ -8,35 +8,96 @@
       v-if="fields.length"
     >
       <div
+        class="field"
         v-for="field in fields"
         :key="field.id"
       >
-        <label :for="field.id">{{ field.label }}:</label>
         <textarea
           v-if="field.id === 'description'"
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
+          :placeholder="field.placeholder"
         />
-        <div v-else-if="field.id === 'images' || field.id === 'files'">
-          <input 
-            type="file"
-            :id="field.id"
-            :name="field.id"
-            :accept="field.accept"
-            @change="field.id === 'images' ? uploadImages($event) : uploadFiles($event);"
-            :ref="field.id"
-            style="display: none"
-            multiple
-          >
-          <input type="button" :value="'Choose ' + field.id" @click="$refs[field.id][0].click()" />
+        <div v-else-if="field.id === 'files-and-images'">
+          <div class="files-and-images">
+            <input 
+              type="file"
+              id="files"
+              name="files"
+              accept="image/png, image/jpeg, image/webp, audio/mp3, audio/wav, audio/ogg, .pdf"
+              @change="uploadFiles($event);"
+              ref="files"
+              style="display: none"
+              multiple
+            >
+            <div class="upload-section">
+              <button class="icon-btn" type="button" @click="$refs['files'][0].click()">
+                <img src="../../public/assets/file-upload.png" alt="">
+                <p>Supporting Files</p> 
+              </button>
+              <ul v-if="field.id === 'files-and-images' && files.length" >
+                <li style="opacity: 0;">placeholder</li>
+                <li v-for="file in files" :key="file.name">
+                  {{file.name}}
+                </li>
+                <button type="button" @click="clearFiles()">Clear Files</button>
+              </ul>
+            </div>
+
+            <span>/</span>
+
+            <input 
+              type="file"
+              id="images"
+              name="images"
+              accept="image/png, image/jpeg, image/webp"
+              @change="uploadImages($event)"
+              ref="images"
+              style="display: none"
+              multiple
+            >
+            <div class="upload-section">
+              <button class="icon-btn" type="button" @click="$refs['images'][0].click()">
+                <img src="../../public/assets/image-icon.png" alt="">
+                <p>Displayed Images</p> 
+              </button>
+              <ul v-if="field.id === 'files-and-images' && images.length">
+                <li style="opacity: 0;">placeholder</li>
+                <li v-for="image in images" :key="image.name">
+                  {{image.name}}
+                </li>
+                <button type="button" @click="clearImages()">Clear Images</button>
+              </ul>
+            </div>
+          </div>
         </div>
-        <div v-else-if="field.id === 'tags'">
+        <div v-else-if="field.id === 'tags'" style="margin-top: -5px;">
           <TagsComponent 
             ref="tagsChildRef"
             :editing="true"
             :displayInline="true"
+            :clickable="false"
           />
+        </div>
+        <div v-else-if="field.id === 'category'" class="category-btn columns">          
+          <button v-if="category === 'Digital Art'" type="button" style="background-color: #923edc;">Digital Art</button>
+          <button v-else @click="addDigitalArt" type="button">Digital Art</button>
+              
+          <button v-if="category === 'Music'" type="button" style="background-color: #923edc;">Music</button>
+          <button v-else @click="addMusic" type="button">Music</button>
+
+          <button v-if="category === 'Dance'" type="button" style="background-color: #923edc;">Dance</button>
+          <button v-else @click="addDance" type="button">Dance</button>
+          
+          <button v-if="category === '3D Modeling'" type="button" style="background-color: #923edc;">3D Modeling</button>
+          <button v-else @click="add3DModeling" type="button">3D Modeling</button>
+          
+          <button v-if="category === 'Drawing Painting'" type="button" style="background-color: #923edc;">Drawing & Painting</button>
+          <button v-else @click="addDrawingPainting" type="button">Drawing & Painting</button>
+          
+          <button v-if="category === 'Theater'" type="button" style="background-color: #923edc;">Theater</button>
+          <button v-else @click="addTheater" type="button">Theater</button>
         </div>
         <input
           v-else
@@ -44,49 +105,10 @@
           :name="field.id"
           :value="field.value"
           @input="field.value = $event.target.value"
+          :placeholder="field.placeholder"
         >
-        <ul v-if="field.id === 'files' && files.length" >
-          <li
-            v-for="file in files"
-            :key="file.name"
-          >
-            {{file.name}}
-          </li>
-          <button type="button" @click="clearFiles()">Clear Files</button>
-        </ul>
-        <div v-if="field.id === 'images' && images.length">
-          <img 
-            v-for="image in images"
-            :key="image.name"
-            :src="image.file"
-            height=200
-            alt=""
-          > 
-          <button type="button" @click="clearImages()">Clear Images</button>
-        </div>
       </div>
 
-      <div v-if="(fields.length === 5)" class="columns">
-      
-        <div class="category-btn" v-if="category === 'Digital Art'" style="background-color: #3E7DDC;">Digital Art</div>
-        <div class="category-btn" v-else @click="addDigitalArt">Digital Art</div>
-            
-        <div class="category-btn" v-if="category === 'Music'" style="background-color: #3E7DDC;">Music</div>
-        <div class="category-btn" v-else @click="addMusic">Music</div>
-
-        <div class="category-btn" v-if="category === 'Dance'" style="background-color: #3E7DDC;">Dance</div>
-        <div class="category-btn" v-else @click="addDance">Dance</div>
-        
-        <div class="category-btn" v-if="category === '3D Modeling'" style="background-color: #3E7DDC;">3D Modeling</div>
-        <div class="category-btn" v-else @click="add3DModeling">3D Modeling</div>
-        
-        <div class="category-btn" v-if="category === 'Drawing Painting'" style="background-color: #3E7DDC;">Drawing & Painting</div>
-        <div class="category-btn" v-else @click="addDrawingPainting">Drawing & Painting</div>
-        
-        <div class="category-btn" v-if="category === 'Theater'" style="background-color: #3E7DDC;">Theater</div>
-        <div class="category-btn" v-else @click="addTheater">Theater</div>
-    </div>
-    
     </article>
 
     <article v-else>
@@ -94,7 +116,9 @@
     </article>
 
     <button
+      class="submit-btn"
       type="submit"
+      :class="{ 'disabled-btn': fields.length == 5 ? !isValidForm : false }"
     >
       {{ buttonText ? buttonText : title }}
     </button>
@@ -113,7 +137,6 @@
 
 <script>
 import TagsComponent from '@/components/Post/TagsComponent.vue';
-
 
 export default {
   name: 'BlockForm',
@@ -140,6 +163,8 @@ export default {
       makeRemix:false,
       alerts: {}, // Displays success/error messages encountered during form submission
       callback: null, // Function to run after successful form submission
+      newTitle: '',
+      description: '', 
       images: [],
       files: [],
       category: '',
@@ -174,6 +199,8 @@ export default {
     },
     addDance() {
       this.category = "Dance";
+      console.log("setting to dance");
+      console.log(this.category);
       return;
     },
     addDigitalArt() {
@@ -232,32 +259,45 @@ export default {
         credentials: 'same-origin' // Sends express-session credentials with request
       };
 
-      // // temporary solution for checking if it's the create post form, will add an input variable later to specify
-      // if (this.category === '' && this.fields === 4) {
-      //   this.$set(this.alerts, Error('Please select a category'), 'error');
-      //   return;
-      // }
-
       if (this.hasBody) {
         if (this.url === '/api/posts') {
           this.title = this.title ? this.title.trim() : null;
           this.description = this.description ? this.description.trim() : null;
-          
-          if (this.title === ''){
-            this.$set(this.alerts, Error('Please insert a title'), 'error');
-            return;
-          }
-          if (this.description === ''){
-            this.$set(this.alerts, Error('Please add a description'), 'error');
-            return;
-          }
-          if (this.images.length === 0 && this.files.length === 0){
-            this.$set(this.alerts, Error('A post must contain either images or files'), 'error');
-            return;
-          }
-          if (this.category === ''){
-            this.$set(this.alerts, Error('Please select a category'), 'error');
-            return;
+
+          if (!this.isValidForm) {
+            var e = null;
+            var errorFound = false;
+            this.fields.forEach(field => {
+              const {id, value} = field;
+              if (errorFound) {
+                return;
+              }
+              
+              if (id == 'title') {
+                if (value === undefined || value.trim().length == 0) {
+                  e = Error('Please insert a title')
+                  errorFound = true;
+                }
+              } else if (id == 'description'){
+                if (value === undefined || value.trim().length == 0) {
+                  e = Error('Please add a description')
+                  errorFound = true;
+                }
+              } else if (id == 'category') {
+                if (this.category === '') {
+                  e = Error('Please select a category')
+                  errorFound = true;
+                }
+              } else if (!this.isValidImagesOrFiles) {
+                e = Error('A post must contain either images or files')
+                errorFound = true;
+              }
+            })
+            if (e) {
+              this.$set(this.alerts, e, 'error');
+              setTimeout(() => this.$delete(this.alerts, e), 3000);
+              return;
+            }
           }
 
           const inputFields = Object.fromEntries(
@@ -369,19 +409,42 @@ export default {
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
     }
+  },
+  computed: {
+    isValidForm() {
+      for (const field in this.fields) {
+        if (field.id == 'title' || field.id == 'description'){
+          if (field.value.trim().length == 0) {
+            return false;
+          }
+        } else if (field.id == 'category'){
+          if (this.category == '') {
+            return false;
+          }
+        } else if (!this.isValidImagesOrFiles){
+          return false;
+        }
+      }
+      return true;
+    },
+    isValidImagesOrFiles() {
+      return (this.images ? this.images.length > 0 : true) || (this.files ? this.files.length > 0 : true);
+    }
   }
 };
 </script>
 
 <style scoped>
 form {
-  border: 1px solid #111;
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
   padding: 0.5rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 14px;
   position: relative;
+  border-radius: 10px;
 }
 
 article > div {
@@ -393,33 +456,44 @@ form > article p {
   margin: 0;
 }
 
-form h3,
-form > * {
-  margin: 0.3em 0;
+h3 {
+  margin: 20px 0px;
+}
+
+article {
+  margin: 0.3em 20px;
 }
 
 form h3 {
   margin-top: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+input {
+  font-size: 1em;
 }
 
 textarea {
-   font-family: inherit;
-   font-size: inherit;
+  font-family: inherit;
+  font-size: 1em;
+  height: 80px;
+  padding-left: 3px;
+  padding-top: 3px;
 }
 
-.category-btn {
-  background-color: #3e7ddc4e;
+.category-btn button {
+  background-color: #923edcab;
   border: none; 
   color: white; 
   padding: 10px 15px;
   border-radius: 20px;
   font-size: 12px;
-  margin-top: 10px;
-  display: table-cell;
+  margin-right: 10px;
 }
 
-.category-btn:hover {
-  background-color: #3E7DDC;
+.category-btn button:hover {
+  background-color: #923edc;
 }
 
 .columns {
@@ -427,5 +501,75 @@ textarea {
   width: 100%; /*Optional*/
   table-layout: fixed; /*Optional*/
   border-spacing: 10px; /*Optional*/
+}
+
+.submit-btn {
+  font-weight: bold;
+  padding: 8px 50px;
+  border: none;
+  border-radius: 16px;
+  color: white;
+  background-color: #EDBD48;
+  transition: .2s ease-in-out 0s;
+  margin: 15px 0px;
+}
+
+.submit-btn:hover {
+  transform: scale(1.1);
+  cursor: pointer;
+}
+
+.disabled-btn {
+  opacity: 0.7;
+}
+
+.files-and-images {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.files-and-images span {
+  font-size: 64px;
+  margin: 20px 20px;
+  color: #ccc;
+}
+
+.files-and-images p {
+  font-size: 20px;
+}
+
+.icon-btn {
+  border: none;
+  background: transparent;
+  color: rgb(74,74,74);
+  transition: .2s ease-in-out 0s;
+}
+
+.icon-btn:hover {
+  opacity: 0.3;
+}
+
+.icon-btn img {
+  width: 120px;
+  height: 120px;
+  opacity: 0.7;
+  padding: 10px;
+}
+
+.two-columns {
+  max-width: 1000px;
+  display: flex;
+  text-align: center;
+}
+
+.two-columns > * {
+  flex: 1;
+  width: 50%;
+}
+
+.upload-section {
+  min-width: 250px;
+  text-align: center;
 }
 </style>

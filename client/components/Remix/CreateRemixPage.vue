@@ -2,6 +2,7 @@
   <main v-if="parentPost">
     <p class="remix-title">Remixing From Post Titled - {{ parentPost.title }}</p>
     <p class="remix-info">Create a post inspired by {{ parentPost.title }}  and share your take on the subject</p>
+
     <CreateRemixForm :parentId=this.$route.params.postId />
   </main>
   <main v-else>
@@ -64,9 +65,14 @@ export default {
   
 <style scoped>
 main {
-  margin-top: 40px;
+  margin-top: 30px;
 }
 .remix-title{
-  font-size:xx-large;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.remix-info {
+  margin-bottom: 30px;
 }
 </style>

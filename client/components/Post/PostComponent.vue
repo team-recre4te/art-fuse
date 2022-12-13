@@ -125,6 +125,7 @@
             :editing="editing"
             :displayInline="false"
             :searchText="searchText"
+            :clickable="true"
           />
         </div>
       </div>

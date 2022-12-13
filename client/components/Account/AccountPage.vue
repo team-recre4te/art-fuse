@@ -5,17 +5,15 @@
   <main>
     <section>
       <header>
-        <h2>Account settings for @{{ $store.state.username }}</h2>
+        <h1>Account Settings for @{{ $store.state.username }}</h1>
       </header>
-      <!-- <p>Biography: {{ $store.state.bio}}</p> -->
-      <ChangeUsernameForm />
-      <ChangePasswordForm />
+      <div class="two-column">
+        <ChangeUsernameForm style="margin-right: 10px;"/>
+        <ChangePasswordForm style="margin-left: 10px;"/>
+      </div>
       <ChangeBioForm />
     </section>
     <section>
-      <header>
-        <h2>Account management</h2>
-      </header>
       <LogoutForm />
       <DeleteAccountForm />
     </section>
@@ -40,3 +38,19 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+h1 {
+  font-size: 24px;
+  font-weight: bolder;
+  margin: 30px 0px;
+}
+
+.two-column {
+  display: flex;
+}
+
+.two-column > * {
+  flex: 1;
+}
+</style>

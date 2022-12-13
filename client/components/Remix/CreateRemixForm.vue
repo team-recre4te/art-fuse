@@ -18,10 +18,10 @@ export default {
       hasBody: true,
       fields: [
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
+        {id: 'category', label: 'Category'},
         {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
         {id: 'tags', label: 'Tags'},
-        {id: 'files', label: 'Files', accept: ''},
-        {id: 'images', label: 'Images', accept: 'image/png, image/jpeg, image/webp'}
+        {id: 'files-and-images'},
       ],
       title: 'Create a Remix ',
       buttonText: 'Submit Remix',

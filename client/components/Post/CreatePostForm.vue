@@ -13,10 +13,10 @@ export default {
       hasBody: true,
       fields: [
         {id: 'title', label: 'Title', value: '', placeholder: 'Title'},
+        {id: 'category', label: 'Category'},
         {id: 'description', label: 'Description', value: '', placeholder: 'Describe your project...'},
         {id: 'tags', label: 'Tags'},
-        {id: 'files', label: 'Attach Supporting Files', accept: 'image/png, image/jpeg, image/webp, audio/mp3, audio/wav, audio/ogg, .pdf'},
-        {id: 'images', label: 'Add displayed Images', accept: 'image/png, image/jpeg, image/webp'},
+        {id: 'files-and-images'},
       ],
       title: 'Create a New Post',
       buttonText: 'Submit Post',
