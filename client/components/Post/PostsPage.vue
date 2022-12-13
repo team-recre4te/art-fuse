@@ -8,7 +8,7 @@
       </header>
     </section>
     <section v-else>
-      <header>
+      <!-- <header>
         <h2>Art Fuse</h2>
       </header>
       <article>
@@ -16,13 +16,53 @@
           <router-link to="/login">Sign in</router-link>
           to create your own posts.
         </h4>
-      </article>
+      </article> -->
+      <div class = "row" id="info">
+
+        <div class="first-column">
+        <header>
+        <h2 class="info-header"> <em> 'Explore. Exchange. Transform.' </em> </h2>
+        </header>
+
+        <p class = "info-text">
+        <em>
+        ArtFuse is a platform for remixes to happen much earlier in the creative process and for a wider range of mediums, not just music. It is built on three core values: collaboration, openness, and community, and challenges one fundamental question, “how far can an idea go?”
+        </em>
+        </p>
+
+        <br>
+       
+        <p class = "info-text-bottom">
+        <em>
+          Ultimately, we want collaboration to go beyond ArtFuse and hope that artists can build lifelong connections through the framework we have provided. We are excited for you to join us on this journey. If you have any questions, please contact us.
+        </em>
+        </p>
+        </div>
+        
+        <div class="second-column">
+
+        <header>
+        <h2  class="create-account-header">Join ArtFuse</h2>
+        </header>
+
+        <section class="create-account-form">
+        <RegisterForm />
+        </section>
+
+        Already have an account? <router-link to="/login">Sign in</router-link>.
+        </div>
+
+      </div>
+
+      <div class="row" id="scrollBtn">
+        <button onclick="document.getElementById('posts').scrollIntoView({behavior: 'smooth'});" id="myBtn" title="Browse Posts">Browse ⬇️</button>
+      </div>
+        
+  
     </section>
 
     <section>
-      <header class="post-header">
-        <h3>Posts</h3>
-        
+      <header class="post-header" id="posts">
         <div>
           <SearchBar 
             @searched="handleSearch" 
@@ -137,12 +177,14 @@ Router Notes
 
 import PostComponent from '@/components/Post/PostComponent.vue';
 import SearchBar from '@/components/common/SearchBar.vue';
+import RegisterForm from '@/components/Login/RegisterForm.vue';
 
 export default {
   name: 'PostsPage',
   components: {
     PostComponent, 
-    SearchBar
+    SearchBar,
+    RegisterForm
   },
   data() {
     return {
@@ -397,6 +439,74 @@ export default {
   justify-content: space-between;
 }
 
+.first-column, .second-column {
+  float: left;
+  width: 50%;
+  padding-left: 5%;
+  padding-right: 5%;
+}
+
+.first-column{
+  border-right: 1px solid black;
+  padding-top: 16%;
+}
+
+.second-column{
+  padding-top: 16%;
+}
+
+.row {
+  background-color: #FFECBC;
+  margin-left: -5em;
+  margin-right: -5em;
+  padding: 2%;
+
+}
+
+#scrollBtn{
+  text-align: center;
+  padding: 5%;
+}
+
+#myBtn{
+  border: none;
+  background: none;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+#myBtn:hover {
+  color: #923edc;
+  cursor: pointer;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.create-account-header, .info-header{
+  /* padding-top: 30%; */
+  padding-bottom: 4%;
+  font-weight: bold;
+  font-size: 24px;
+}
+
+.create-account-form{
+  padding-bottom: 5%
+}
+
+.info-text{
+  font-size: 20px;
+}
+
+.info-text-bottom{
+  font-size: 20px;
+  margin-bottom: 20%;
+}
+
 section {
   display: flex;
   flex-direction: column;
@@ -446,6 +556,7 @@ section .scrollbox {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
+  padding: 2%;
 }
 
 .post-header div {
