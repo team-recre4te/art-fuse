@@ -17,7 +17,7 @@ export default {
         {id: 'password', label: 'Password', value: '', placeholder: 'Password'},
         {id: 'bio', label: 'Bio', value: '', placeholder: 'Bio'}
       ],
-      title: 'Create account',
+      title: 'Join ArtFuse',
       buttonText: 'Register',
       callback: () => {
         const message = 'Successfully created an account!';

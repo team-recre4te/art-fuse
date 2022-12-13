@@ -25,22 +25,21 @@
        
         <p class = "info-text-bottom">
         <em>
-          Ultimately, we want collaboration to go beyond ArtFuse and hope that artists can build lifelong connections through the framework we have provided. We are excited for you to join us on this journey. If you have any questions, please contact us.
+          Ultimately, we want collaboration to go beyond ArtFuse and hope that artists can build lifelong connections through the framework we have provided. We are excited for you to join us on this journey.
         </em>
         </p>
         </div>
         
         <div class="second-column">
 
-        <header>
+        <!-- <header>
         <h2  class="create-account-header">Join ArtFuse</h2>
-        </header>
+        </header> -->
 
         <section class="create-account-form">
         <RegisterForm />
+        Already have an account? <router-link to="/login">Log in</router-link>.
         </section>
-
-        Already have an account? <router-link to="/login">Sign in</router-link>.
         </div>
 
       </div>
@@ -435,8 +434,10 @@ export default {
 .first-column, .second-column {
   float: left;
   width: 50%;
+  height: 85vh;
   padding-left: 5%;
   padding-right: 5%;
+  overflow:scroll;
 }
 
 .first-column{
@@ -448,7 +449,7 @@ export default {
   padding-top: 16%;
 }
 
-.row {
+#info {
   background-color: #FFECBC;
   margin-left: -5em;
   margin-right: -5em;
@@ -457,8 +458,12 @@ export default {
 }
 
 #scrollBtn{
+  height: 20vh;
+  background-color: #FFECBC;
+  margin-left: -5em;
+  margin-right: -5em;
   text-align: center;
-  padding-bottom: 6%;
+  padding: 2%;
 }
 
 #myBtn{
@@ -484,20 +489,24 @@ export default {
   /* padding-top: 30%; */
   padding-bottom: 4%;
   font-weight: bold;
-  font-size: 24px;
+  font-size: 22px;
+  /* overflow:hidden; */
 }
 
 .create-account-form{
-  padding-bottom: 5%
+  padding-bottom: 5%;
+  overflow:scroll;
 }
 
 .info-text{
-  font-size: 20px;
+  /* font-size: 2.2vh; */
+  overflow:scroll;
 }
 
 .info-text-bottom{
-  font-size: 20px;
+  /* font-size:  2.2vh; */
   margin-bottom: 20%;
+  overflow:hidden;
 }
 
 section {
@@ -519,7 +528,6 @@ section {
 .category-btn button:hover {
   background-color: #923edc;
 }
-
 
 header, header > * {
   display: flex;
@@ -560,7 +568,7 @@ section .scrollbox {
 
 .post-header h3 {
   margin-top: 0px;
-  margin-bottom: 22px;
+  margin-bottom: 20px;
 }
 
 article p {

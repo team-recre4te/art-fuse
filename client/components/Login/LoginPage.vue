@@ -5,15 +5,15 @@
   <main>
     <section>
       <header>
-        <h2>New to ArtFuse?</h2>
-      </header>
-      <RegisterForm />
-    </section>
-    <section>
-      <header>
         <h2>Have an account?</h2>
       </header>
       <LoginForm />
+    </section>
+    <section>
+      <header>
+        <h2>New to ArtFuse?</h2>
+      </header>
+      <RegisterForm />
     </section>
   </main>
 </template>

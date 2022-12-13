@@ -16,8 +16,8 @@ export default {
         {id: 'username', label: 'Username', value: '', placeholder: 'Username'},
         {id: 'password', label: 'Password', value: '', placeholder: 'Password'}
       ],
-      title: 'Sign in',
-      buttonText: 'Sign in',
+      title: 'Log in',
+      buttonText: 'Log in',
       callback: () => {
         this.$router.push({name: 'Home'});
         this.$store.commit('alert', {
