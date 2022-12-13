@@ -1,7 +1,14 @@
 <!-- Reusable component representing a single post and its actions -->
 
 <template>
-  <article class="post" >
+    <div v-if="(postIsReported && !viewPost)" class="blur">
+      <span>
+        <div style="font-weight: bold; font-size: 24px;">🚩 Reported: {{post.reports[0].reportType}}</div>
+        <div><button style="border-radius: 20px; font-size: 20px; border: none; background-color: #904D29; color: white; padding: 8px;" @click="(viewPost = true)">View Post</button></div>
+      </span>
+    </div>
+    
+    <article v-else class="post">
     <div :class="{'overlay-reported': postIsReported}">
     </div>
     <header class="post-header columns">
@@ -263,20 +270,21 @@
                     class="icon-btn"/>
             </template>
 
-            <b-dropdown-item aria-role="listitem" @click="reportPost">Plagiarism</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" @click="reportPost">Offensive/ Inappropriate Content</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" @click="reportPost">Unrelated Content</b-dropdown-item>
-            <b-dropdown-item aria-role="listitem" @click="reportPost">Other</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost('Plagiarism')">Plagiarism</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost('Offensive/ Inappropriate Content')">Offensive/ Inappropriate Content</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost('Unrelated Content')">Unrelated Content</b-dropdown-item>
+            <b-dropdown-item aria-role="listitem" @click="reportPost('Other')">Other</b-dropdown-item>
             </b-dropdown>
-
           </div>
         </div>
       </div>
-      <div v-else-if="postIsReported" style="border-bottom-right-radius: 10px;">
+      <div class="actions" v-else-if="postIsReported">
+      <button style="border: none; background-color: transparent" @click="(viewPost = false)">
         <!-- Reported -->
         <p>
-          🚩 Reported
+          🚩 Hide Post
         </p>
+      </button>
       </div>
 
     </div>
@@ -316,7 +324,7 @@
       </article>
     </section>
     
-  </article>
+    </article>
 </template>
 
 <script>
@@ -393,12 +401,13 @@ export default {
       showFiles: false,
       draftCategory: '',
       showRemixes: false,
+      viewPost: false,
     };
   },
-  mounted() {
-    
-  },
   methods: {
+    view() {
+      this.viewPost = true;
+    },
     handleSearch(value) {
       this.$emit('searchFor', value);
     },
@@ -559,11 +568,11 @@ export default {
       };      
       this.request(`comments?postId=${this.post._id}`, params);
     },
-    reportPost() {
+    reportPost(reportType) {
       const params = {
         method: 'POST',
         message: 'Successfully reported post!',
-        body: JSON.stringify({postId: this.post._id}),
+        body: JSON.stringify({postId: this.post._id, reportType: reportType}),
         callback: (res) => {
           this.post.reports.push(res.report)
         }
@@ -691,13 +700,43 @@ export default {
       return this.editing ? this.draftImages : this.post.images;
     },
     postIsReported() {
-      return this.post.reports.length > 0;
+      return this.post.reports ? this.post.reports.length > 0 : false;
     }
   },
 };
 </script>
 
 <style scoped>
+.blur {
+  position:relative;
+  height: 300px;
+  padding: 20px;
+  position: relative;
+  margin: 10px 0px;
+  border-radius: 12px;
+  border: 2px solid #EAEAEA;
+  width:100%;
+}
+
+.blur:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e8e8e8cd;
+  filter: blur(20px);
+  z-index:0;
+}
+.blur span {
+  position:relative;
+  display: table;
+  text-align: center;
+  margin: 80px auto;
+  z-index:1;
+}
+
 h3 {
   border-radius: 20px;
   font-size: 24px;
