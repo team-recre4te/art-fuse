@@ -12,7 +12,7 @@ export default {
       method: 'PATCH',
       hasBody: true,
       fields: [
-        {id: 'password', label: 'Password', value: ''}
+        {id: 'password', label: 'Password', value: '', placeholder: 'New password'}
       ],
       title: 'Change password',
       buttonText: 'Update password',

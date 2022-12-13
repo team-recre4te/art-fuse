@@ -878,7 +878,7 @@ h3 {
 
 .remix-btn {
   background-color: #3E7DDC;
-  color: #EAEAEA;
+  color: white;
   padding: 5px 15px;
   border-radius: 20px;
   border: none;

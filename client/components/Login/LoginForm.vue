@@ -13,8 +13,8 @@ export default {
       hasBody: true,
       setUsername: true,
       fields: [
-        {id: 'username', label: 'Username', value: ''},
-        {id: 'password', label: 'Password', value: ''}
+        {id: 'username', label: 'Username', value: '', placeholder: 'Username'},
+        {id: 'password', label: 'Password', value: '', placeholder: 'Password'}
       ],
       title: 'Sign in',
       buttonText: 'Sign in',

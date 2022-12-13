@@ -14,7 +14,7 @@ export default {
       hasBody: true,
       setUsername: true,
       fields: [
-        {id: 'bio', label: 'Bio', value: ''}
+        {id: 'bio', label: 'Bio', value: '', placeholder: 'Bio'}
       ],
       title: 'Change bio',
       buttonText: 'Update bio',

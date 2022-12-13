@@ -30,3 +30,10 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+}
+</style>
