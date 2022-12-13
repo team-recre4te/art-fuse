@@ -26,7 +26,7 @@
         Profile
       </router-link>
       <router-link v-if="$store.state.username" to="/account" :class="{ 'selected': (isOnSettings) }">
-        <img :src="getSettingsIcon()" class="icon">
+        <img :src="getSettingsIcon()" class="icon-settings">
         Settings
       </router-link>
       <router-link v-else to="/login" :class="{ 'selected': (isOnLogin) }">
@@ -141,9 +141,19 @@ img {
 }
 
 .icon {
-  margin-bottom: -7px;
+  margin-bottom: -12px;
   padding-right: 10px;
   scale: 0.9;
+  height: 45px;
+  width: 51px;
+}
+
+.icon-settings{
+  margin-bottom: -12px;
+  padding-right: 10px;
+  scale: 0.8;
+  height: 45px;
+  width: 51px;
 }
 
 .alerts {
