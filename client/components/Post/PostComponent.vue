@@ -90,23 +90,25 @@
         </div>
 
         <div v-if="editing" class="columns">
-          <div class="category-btn-edit" v-if="draftCategory === 'Digital Art'" >Digital Art</div>
+          
+          <div class="category-btn-edit" v-if="draftCategory === 'Digital Art'" style="background-color: #923edc; ">Digital Art</div>
           <div class="category-btn-edit" v-else @click="editDigitalArt">Digital Art</div>
             
-          <div class="category-btn-edit" v-if="draftCategory === 'Music'" >Music</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Music'" style="background-color: #923edc; ">Music</div>
           <div class="category-btn-edit" v-else @click="editMusic">Music</div>
 
-          <div class="category-btn-edit" v-if="draftCategory === 'Dance'" >Dance</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Dance'" style="background-color: #923edc; ">Dance</div>
           <div class="category-btn-edit" v-else @click="editDance">Dance</div>
         
-          <div class="category-btn-edit" v-if="draftCategory === '3D Modeling'" >3D Modeling</div>
+          <div class="category-btn-edit" v-if="draftCategory === '3D Modeling'" style="background-color: #923edc; ">3D Modeling</div>
           <div class="category-btn-edit" v-else @click="edit3DModeling">3D Modeling</div>
         
-          <div class="category-btn-edit" v-if="draftCategory === 'Drawing Painting'" >Drawing & Painting</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Drawing Painting'" style="background-color: #923edc; ">Drawing & Painting</div>
           <div class="category-btn-edit" v-else @click="editDrawingPainting">Drawing & Painting</div>
           
-          <div class="category-btn-edit" v-if="draftCategory === 'Theater'" >Theater</div>
+          <div class="category-btn-edit" v-if="draftCategory === 'Theater'" style="background-color: #923edc; ">Theater</div>
           <div class="category-btn-edit" v-else @click="editTheater">Theater</div>
+        
         </div>
         <div v-else-if="(post.category && post.category.name !== '')" class="columns">
           <div class="category-btn">
@@ -770,7 +772,7 @@ h3 {
   margin-right: auto;
 }
 
-.category-btn-edit :hover{
+.category-btn-edit:hover{
   background-color: #923edc;
 }
 
