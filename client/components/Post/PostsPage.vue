@@ -441,18 +441,17 @@ export default {
 
 .first-column{
   border-right: 1px solid black;
-  padding-top: 16%;
+  padding-top: 20vh;
 }
 
 .second-column{
-  padding-top: 16%;
+  padding-top: 20vh;
 }
 
 .row {
   background-color: #FFECBC;
   margin-left: -5em;
   margin-right: -5em;
-  padding: 2%;
   height: 80vh;
 }
 
