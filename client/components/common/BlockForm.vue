@@ -428,14 +428,14 @@ export default {
         if (this.makeRemix || this.category !== '' || (this.$refs.tagsChildRef !== undefined && tagsCompRef.draftTags.length > 0)) {
           newPostRes = await r.json();
 
-          newPostRes.post.category = { name: this.category };
-          newPostRes.post.comments = [];
-          newPostRes.post.tags = tagsCompRef.draftTags;
-          newPostRes.post.likes = [];
-          newPostRes.post.reports = [];
-          newPostRes.post.remixes = [];
+          // newPostRes.post.category = { name: this.category };
+          // newPostRes.post.comments = [];
+          // newPostRes.post.tags = tagsCompRef.draftTags;
+          // newPostRes.post.likes = [];
+          // newPostRes.post.reports = [];
+          // newPostRes.post.remixes = [];
 
-          this.$store.state.posts.push(newPostRes.post);
+          // this.$store.state.posts.push(newPostRes.post);
         }
 
         if (this.category !== '') {

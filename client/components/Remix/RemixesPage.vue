@@ -7,11 +7,14 @@
             </div>
             <PostComponent v-else :key="parentPost.id" :post="parentPost" />
         </div>
-        <section v-if="childPosts.length">
+        <section v-if="childPosts.length && !loadingRemixes">
             <h2>Remixes of Parent Post</h2>
             <PostComponent v-for="remix in childPosts" :key="remix.id" :post="remix" />
         </section>
-        <section v-else-if="!loading">
+        <section v-else-if="loadingRemixes">
+            <p>Loading Remixes for this post...</p>
+        </section>
+        <section v-else>
             <p>No Remixes for this post</p>
         </section>
     </main>
@@ -28,7 +31,9 @@ export default {
             parentPost: null,
             childPosts: [],
             childPostIds: [],
-            loading: true
+            loading: true,
+            loadingRemixes: true,
+            alerts: {}
         }
     },
     methods: {
@@ -93,21 +98,25 @@ export default {
             try {
                 const r = await fetch(`/api/remix?postId=${this.$route.query.postId}`, options);
                 const res = await r.json();
-                this.childPostIds = res.map(remix => { return remix.childId.id });
+                this.childPostIds = res.map(remix => { 
+                    return remix.childId ? remix.childId.id : null 
+                }).filter(remix => { 
+                    return remix != null;
+                });
 
                 this.childPostIds.forEach(async id => {
                     const post = await this.getPost(id, false);
                     this.childPosts.push(post);
+                    this.loadingRemixes = false;
                 })
 
-                // console.log('child posts', this.childPosts)
-
                 if (!r.ok) {
-                throw new Error(res.error);
+                    throw new Error(res.error);
                 }
 
                 params.callback();
             } catch (e) {
+                console.log(e)
                 this.$set(this.alerts, e, 'error');
                 setTimeout(() => this.$delete(this.alerts, e), 3000);
             }
@@ -115,6 +124,7 @@ export default {
     },
     mounted() {
         this.loading = true;
+        this.loadingRemixes = true;
         this.getPost(this.$route.query.postId, true);
         this.getChildPosts();
         this.$store.commit('loadRemixes', this.$route.query.postId);

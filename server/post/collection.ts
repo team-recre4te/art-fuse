@@ -13,6 +13,7 @@ import CommentModel from '../comment/model';
 import TagModel from '../tag/model';
 import LikeModel from '../like/model';
 import ReportModel from '../report/model';
+import RemixModel from '../remix/model';
 
 class PostCollection {
   /**
@@ -228,6 +229,7 @@ class PostCollection {
     const tags = await TagModel.deleteMany({postId: postId});
     const likes = await LikeModel.deleteMany({postId: postId});
     const reports = await ReportModel.deleteMany({postId: postId});
+    const remixes = await RemixModel.deleteMany({childId: postId});
     return (post && category && comments && tags && likes && reports) !== null;
   }
 
