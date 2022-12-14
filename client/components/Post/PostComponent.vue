@@ -647,6 +647,9 @@ export default {
         });
         const draftTagNames = this.$refs.tagsChildRef.draftTags.map(tag => { return tag.name });
         const postTagNames = this.post.tags.map(tag => { return tag.name });
+        if (draftTagNames.length != postTagNames.length) {
+          postEdited = true;
+        }
         draftTagNames.forEach(tag => {
           if (!postTagNames.includes(tag)) {
             postEdited = true;
@@ -693,7 +696,17 @@ export default {
       };
       this.request(`posts/${this.post._id}`, params);
 
-      this.$refs.tagsChildRef.saveTags(this.post._id);
+      const postTagNames = this.post.tags.map(tag => { return tag.name });
+      const draftTagNames = this.$refs.tagsChildRef.draftTags.map(tag => { return tag.name });
+      const oldTags = this.post.tags.filter(tag => { return !draftTagNames.includes(tag.name) });
+      const newTagNames = this.$refs.tagsChildRef.draftTags.map(tag => { return tag.name }).filter(tagName => { return !postTagNames.includes(tagName) });
+      console.log(this.$refs.tagsChildRef.draftTags);
+      console.log(oldTags)
+      console.log(newTagNames)
+      if (newTagNames.length != postTagNames.length || newTagNames.length > 0) {
+        this.$refs.tagsChildRef.saveTags(this.post._id);
+        this.$refs.tagsChildRef.removeTags(oldTags);
+      }
     },
     async request(path, params) {
       /**

@@ -20,7 +20,7 @@
       <div>
         <button
           class="tag"
-          :class="{ 'clickable-tag': clickable, selected: searchText == tag.name }"
+          :class="{ 'clickable-tag': clickable && !editing, selected: searchText == tag.name }"
           v-for="tag in tagsToDisplay"
           :key="tag._id"
           :tag="tag"
@@ -111,11 +111,13 @@ export default {
        * Add tag to post
        */
       if (postId !== undefined) {
-        const draftTagNames = this.draftTags.map(tag => { return tag.name });
+        const postTagNames = this.post.tags.map(tag => { return tag.name });
+        const newTagNames = this.draftTags.map(tag => { return tag.name }).filter(tagName => { return !postTagNames.includes(tagName) });
+
         const params = {
           method: 'POST',
           message: 'Successfully added tag!',
-          body: JSON.stringify({ names: draftTagNames, postId: postId }),
+          body: JSON.stringify({ names: newTagNames, postId: postId }),
           callback: () => {
             this.$store.commit('refreshPosts');
 
@@ -126,7 +128,12 @@ export default {
         this.request(`tags`, params);
       }
     },
-    removeTag(tag) {
+    removeTags(tags) {
+      tags.forEach(tag => {
+        this.removeTag(tag._id);
+      });
+    },
+    removeTag(tagId) {
       /**
        * Remove tag from post
        */
@@ -141,7 +148,7 @@ export default {
             setTimeout(() => this.$delete(this.alerts, params.message), 3000);
           }
         };
-        this.request(`tags/${tag._id}`, params);
+        this.request(`tags/${tagId}`, params);
       }
     },
     async request(path, params) {

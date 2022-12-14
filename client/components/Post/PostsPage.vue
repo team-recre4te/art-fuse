@@ -142,9 +142,9 @@
             :getTheater="getTheater"
           />
         </div>
-        <div v-else style="margin-top: 50px; font-size: 22px; text-align: center; font-weight: bold;">
+        <!-- <div v-else style="margin-top: 50px; font-size: 22px; text-align: center; font-weight: bold;">
           No posts in selected category
-        </div>
+        </div> -->
       </section>     
       <article
         v-else
