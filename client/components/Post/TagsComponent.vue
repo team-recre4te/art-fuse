@@ -2,7 +2,7 @@
 <template>
   <section>
     <div class="tags">
-      <div v-if="editing" :class="{ 'display-inline': displayInline }">
+      <div v-if="editing" class="display-inline">
         <input type="text" 
               :value="newTag"
               @input="newTag = $event.target.value"
@@ -45,10 +45,6 @@ export default {
       required: false
     },
     editing: {
-      type: Boolean,
-      required: true
-    },
-    displayInline: {
       type: Boolean,
       required: true
     },

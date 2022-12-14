@@ -70,7 +70,7 @@
     </header>
 
     <div class="columns">
-      <div :class="{ 'post-info': post.images.length > 0 }">
+      <div :class="{ 'post-info': post.images.length > 0 && !editing }">
         <!-- Category, parent post, description, and tags on right side -->
         <h5 v-if="post.parentId" class="section-label" style="margin-top: 10px;">Remixed From</h5>
         <p v-if="post.parentId" style="margin: 5px 0px;">{{ post.parentId.title }}</p>
@@ -123,39 +123,15 @@
             @searchFor="handleSearch" 
             :post="post"
             :editing="editing"
-            :displayInline="false"
             :searchText="searchText"
             :clickable="true"
           />
         </div>
       </div>
-      <div v-if="(post.images && post.images.length > 0) || editing" class="post-images">
+      <div v-if="(post.images && post.images.length > 0) || editing" :class="{ 'post-images-width': !editing }">
         <!-- Images on left side -->
-        <div v-if="editing">
-          <input 
-            type="file"
-            id="images"
-            name="images"
-            accept="image/png, image/jpeg, image/webp"
-            @change="uploadImages($event)"
-            ref="images"
-            style="display: none"
-            multiple
-          >
-          <input type="button" value="Choose images" @click="$refs['images'].click()" />
-          <div>
-            <img 
-              v-for="image in draftImages"
-              :key="image.name"
-              :src="image.file"
-              height=200
-              alt=""
-            >
-          </div>
-          <button v-if="draftImages.length" type="button" @click="clearImages()">Clear Images</button>
-        </div>
         <!-- https://wlada.github.io/vue-carousel-3d/api/ -->
-        <carousel-3d :width="260" :height="215" v-else>
+        <carousel-3d :width="260" :height="215" v-if="!editing">
           <slide class="slide" v-for=" (image, i) in postImagesToDisplay" :index="i" :key="i">
             <template slot-scope="{ index, isCurrent, leftIndex, rightIndex}">
               <img :data-index="index" :class="{ current: isCurrent, onLeft: (leftIndex >= 0), onRight: (rightIndex >= 0) }" :src="image.file">
@@ -177,51 +153,84 @@
               {{ showFiles ? 'Hide Files' : 'Show Files' }}
             </button>
           </div>
-
-          <div v-if="editing">
-            <input 
-              type="file"
-              id="files"
-              name="files"
-              @change="uploadFiles($event)"
-              ref="files"
-              style="display: none"
-              multiple
-            >
-            <input type="button" value="Choose files" @click="$refs['files'].click()" />
-          </div>
-          <ul v-if="showFiles || editing">
-            <li v-for="file in postFilesToDisplay" :key="file.index">
-              <div class="file">
-                <a :download="file.name" :href="file.file">{{file.name}}</a>
-
-                <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1]) && !editing" controls>
-                  <source :src="file.file">
-                </audio>
-              </div>
-            </li>
-          </ul>
-          <button v-if="editing && postFilesToDisplay.length" type="button" @click="clearFiles()">Clear Files</button>
         </div>
+
+        <ul v-if="showFiles || editing">
+          <li v-for="file in postFilesToDisplay" :key="file.index">
+            <div class="file">
+              <a :download="file.name" :href="file.file">{{file.name}}</a>
+
+              <audio v-if="['ogg', 'mp3', 'wav'].includes(file.name.split('.')[1]) && !editing" controls>
+                <source :src="file.file">
+              </audio>
+            </div>
+          </li>
+        </ul>
       </div>
-      <div v-if="!showFiles">
-        <p class="info">
-          {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
-          <i v-if="post.edited">(edited)</i>
-        </p>
+    </div>
+
+    <div v-if="editing">
+      <div class="files-and-images">
+        <input 
+          type="file"
+          id="filesEdit"
+          name="filesEdit"
+          accept="image/png, image/jpeg, image/webp, audio/mp3, audio/wav, audio/ogg, .pdf"
+          @change="uploadFiles($event);"
+          ref="filesEdit"
+          style="display: none"
+          multiple
+        >
+        <div class="upload-section">
+          <button class="upload-icon-btn" type="button" onclick="document.getElementById('filesEdit').click();">
+            <img src="../../public/assets/file-upload.png" alt="">
+            <p>Supporting Files</p> 
+          </button>
+          <ul v-if="draftFiles.length" >
+            <li style="opacity: 0;">placeholder</li>
+            <li v-for="file in draftFiles" :key="file.name">
+              {{file.name}}
+            </li>
+            <button type="button" @click="clearFiles()">Clear Files</button>
+          </ul>
+        </div>
+
+        <span>/</span>
+
+        <input 
+          type="file"
+          id="imagesEdit"
+          name="imagesEdit"
+          accept="image/png, image/jpeg, image/webp"
+          @change="uploadImages($event)"
+          ref="imagesEdit"
+          style="display: none"
+          multiple
+        >
+        <div class="upload-section">
+          <button class="upload-icon-btn" type="button" onclick="document.getElementById('imagesEdit').click();">
+            <img src="../../public/assets/image-icon.png" alt="">
+            <p>Displayed Images</p> 
+          </button>
+          <ul v-if="draftImages.length">
+            <li style="opacity: 0;">placeholder</li>
+            <li v-for="image in draftImages" :key="image.name">
+              {{image.name}}
+            </li>
+            <button type="button" @click="clearImages()">Clear Images</button>
+          </ul>
+        </div>
       </div>
     </div>
 
     <!-- Posted at ... -->
-    <div v-if="showFiles">
-      <p class="info">
-        {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
-        <i v-if="post.edited">(edited)</i>
-      </p>
-    </div>
+    <p class="info">
+      {{ post.dateModified != post.dateCreated ? 'Modifed' : 'Posted' }} at {{ postDate }}
+      <i v-if="post.edited">(edited)</i>
+    </p>
 
     <div class="columns bottom-bar" :class="{ 'bottom-bar-bottom-border': showComments } ">
-      <div class="right-border" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
+      <div class="bottom-bar-hover" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
         <!-- Likes -->
         <div>
           <div class="actions" v-if="$store.state.username">
@@ -245,7 +254,7 @@
           </div>
         </div>
       </div>
-      <div class="right-border">
+      <div class="bottom-bar-hover">
         <!-- Comments -->
         <button
           style="border: 0px;"
@@ -253,7 +262,7 @@
           💬 {{post.comments.length}} Comments
         </button>
       </div>
-      <div class="right-border">
+      <div class="bottom-bar-hover">
         <!-- Remixes -->
         <router-link class="remixes-link" :to="{ name: 'Remixes', query: { postId: post._id }}">
           🔀 {{ post.remixes.length }} Remixes
@@ -537,18 +546,18 @@ export default {
     },
     clearImages() {
       this.draftImages = [];
-      this.$refs["images"].value = '';
+      this.$refs["imagesEdit"].value = '';
     },
     clearFiles() {
       this.draftFiles = [];
-      this.$refs["files"].value = null;
+      this.$refs["filesEdit"].value = null;
     },
     uploadImages(e){
       Array.from(e.target.files).forEach(image => { 
         const reader = new FileReader();
         reader.readAsDataURL(image);
         reader.onload = e => {
-          this.draftImages.push(e.target.result);
+          this.draftImages.push({ name: image.name, file: e.target.result });
         };
       });
     },
@@ -823,7 +832,7 @@ h3 {
   justify-content: space-evenly;
   align-items: center;
   border-top: 2px solid #EAEAEA;
-  margin: 10px -20px;
+  margin: 10px -30px;
   padding-bottom: -10px;
   margin-bottom: -20px;
 }
@@ -851,8 +860,14 @@ h3 {
   padding: auto 0;
 }
 
-.bottom-bar > *:hover {
-  background-color: #EAEAEA;
+.bottom-bar-hover {
+  transition: .2s ease-in-out 0s;
+}
+
+.bottom-bar-hover:hover {
+  /* background-color: #EAEAEA; */
+  scale: 1.1;
+  opacity: 0.6;
 }
 
 .bottom-bar p {
@@ -885,7 +900,7 @@ h3 {
   font-size: 14px;
 }
 
-.post-images {
+.post-images-width {
   width: 50%;
 }
 
@@ -916,7 +931,6 @@ h3 {
 .top-bar {
   display: flex;
   align-items: center;
-  justify-content: center;
 }
 
 .top-bar p {
@@ -999,5 +1013,55 @@ h3 {
 
 .disabled {
   pointer-events:none; 
- }
+}
+
+.files-and-images {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.files-and-images span {
+  font-size: 64px;
+  margin: 20px 20px;
+  color: #ccc;
+}
+
+.files-and-images p {
+  font-size: 20px;
+}
+
+.upload-icon-btn {
+  border: none;
+  background: transparent;
+  color: rgb(74,74,74);
+  transition: .2s ease-in-out 0s;
+}
+
+.upload-icon-btn:hover {
+  opacity: 0.3;
+}
+
+.upload-icon-btn img {
+  width: 120px;
+  height: 120px;
+  opacity: 0.7;
+  padding: 10px;
+}
+
+.two-columns {
+  max-width: 1000px;
+  display: flex;
+  text-align: center;
+}
+
+.two-columns > * {
+  flex: 1;
+  width: 50%;
+}
+
+.upload-section {
+  min-width: 250px;
+  text-align: center;
+}
 </style>
