@@ -441,7 +441,6 @@ export default {
 }
 
 .first-column{
-  border-right: 1px solid black;
   padding-top: 20vh;
 }
 
@@ -493,7 +492,7 @@ export default {
 }
 
 .create-account-form{
-  padding-bottom: 5%;
+  padding: 5%;
   overflow:scroll;
 }
 
