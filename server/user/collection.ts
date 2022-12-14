@@ -71,6 +71,8 @@ class UserCollection {
    */
   static async updateOne(userId: Types.ObjectId | string, userDetails: any): Promise<HydratedDocument<User>> {
     const user = await UserModel.findOne({_id: userId});
+    console.log('bio', userDetails.bio as string);
+    const bio = userDetails.bio as string ?? ' ';
     if (userDetails.password) {
       user.password = userDetails.password as string;
     }
@@ -80,7 +82,7 @@ class UserCollection {
     }
 
     if (userDetails.bio) {
-      user.bio = userDetails.bio as string;
+      user.bio = bio;
     }
     if (userDetails.preferences){
       user.preferences = Array.from(new Set(userDetails.preferences))

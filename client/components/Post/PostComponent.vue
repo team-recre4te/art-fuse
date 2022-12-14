@@ -4,7 +4,7 @@
     <div v-if="(postIsReported && !viewPost)" class="blur">
       <span>
         <div style="font-weight: bold; font-size: 24px;">🚩 Reported: {{post.reports[0].reportType}}</div>
-        <div><button style="border-radius: 20px; font-size: 20px; border: none; background-color: #904D29; color: white; padding: 8px;" @click="(viewPost = true)">View Post</button></div>
+        <div style="padding-top: 15px;"><button style="border-radius: 20px; font-size: 20px; border: none; background-color: #904D29; color: white; padding-top: 10px; padding-bottom: 10px; padding-left: 30px; padding-right: 30px;" @click="(viewPost = true)">View Post</button></div>
       </span>
     </div>
     

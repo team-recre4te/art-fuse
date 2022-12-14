@@ -362,6 +362,46 @@ export default {
               return [id, value];
             })
           ));
+        } else if (this.url === '/api/users' && this.method === 'PATCH') {
+          this.username = this.username ? this.username.trim() : null;
+          this.password = this.password ? this.password.trim() : null;
+          if (!this.isValidForm) {
+            var e = null;
+            var errorFound = false;
+            this.fields.forEach(field => {
+              const {id, value} = field;
+              if (errorFound) {
+                return;
+              }
+              
+              if (id == 'username') {
+                console.log("hey");
+                if (value === undefined || value.trim().length == 0) {
+                  e = Error('Please insert a username')
+                  errorFound = true;
+                }
+              } else if (id == 'password'){
+                if (value === undefined || value.trim().length == 0) {
+                  e = Error('Please add a password')
+                  errorFound = true;
+                }
+              } else if (id == 'bio') {
+                this.fields['bio'] = this.fields['bio'] ?? ' ';
+              }
+            })
+            if (e) {
+              this.$set(this.alerts, e, 'error');
+              setTimeout(() => this.$delete(this.alerts, e), 3000);
+              return;
+            }
+          }
+          options.body = JSON.stringify(Object.fromEntries(
+            this.fields.map(field => {
+              const {id, value} = field;
+              field.value = '';
+              return [id, value];
+            })
+          ));
         } else {
           options.body = JSON.stringify(Object.fromEntries(
             this.fields.map(field => {
