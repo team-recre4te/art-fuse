@@ -5,7 +5,7 @@
   <main>
     <header>
       <h2 class="title">@{{ $route.query.author }}</h2>
-      <p class="date-joined" v-if="dateJoined">Joined at {{ dateJoined }}</p>
+      <p class="date-joined" v-if="dateJoined">Joined on {{ dateJoined }}</p>
       <section class="bio" v-if="bio.length">
         <h3>Bio: {{ bio }}</h3>
       </section>
@@ -132,6 +132,7 @@ h3 {
 
 .date-joined {
   color: #AEAEAE;
+  font-size: 15px;
 }
 
 </style>
