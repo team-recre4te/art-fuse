@@ -13,7 +13,12 @@
     </div>
     <header class="post-header columns">
       <div>
+        <h3 v-if="editing" style="margin-bottom: 10px;">
+          Editing Post
+        </h3>
+
         <div class="top-bar">
+
           <input
             v-if="editing"
             type="text"
@@ -61,7 +66,7 @@
       </div>
       <div>
         <router-link 
-          v-if="$store.state.username" class="remix-btn"
+          v-if="$store.state.username && !editing" class="remix-btn"
           :to="{ name: 'Create Remix', params: {postId: post._id} }"
         >
           Make Remix
@@ -72,8 +77,12 @@
     <div class="columns">
       <div :class="{ 'post-info': post.images.length > 0 && !editing }">
         <!-- Category, parent post, description, and tags on right side -->
-        <h5 v-if="post.parentId" class="section-label" style="margin-top: 10px;">Remixed From</h5>
-        <p v-if="post.parentId" style="margin: 5px 0px;">{{ post.parentId.title }}</p>
+        <div v-if="post.parentId" style="display: flex;">
+          <h5 class="section-label" style="margin-top: 10px; margin-right: 4px;">Remixed From -</h5>
+          <router-link class="parent-link" :to="{ name: 'Remixes', query: { postId: post.parentId._id }}">
+            <h5 class="section-label" style="margin-top: 10px;">{{ post.parentId.title }}</h5>
+          </router-link>  
+        </div>
 
         <!-- <h5 class="section-label">Description</h5> -->
         <textarea
@@ -230,7 +239,7 @@
     </p>
 
     <div class="columns bottom-bar" :class="{ 'bottom-bar-bottom-border': showComments } ">
-      <div class="bottom-bar-hover" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
+      <div :class="{ 'bottom-bar-hover': $store.state.username }" style="border-bottom-left-radius: 10px; padding: 2px 0px;">
         <!-- Likes -->
         <div>
           <div class="actions" v-if="$store.state.username">
@@ -399,6 +408,9 @@ export default {
     CommentComponent, 
     CreateCommentForm
   },
+  mounted() {
+    // console.log(this.post)
+  },
   data() {
     return {
       editing: false, // Whether or not this post is in edit mode
@@ -413,7 +425,7 @@ export default {
       showFiles: false,
       draftCategory: '',
       showRemixes: false,
-      viewPost: false,
+      viewPost: false
     };
   },
   methods: {
@@ -516,8 +528,18 @@ export default {
         method: 'DELETE',
         message: 'Successfully unliked post!',
         callback: () => {
-          // TODO: make unlike faster ??
           this.liking = false;
+
+          var indexOfLike = null;
+          var index = 0;
+          this.post.likes.forEach(like => {
+            if (this.$store.state.username == like.userId.username) {
+              indexOfLike = index;
+            }
+            index += 1;
+          });
+          this.post.likes.splice(indexOfLike, 1);
+
           this.$store.commit('refreshPosts');
         }
       };
@@ -536,6 +558,17 @@ export default {
         method: 'DELETE',
         callback: () => {
           this.$store.commit('refreshPosts');
+
+          var indexOfPost = null;
+          var index = 0;
+          this.$store.state.posts.forEach(post => {
+            if (this.post._id == post._id) {
+              indexOfPost = index;
+            }
+            index += 1;
+          });
+          this.$store.state.posts.splice(indexOfPost, 1);
+
           this.$store.commit('alert', {
             message: 'Successfully deleted post!', status: 'success'
           });
@@ -586,6 +619,8 @@ export default {
         message: 'Successfully reported post!',
         body: JSON.stringify({postId: this.post._id, reportType: reportType}),
         callback: (res) => {
+          console.log(res);
+          res.report.reportType = res.report.reason;
           this.post.reports.push(res.report)
         }
       }
@@ -779,7 +814,7 @@ h3 {
   border-radius: 20px;
   font-size: 12px;
   margin-top: 20px;
-  margin-right: auto;
+  margin-right: 10px;
 }
 
 .category-btn-edit:hover{

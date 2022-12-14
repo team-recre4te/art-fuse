@@ -118,7 +118,6 @@
     <button
       class="submit-btn"
       type="submit"
-      :class="{ 'disabled-btn': fields.length == 5 ? !isValidForm : false }"
     >
       {{ buttonText ? buttonText : title }}
     </button>
@@ -199,8 +198,6 @@ export default {
     },
     addDance() {
       this.category = "Dance";
-      console.log("setting to dance");
-      console.log(this.category);
       return;
     },
     addDigitalArt() {
@@ -264,40 +261,40 @@ export default {
           this.title = this.title ? this.title.trim() : null;
           this.description = this.description ? this.description.trim() : null;
 
-          if (!this.isValidForm) {
-            var e = null;
-            var errorFound = false;
-            this.fields.forEach(field => {
-              const {id, value} = field;
-              if (errorFound) {
-                return;
-              }
-              
-              if (id == 'title') {
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please insert a title')
-                  errorFound = true;
-                }
-              } else if (id == 'description'){
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please add a description')
-                  errorFound = true;
-                }
-              } else if (id == 'category') {
-                if (this.category === '') {
-                  e = Error('Please select a category')
-                  errorFound = true;
-                }
-              } else if (!this.isValidImagesOrFiles) {
-                e = Error('A post must contain either images or files')
-                errorFound = true;
-              }
-            })
-            if (e) {
-              this.$set(this.alerts, e, 'error');
-              setTimeout(() => this.$delete(this.alerts, e), 3000);
+          var e = null;
+          var errorFound = false;
+          this.fields.forEach(field => {
+            const {id, value} = field;
+            if (errorFound) {
               return;
             }
+            
+            if (id == 'title') {
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please insert a title')
+                errorFound = true;
+              }
+            } else if (id == 'description'){
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please add a description')
+                errorFound = true;
+              }
+            } else if (id == 'category') {
+              console.log(this.category)
+              if (this.category === '') {
+                e = Error('Please select a category')
+                errorFound = true;
+              }
+            } else if (!this.isValidImagesOrFiles) {
+              e = Error('A post must contain either images or files')
+              errorFound = true;
+            }
+          })
+
+          if (e) {
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+            return;
           }
 
           const inputFields = Object.fromEntries(
@@ -328,33 +325,32 @@ export default {
           this.username = this.username ? this.username.trim() : null;
           this.password = this.password ? this.password.trim() : null;
 
-          if (!this.isValidForm) {
-            var e = null;
-            var errorFound = false;
-            this.fields.forEach(field => {
-              const {id, value} = field;
-              if (errorFound) {
-                return;
-              }
-              
-              if (id == 'username') {
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please insert a username')
-                  errorFound = true;
-                }
-              } else if (id == 'password'){
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please add a password')
-                  errorFound = true;
-                }
-              }
-            })
-            if (e) {
-              this.$set(this.alerts, e, 'error');
-              setTimeout(() => this.$delete(this.alerts, e), 3000);
+          var e = null;
+          var errorFound = false;
+          this.fields.forEach(field => {
+            const {id, value} = field;
+            if (errorFound) {
               return;
             }
+            
+            if (id == 'username') {
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please insert a username')
+                errorFound = true;
+              }
+            } else if (id == 'password'){
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please add a password')
+                errorFound = true;
+              }
+            }
+          })
+          if (e) {
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+            return;
           }
+
           options.body = JSON.stringify(Object.fromEntries(
             this.fields.map(field => {
               const {id, value} = field;
@@ -365,35 +361,33 @@ export default {
         } else if (this.url === '/api/users' && this.method === 'PATCH') {
           this.username = this.username ? this.username.trim() : null;
           this.password = this.password ? this.password.trim() : null;
-          if (!this.isValidForm) {
-            var e = null;
-            var errorFound = false;
-            this.fields.forEach(field => {
-              const {id, value} = field;
-              if (errorFound) {
-                return;
-              }
-              
-              if (id == 'username') {
-                console.log("hey");
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please insert a username')
-                  errorFound = true;
-                }
-              } else if (id == 'password'){
-                if (value === undefined || value.trim().length == 0) {
-                  e = Error('Please add a password')
-                  errorFound = true;
-                }
-              } else if (id == 'bio') {
-                this.fields['bio'] = this.fields['bio'] ?? ' ';
-              }
-            })
-            if (e) {
-              this.$set(this.alerts, e, 'error');
-              setTimeout(() => this.$delete(this.alerts, e), 3000);
+          var e = null;
+          var errorFound = false;
+          this.fields.forEach(field => {
+            const {id, value} = field;
+            if (errorFound) {
               return;
             }
+            
+            if (id == 'username') {
+              console.log("hey");
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please insert a username')
+                errorFound = true;
+              }
+            } else if (id == 'password'){
+              if (value === undefined || value.trim().length == 0) {
+                e = Error('Please add a password')
+                errorFound = true;
+              }
+            } else if (id == 'bio') {
+              this.fields['bio'] = this.fields['bio'] ?? ' ';
+            }
+          })
+          if (e) {
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+            return;
           }
           options.body = JSON.stringify(Object.fromEntries(
             this.fields.map(field => {
@@ -433,6 +427,17 @@ export default {
         const tagsCompRef = this.$refs.tagsChildRef !== undefined && this.$refs.tagsChildRef.length > 0 ? this.$refs.tagsChildRef[0] : this.$refs.tagsChildRef;
         if (this.makeRemix || this.category !== '' || (this.$refs.tagsChildRef !== undefined && tagsCompRef.draftTags.length > 0)) {
           newPostRes = await r.json();
+
+          newPostRes.post.category = { name: this.category };
+          newPostRes.post.comments = [];
+          newPostRes.post.tags = tagsCompRef.draftTags;
+          newPostRes.post.likes = [];
+          newPostRes.post.reports = [];
+          newPostRes.post.remixes = [];
+
+          this.$store.state.posts.push(newPostRes.post);
+
+          console.log(this.$store.state.posts);
         }
 
         if (this.category !== '') {
@@ -489,22 +494,6 @@ export default {
     }
   },
   computed: {
-    isValidForm() {
-      for (const field in this.fields) {
-        if (field.id == 'title' || field.id == 'description'){
-          if (field.value.trim().length == 0) {
-            return false;
-          }
-        } else if (field.id == 'category'){
-          if (this.category == '') {
-            return false;
-          }
-        } else if (!this.isValidImagesOrFiles){
-          return false;
-        }
-      }
-      return true;
-    },
     isValidImagesOrFiles() {
       return (this.images ? this.images.length > 0 : true) || (this.files ? this.files.length > 0 : true);
     }

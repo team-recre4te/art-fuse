@@ -8,7 +8,7 @@
             <PostComponent v-else :key="parentPost.id" :post="parentPost" />
         </div>
         <section v-if="childPosts.length">
-            <h3>Remixes of Parent Post</h3>
+            <h2>Remixes of Parent Post</h2>
             <PostComponent v-for="remix in childPosts" :key="remix.id" :post="remix" />
         </section>
         <section v-else-if="!loading">
@@ -124,5 +124,15 @@ export default {
 </script>
 
 <style>
+h3 {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 30px 0px;
+}
 
+h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 30px 0px;
+}
 </style>
