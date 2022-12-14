@@ -14,7 +14,6 @@
       </section>
     </header>
     <section>
-      <h3>Posts</h3>
       <section
         v-if="ownPosts.length"
       >
@@ -25,7 +24,7 @@
         />
       </section>
       <article v-else>
-        <p>No posts</p>
+        <div style="padding: 20px; font-size: 24px; font-weight: bold;">No posts</div>
       </article>
     </section>
     <!-- <section>
