@@ -436,8 +436,6 @@ export default {
           newPostRes.post.remixes = [];
 
           this.$store.state.posts.push(newPostRes.post);
-
-          console.log(this.$store.state.posts);
         }
 
         if (this.category !== '') {

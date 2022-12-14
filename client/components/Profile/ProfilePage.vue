@@ -24,7 +24,7 @@
         />
       </section>
       <article v-else>
-        <div style="padding: 20px; font-size: 24px; font-weight: bold;">No posts</div>
+        <div style="margin-top: 50px; font-size: 22px; text-align: center; font-weight: bold;">No posts</div>
       </article>
     </section>
     <!-- <section>

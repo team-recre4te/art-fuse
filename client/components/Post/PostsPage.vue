@@ -142,14 +142,14 @@
             :getTheater="getTheater"
           />
         </div>
-        <div v-else>
+        <div v-else style="margin-top: 50px; font-size: 22px; text-align: center; font-weight: bold;">
           No posts in selected category
         </div>
       </section>     
       <article
         v-else
       >
-        <p>No posts</p>
+        <p style="margin-top: 50px; font-size: 22px; text-align: center; font-weight: bold;">No posts</p>
       </article>
     </section>
   </main>
@@ -555,7 +555,7 @@ section .scrollbox {
   display: flex;
   align-items: flex-start;
   flex-direction: column;
-  padding: 30px;
+  padding-top: 30px;
 }
 
 .post-header div {
